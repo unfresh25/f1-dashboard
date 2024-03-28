@@ -17,19 +17,21 @@ app = Dash(
 server=app.server
 
 Navigation_options = [
-    dbc.NavLink("Home"),
-    dbc.NavLink("Exploratory Analysis"),
-    dbc.NavLink("Predictive Analysis")
+    dbc.NavLink("Home", href = "/", active = "exact"),
+    dbc.NavLink("Exploratory Analysis", href = "/eda", active = "exact"),
+    dbc.NavLink("Predictive Analysis", href = "/pa", active = "exact")
 ]
 
 app.layout = html.Div([
     dcc.Location(id='url'),
 
     html.Header([
-        html.Span([
-            html.Span("F1 ", style={"color": "#e10600",}),
-            html.Span("Dashboard", style={"color": "#fff",})
-        ], style = {"font-size": "28", "font-weight": "600"}),
+        html.A([
+            html.Span([
+                html.Span("F1 ", style={"color": "#e10600",}),
+                html.Span("Dashboard", style={"color": "#fff",})
+            ]),
+        ], href="/", style = {"font-size": "20px", "font-weight": "600", "cursor": "pointer", "text-decoration": "none"}),
 
         dbc.Nav(Navigation_options, vertical=False, pills=True, style={"justify-content": "flex-start", "gap": "150px", "font-weight": "400"}),
     ], style={"display": "flex", "gap": "185px", "align-items": "center", "margin-top": "30px"}),
@@ -51,8 +53,8 @@ app.layout = html.Div([
 
             html.Span([
                 html.P([
-                    "From 1950 to 2023, we delve into the wealth of data to predict how diverse factors influence race outcomes. Utilizing advanced data visualization techniques, we unravel the complex dynamics between race strategies, driver performance, and circuit characteristics."
-                ], style = {"width": "80%", "margin-top": "-30px"})
+                    "Embark on an exhilarating journey through Formula 1 from 1950 to 2023, where we dissect a wealth of data to predict the intricate dance between race strategies, driver prowess, and circuit nuances. "
+                ], style = {"width": "80%", "margin-top": "-20px"})
             ])
         ]),
 

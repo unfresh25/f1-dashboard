@@ -8,6 +8,7 @@ body {
     font-style: normal;    
     width: 90%;
     margin: 0 auto;
+    line-height: normal;
 }
 
 h1 {
@@ -26,7 +27,7 @@ h4{
     height: 2px; /* Grosor de la línea */
     background-color: white; /* Color de la línea */
     transform: translateY(-50%);
-    margin-left: 10px;
+    margin-left: 15px;
     margin-top: -10px;
 }
 
@@ -35,3 +36,21 @@ p {
     font-size: 20px;
     font-weight: 400;
 }
+
+.nav-link {
+    padding: 0;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.nav-link.active {
+    background-color: transparent !important;
+    color: #fff !important;
+    cursor: default;
+}
+
+.nav-link:hover {
+    background-color: transparent !important;
+    transform: scale(1.02);
+    color: #fff !important;
+}
+
