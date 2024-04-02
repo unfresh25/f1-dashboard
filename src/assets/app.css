@@ -11,6 +11,24 @@ body {
     line-height: normal;
 }
 
+header {
+    position: sticky;
+    top: 0;
+    padding: 16px;
+
+    animation: header-scroll linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 200px;
+    z-index: 1;
+}
+
+@keyframes header-scroll {
+    to {
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+    }
+}
+
 h1 {
     font-size: 70px;
     font-weight: 600;   
@@ -23,9 +41,9 @@ h4{
 }
 
 .line {
-    width: 60%; /* La línea se extenderá a lo largo del contenedor */
-    height: 2px; /* Grosor de la línea */
-    background-color: white; /* Color de la línea */
+    width: 60%;
+    height: 2px;
+    background-color: #e10600;
     transform: translateY(-50%);
     margin-left: 15px;
     margin-top: -10px;
