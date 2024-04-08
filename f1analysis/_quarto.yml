@@ -1,0 +1,66 @@
+project:
+  type: website
+
+author:
+  - name: Jorge Borja
+    url: https://www.linkedin.com/in/jorgeborjas25/
+    #email: jborjaa@uninorte.edu.co
+    degrees:
+      - Mag
+    affiliation: 
+     - id: uninorte
+       name: Universidad del Norte
+       department: Matemáticas y Estadísticas
+       url: https://uninorte.edu.co/
+  - name: Jose Mercado
+    url: https://www.linkedin.com/in/jose-javier-mercado-reyes-246352214/
+    #email: reyesjj@uninorte.edu.co
+    degrees:
+      - Mag
+
+website:
+  title: "<span style='color: #e10600'>F1</span> Dashboard"
+  page-navigation: true
+  sidebar: 
+    - contents: 
+      - href: index.qmd
+        text: Introducción
+      - section: "Análisis Exploratorio de Datos (EDA)" 
+        contents:
+          - text: "Análisis de la tabla circuits"
+            href: circuits.qmd
+          - text: "Análisis de la tabla constructors"
+            href: constructors.qmd
+          - text: "Análisis de la tabla drivers"
+            href: drivers.qmd
+    - tools: 
+      - icon: github
+        url: https://github.com/unfresh25/f1-dashboard
+          
+
+format:
+  html:
+    theme: cyborg
+    toc: true
+    toc-depth: 2
+    css: style.css
+    smooth-scroll: true
+    lang: es
+    toc-title: En esta página
+    df-print: paged
+
+include-in-header:
+  - text: |
+      <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+      <link rel="manifest" href="icon/site.webmanifest">
+      <link rel="mask-icon" href="icon/safari-pinned-tab.svg" color="#5bbad5">
+      <meta name="msapplication-TileColor" content="#da532c">
+      <meta name="theme-color" content="#ffffff">
+
+bibliography: references.bib
+
+jupyter: f1_env
+
+

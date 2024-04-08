@@ -1,0 +1,90 @@
+---
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
+---
+
+``` {python load_os}
+import os 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# ¿Qué haremos?
+
+En esta sección realizaremos el análisis exploratorio referente a la tabla `races`, que contiene los datos de las carreras realizadas desde 1950 hasta 2023. Sin embargo, para realizar este análisis no podemos trabajar únicamente con esta tabla, utilizaremos consultas para obtener una tabla con la información unificada de la tabla `races`, `circuits` (circuitos donde se celebran carreras de la F1), `results` (resultados de las carreras realizadas), `drivers` (pilotos que compitieron en las carreras), `constructors` (equipos que participaron en las carreras). Teniendo en cuenta que para las tablas de `results`, `drivers` y `constructors` tomaremos únicamente los datos del ganador en cada carrera. 
+
+# Librerías
+
+Para este proyecto trabajaremos con las siguientes librerías:
+
+* Pandas
+* Psycopg2
+* Plotly
+* Matplotlib
+* Seaborn
+
+Para instalarlas pueden ejecutar el siguiente comando desde la terminal `pip install pandas, psycopg2...` o, también se pueden instalar mediante el archivo [requirements.txt](https://github.com/unfresh25/f1-dashboard) utilizando `pip install -r requirements.txt` en su terminal.
+
+Con esto, podemos proceder a importar las librerías
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+```
+
+Además, usaremos la siguiente función para evitar repetitivdad en el código y poder conectarnos a la base de datos sin problemas.
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Note que en esta función estamos obteniendo una variable del entorno que es la que almacena los datos de la conexión a la base de datos. En este caso, estamos usando [Neon](https://neon.tech/) que nos permite crear un servidor de bases de datos con `PostgreSQL`. 
+
+# Obtención de los datos
+
+Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas. 
+
+## Tabla races
+
+``` {python get_tables}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM races
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+

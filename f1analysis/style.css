@@ -1,0 +1,93 @@
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: rgba(131, 131, 131, 0.1);
+  margin-left: 1em;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(129, 129, 129, 0.3);
+  border-radius: 4px;
+}
+
+.sidebar-title{
+  text-align: center;
+  color: #fff;
+}
+
+a {
+  text-decoration: none;
+}
+
+.description {
+  color: #888;
+}
+
+h2 {
+  font-size: 20px !important;
+}
+
+h3 {
+  font-size: 18px !important;
+}
+
+.pagedtable-index, .pagedtable-index-nav {
+  color: #afb1b3;
+}
+
+.pagedtable-index:hover, .pagedtable-index-nav:hover{
+  color: #6c757d;
+}
+
+.nav-link {
+  color: #6c757d !important;
+}
+
+.quarto-title-block .quarto-title-banner {
+  background-image: url(https://www.uninorte.edu.co/o/uninorte-theme/images/uninorte/footer_un/logo.png);
+  background-size: 200px;
+  background-position: right;
+  background-repeat: no-repeat;
+  padding-right: 100px;
+  background-origin: content-box;
+  color: #fff;
+  border-bottom: 1px solid #333;
+  background-color: #111;
+}
+
+p > code, h2 > code, h3 > code {
+  background-color: #212121 !important;
+  color: #dd9ec2 !important;
+  border: 1px solid #373737 !important;
+  border-radius: .25rem;
+  padding: .1rem .25rem;
+}
+
+thead, tbody, tfoot, tr, td, th {
+  border-color: transparent !important;
+}
+
+figcaption {
+  text-align: center;
+}
+
+.ex {
+  color: #0096c7 !important;
+}
+
+.cf, .im {
+  color: #b892ff !important;
+}
+
+.aa-Form {
+  background-color: transparent !important;
+  border-bottom: 1px solid #555 !important;
+  color: #fff !important;
+}
+
+.aa-SubmitIcon {
+  filter: invert(98%) sepia(100%) saturate(0%) hue-rotate(338deg) brightness(104%) contrast(103%);
+}
+
+.breadcrumb {
+  background-color: transparent !important;
+}
