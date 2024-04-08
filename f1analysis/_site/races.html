@@ -108,10 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <style>html{ scroll-behavior: smooth; }</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-
-
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-
 <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
@@ -282,13 +279,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Pueden instalarse utilizando el siguiente comando desde la terminal: <code>pip install pandas psycopg2 plotly...</code>, o bien, mediante el archivo <a href="https://github.com/unfresh25/f1-dashboard">requirements.txt</a> utilizando <code>pip install -r requirements.txt</code> en la terminal.</p>
 <p>Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:</p>
-<div id="3bb1feb3" class="cell" data-execution_count="2">
+<div id="5599fc6b" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:</p>
-<div id="ed223659" class="cell" data-execution_count="3">
+<div id="5458ac82" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -303,7 +300,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas.</p>
 <section id="tabla-races" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-races">Tabla races</h2>
-<div id="dba9e579" class="cell" data-execution_count="4">
+<div id="a812a53e" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -477,7 +474,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-circuits" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-circuits">Tabla circuits</h2>
-<div id="ac28ea12" class="cell" data-execution_count="5">
+<div id="2a163dbb" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -597,7 +594,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-results" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-results">Tabla results</h2>
-<div id="edccfd9d" class="cell" data-execution_count="6">
+<div id="91147a7d" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -771,7 +768,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-lap_times" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-lap_times">Tabla lap_times</h2>
-<div id="1d96a94b" class="cell" data-execution_count="7">
+<div id="5a3118b3" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -873,7 +870,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-pit_stops" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-pit_stops">Tabla pit_stops</h2>
-<div id="f4dfc0f4" class="cell" data-execution_count="8">
+<div id="e3c50946" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -990,7 +987,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Pit Stops: stop, lap, milliseconds.</li>
 </ul>
 <p>Realicemos entonces la consulta a la base de datos para obtener esta tabla.</p>
-<div id="a9a1599a" class="cell" data-execution_count="9">
+<div id="d75ed4f5" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -1033,7 +1030,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
 <span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    display(records_data.head())</span>
 <span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
 <span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
 <span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
@@ -1193,154 +1190,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>NaN</td>
 </tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1089</td>
-<td>1106</td>
-<td>2023</td>
-<td>8</td>
-<td>7</td>
-<td>Canadian Grand Prix</td>
-<td>18:00:00</td>
-<td>villeneuve</td>
-<td>Circuit Gilles Villeneuve</td>
-<td>Montreal</td>
-<td>Canada</td>
-<td>...</td>
-<td>70</td>
-<td>5638348</td>
-<td>68.0</td>
-<td>3.0</td>
-<td>207.683</td>
-<td>1.0</td>
-<td>74481.0</td>
-<td>1.0</td>
-<td>1.0</td>
-<td>23218.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1090</td>
-<td>1107</td>
-<td>2023</td>
-<td>9</td>
-<td>70</td>
-<td>Austrian Grand Prix</td>
-<td>13:00:00</td>
-<td>red_bull_ring</td>
-<td>Red Bull Ring</td>
-<td>Spielberg</td>
-<td>Austria</td>
-<td>...</td>
-<td>71</td>
-<td>5133607</td>
-<td>71.0</td>
-<td>1.0</td>
-<td>231.970</td>
-<td>1.0</td>
-<td>67012.0</td>
-<td>1.0</td>
-<td>1.0</td>
-<td>16246.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1091</td>
-<td>1108</td>
-<td>2023</td>
-<td>10</td>
-<td>9</td>
-<td>British Grand Prix</td>
-<td>14:00:00</td>
-<td>silverstone</td>
-<td>Silverstone Circuit</td>
-<td>Silverstone</td>
-<td>UK</td>
-<td>...</td>
-<td>52</td>
-<td>5116938</td>
-<td>42.0</td>
-<td>1.0</td>
-<td>234.922</td>
-<td>1.0</td>
-<td>90275.0</td>
-<td>1.0</td>
-<td>7.0</td>
-<td>28060.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1092</td>
-<td>1109</td>
-<td>2023</td>
-<td>11</td>
-<td>11</td>
-<td>Hungarian Grand Prix</td>
-<td>13:00:00</td>
-<td>hungaroring</td>
-<td>Hungaroring</td>
-<td>Budapest</td>
-<td>Hungary</td>
-<td>...</td>
-<td>70</td>
-<td>5888634</td>
-<td>53.0</td>
-<td>1.0</td>
-<td>195.910</td>
-<td>1.0</td>
-<td>80504.0</td>
-<td>1.0</td>
-<td>8.0</td>
-<td>20880.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1093</td>
-<td>1110</td>
-<td>2023</td>
-<td>12</td>
-<td>13</td>
-<td>Belgian Grand Prix</td>
-<td>13:00:00</td>
-<td>spa</td>
-<td>Circuit de Spa-Francorchamps</td>
-<td>Spa</td>
-<td>Belgium</td>
-<td>...</td>
-<td>44</td>
-<td>4950450</td>
-<td>32.0</td>
-<td>2.0</td>
-<td>231.490</td>
-<td>1.0</td>
-<td>107305.0</td>
-<td>1.0</td>
-<td>5.0</td>
-<td>22610.0</td>
-</tr>
 </tbody>
 </table>
 
-<p>1094 rows × 26 columns</p>
+<p>5 rows × 26 columns</p>
 </div>
 </div>
 </div>
