@@ -27,8 +27,8 @@ website:
         text: Introducción
       - section: "Análisis Exploratorio de Datos (EDA)" 
         contents:
-          - text: "Análisis de la tabla circuits"
-            href: circuits.qmd
+          - text: "Análisis de la tabla races"
+            href: races.qmd
           - text: "Análisis de la tabla constructors"
             href: constructors.qmd
           - text: "Análisis de la tabla drivers"

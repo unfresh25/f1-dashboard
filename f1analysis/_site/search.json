@@ -32,7 +32,7 @@
     "href": "circuits.html",
     "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
     "section": "",
-    "text": "import os \nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nDATABASE_URL = os.environ.get('DATABASE_URL')",
+    "text": "En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla races, que abarca los datos de las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla races con aquellos de las tablas circuits (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), results (que proporciona los resultados de las carreras), drivers (que enumera los pilotos que participaron en las carreras), constructors (los equipos que compitieron en las carreras), lap_times (los tiempos registrados por vuelta) y pit_stops (las paradas realizadas en boxes).\nEs fundamental destacar que, para las tablas results, drivers y constructors, nos enfocaremos exclusivamente en los datos del ganador de cada carrera. Asimismo, de las tablas lap_times y pit_stops, extraeremos únicamente la información correspondiente a la vuelta más rápida registrada y a la parada en boxes más rápida realizada, respectivamente.",
     "crumbs": [
       "Análisis Exploratorio de Datos (EDA)",
       "Análisis de la tabla circuits"
@@ -58,6 +58,171 @@
     "crumbs": [
       "Análisis Exploratorio de Datos (EDA)",
       "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-circuits",
+    "href": "circuits.html#tabla-circuits",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla circuits",
+    "text": "Tabla circuits\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM circuits\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\ncircuitid\ncircuitref\nname\nlocation\ncountry\nlat\nlng\nalt\nurl\n\n\n\n\n0\n1\nalbert_park\nAlbert Park Grand Prix Circuit\nMelbourne\nAustralia\n-37.8497\n144.968\n10\nhttp://en.wikipedia.org/wiki/Melbourne_Grand_P...\n\n\n1\n2\nsepang\nSepang International Circuit\nKuala Lumpur\nMalaysia\n2.76083\n101.738\n18\nhttp://en.wikipedia.org/wiki/Sepang_Internatio...\n\n\n2\n3\nbahrain\nBahrain International Circuit\nSakhir\nBahrain\n26.0325\n50.5106\n7\nhttp://en.wikipedia.org/wiki/Bahrain_Internati...\n\n\n3\n4\ncatalunya\nCircuit de Barcelona-Catalunya\nMontmeló\nSpain\n41.57\n2.26111\n109\nhttp://en.wikipedia.org/wiki/Circuit_de_Barcel...\n\n\n4\n5\nistanbul\nIstanbul Park\nIstanbul\nTurkey\n40.9517\n29.405\n130\nhttp://en.wikipedia.org/wiki/Istanbul_Park",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-results",
+    "href": "circuits.html#tabla-results",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla results",
+    "text": "Tabla results\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM results\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nresultid\nraceid\ndriverid\nconstructorid\nnumber\ngrid\nposition\npositiontext\npositionorder\npoints\nlaps\ntime\nmilliseconds\nfastestlap\nrank\nfastestlaptime\nfastestlapspeed\nstatusid\n\n\n\n\n0\n1\n18\n1\n1\n22\n1\n1\n1\n1\n10\n58\n1:34:50.616\n5690616\n39\n2\n1:27.452\n218.300\n1\n\n\n1\n2\n18\n2\n2\n3\n5\n2\n2\n2\n8\n58\n+5.478\n5696094\n41\n3\n1:27.739\n217.586\n1\n\n\n2\n3\n18\n3\n3\n7\n7\n3\n3\n3\n6\n58\n+8.163\n5698779\n41\n5\n1:28.090\n216.719\n1\n\n\n3\n4\n18\n4\n4\n5\n11\n4\n4\n4\n5\n58\n+17.181\n5707797\n58\n7\n1:28.603\n215.464\n1\n\n\n4\n5\n18\n5\n1\n23\n3\n5\n5\n5\n4\n58\n+18.014\n5708630\n43\n1\n1:27.418\n218.385\n1",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-drivers",
+    "href": "circuits.html#tabla-drivers",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla drivers",
+    "text": "Tabla drivers\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM drivers\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\ndriverid\ndriverref\nnumber\ncode\nforename\nsurname\ndob\nnationality\nurl\n\n\n\n\n0\n1\nhamilton\n44.0\nHAM\nLewis\nHamilton\n1985-01-07\nBritish\nhttp://en.wikipedia.org/wiki/Lewis_Hamilton\n\n\n1\n2\nheidfeld\nNaN\nHEI\nNick\nHeidfeld\n1977-05-10\nGerman\nhttp://en.wikipedia.org/wiki/Nick_Heidfeld\n\n\n2\n3\nrosberg\n6.0\nROS\nNico\nRosberg\n1985-06-27\nGerman\nhttp://en.wikipedia.org/wiki/Nico_Rosberg\n\n\n3\n4\nalonso\n14.0\nALO\nFernando\nAlonso\n1981-07-29\nSpanish\nhttp://en.wikipedia.org/wiki/Fernando_Alonso\n\n\n4\n5\nkovalainen\nNaN\nKOV\nHeikki\nKovalainen\n1981-10-19\nFinnish\nhttp://en.wikipedia.org/wiki/Heikki_Kovalainen",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-constructors",
+    "href": "circuits.html#tabla-constructors",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla constructors",
+    "text": "Tabla constructors\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM constructors\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nconstructorid\nconstructorref\nname\nnationality\nurl\n\n\n\n\n0\n1\nmclaren\nMcLaren\nBritish\nhttp://en.wikipedia.org/wiki/McLaren\n\n\n1\n2\nbmw_sauber\nBMW Sauber\nGerman\nhttp://en.wikipedia.org/wiki/BMW_Sauber\n\n\n2\n3\nwilliams\nWilliams\nBritish\nhttp://en.wikipedia.org/wiki/Williams_Grand_Pr...\n\n\n3\n4\nrenault\nRenault\nFrench\nhttp://en.wikipedia.org/wiki/Renault_in_Formul...\n\n\n4\n5\ntoro_rosso\nToro Rosso\nItalian\nhttp://en.wikipedia.org/wiki/Scuderia_Toro_Rosso",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-lap_times",
+    "href": "circuits.html#tabla-lap_times",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla lap_times",
+    "text": "Tabla lap_times\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM lap_times\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\ndriverid\nlap\nposition\ntime\nmilliseconds\n\n\n\n\n0\n841\n20\n1\n1\n1:38.109\n98109\n\n\n1\n841\n20\n2\n1\n1:33.006\n93006\n\n\n2\n841\n20\n3\n1\n1:32.713\n92713\n\n\n3\n841\n20\n4\n1\n1:32.803\n92803\n\n\n4\n841\n20\n5\n1\n1:32.342\n92342",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "circuits.html#tabla-pit_stops",
+    "href": "circuits.html#tabla-pit_stops",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla pit_stops",
+    "text": "Tabla pit_stops\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM pit_stops\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\ndriverid\nstop\nlap\ntime\nduration\nmilliseconds\n\n\n\n\n0\n841\n153\n1\n1\n17:05:23\n26.898\n26898\n\n\n1\n841\n30\n1\n1\n17:05:52\n25.021\n25021\n\n\n2\n841\n17\n1\n11\n17:20:48\n23.426\n23426\n\n\n3\n841\n4\n1\n12\n17:22:34\n23.251\n23251\n\n\n4\n841\n13\n1\n13\n17:24:10\n23.842\n23842",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla circuits"
+    ]
+  },
+  {
+    "objectID": "races.html",
+    "href": "races.html",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "",
+    "text": "En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla races, que abarca los datos de las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla races con aquellos de las tablas circuits (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), results (que proporciona los resultados de las carreras), lap_times (los tiempos registrados por vuelta) y pit_stops (las paradas realizadas en boxes).\nEs fundamental destacar que, para la tabla results nos enfocaremos exclusivamente en los datos del ganador de cada carrera. Asimismo, de las tablas lap_times y pit_stops, extraeremos únicamente la información correspondiente a la vuelta más rápida registrada y a la parada en boxes más rápida realizada, respectivamente.",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-races",
+    "href": "races.html#tabla-races",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla races",
+    "text": "Tabla races\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM races\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\nyear\nround\ncircuitid\nname\ndate\ntime\nurl\nfp1_date\nfp1_time\nfp2_date\nfp2_time\nfp3_date\nfp3_time\nquali_date\nquali_time\nsprint_date\nsprint_time\n\n\n\n\n0\n1\n2009\n1\n1\nAustralian Grand Prix\n2009-03-29\n06:00:00\nhttp://en.wikipedia.org/wiki/2009_Australian_G...\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\n\n\n1\n2\n2009\n2\n2\nMalaysian Grand Prix\n2009-04-05\n09:00:00\nhttp://en.wikipedia.org/wiki/2009_Malaysian_Gr...\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\n\n\n2\n3\n2009\n3\n17\nChinese Grand Prix\n2009-04-19\n07:00:00\nhttp://en.wikipedia.org/wiki/2009_Chinese_Gran...\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\n\n\n3\n4\n2009\n4\n3\nBahrain Grand Prix\n2009-04-26\n12:00:00\nhttp://en.wikipedia.org/wiki/2009_Bahrain_Gran...\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\n\n\n4\n5\n2009\n5\n4\nSpanish Grand Prix\n2009-05-10\n12:00:00\nhttp://en.wikipedia.org/wiki/2009_Spanish_Gran...\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone\nNone",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-circuits",
+    "href": "races.html#tabla-circuits",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla circuits",
+    "text": "Tabla circuits\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM circuits\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\ncircuitid\ncircuitref\nname\nlocation\ncountry\nlat\nlng\nalt\nurl\n\n\n\n\n0\n1\nalbert_park\nAlbert Park Grand Prix Circuit\nMelbourne\nAustralia\n-37.8497\n144.968\n10\nhttp://en.wikipedia.org/wiki/Melbourne_Grand_P...\n\n\n1\n2\nsepang\nSepang International Circuit\nKuala Lumpur\nMalaysia\n2.76083\n101.738\n18\nhttp://en.wikipedia.org/wiki/Sepang_Internatio...\n\n\n2\n3\nbahrain\nBahrain International Circuit\nSakhir\nBahrain\n26.0325\n50.5106\n7\nhttp://en.wikipedia.org/wiki/Bahrain_Internati...\n\n\n3\n4\ncatalunya\nCircuit de Barcelona-Catalunya\nMontmeló\nSpain\n41.57\n2.26111\n109\nhttp://en.wikipedia.org/wiki/Circuit_de_Barcel...\n\n\n4\n5\nistanbul\nIstanbul Park\nIstanbul\nTurkey\n40.9517\n29.405\n130\nhttp://en.wikipedia.org/wiki/Istanbul_Park",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-results",
+    "href": "races.html#tabla-results",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla results",
+    "text": "Tabla results\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM results\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nresultid\nraceid\ndriverid\nconstructorid\nnumber\ngrid\nposition\npositiontext\npositionorder\npoints\nlaps\ntime\nmilliseconds\nfastestlap\nrank\nfastestlaptime\nfastestlapspeed\nstatusid\n\n\n\n\n0\n1\n18\n1\n1\n22\n1\n1\n1\n1\n10\n58\n1:34:50.616\n5690616\n39\n2\n1:27.452\n218.300\n1\n\n\n1\n2\n18\n2\n2\n3\n5\n2\n2\n2\n8\n58\n+5.478\n5696094\n41\n3\n1:27.739\n217.586\n1\n\n\n2\n3\n18\n3\n3\n7\n7\n3\n3\n3\n6\n58\n+8.163\n5698779\n41\n5\n1:28.090\n216.719\n1\n\n\n3\n4\n18\n4\n4\n5\n11\n4\n4\n4\n5\n58\n+17.181\n5707797\n58\n7\n1:28.603\n215.464\n1\n\n\n4\n5\n18\n5\n1\n23\n3\n5\n5\n5\n4\n58\n+18.014\n5708630\n43\n1\n1:27.418\n218.385\n1",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-drivers",
+    "href": "races.html#tabla-drivers",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla drivers",
+    "text": "Tabla drivers\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM drivers\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\ndriverid\ndriverref\nnumber\ncode\nforename\nsurname\ndob\nnationality\nurl\n\n\n\n\n0\n1\nhamilton\n44.0\nHAM\nLewis\nHamilton\n1985-01-07\nBritish\nhttp://en.wikipedia.org/wiki/Lewis_Hamilton\n\n\n1\n2\nheidfeld\nNaN\nHEI\nNick\nHeidfeld\n1977-05-10\nGerman\nhttp://en.wikipedia.org/wiki/Nick_Heidfeld\n\n\n2\n3\nrosberg\n6.0\nROS\nNico\nRosberg\n1985-06-27\nGerman\nhttp://en.wikipedia.org/wiki/Nico_Rosberg\n\n\n3\n4\nalonso\n14.0\nALO\nFernando\nAlonso\n1981-07-29\nSpanish\nhttp://en.wikipedia.org/wiki/Fernando_Alonso\n\n\n4\n5\nkovalainen\nNaN\nKOV\nHeikki\nKovalainen\n1981-10-19\nFinnish\nhttp://en.wikipedia.org/wiki/Heikki_Kovalainen",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-constructors",
+    "href": "races.html#tabla-constructors",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla constructors",
+    "text": "Tabla constructors\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM constructors\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nconstructorid\nconstructorref\nname\nnationality\nurl\n\n\n\n\n0\n1\nmclaren\nMcLaren\nBritish\nhttp://en.wikipedia.org/wiki/McLaren\n\n\n1\n2\nbmw_sauber\nBMW Sauber\nGerman\nhttp://en.wikipedia.org/wiki/BMW_Sauber\n\n\n2\n3\nwilliams\nWilliams\nBritish\nhttp://en.wikipedia.org/wiki/Williams_Grand_Pr...\n\n\n3\n4\nrenault\nRenault\nFrench\nhttp://en.wikipedia.org/wiki/Renault_in_Formul...\n\n\n4\n5\ntoro_rosso\nToro Rosso\nItalian\nhttp://en.wikipedia.org/wiki/Scuderia_Toro_Rosso",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-lap_times",
+    "href": "races.html#tabla-lap_times",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla lap_times",
+    "text": "Tabla lap_times\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM lap_times\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\ndriverid\nlap\nposition\ntime\nmilliseconds\n\n\n\n\n0\n841\n20\n1\n1\n1:38.109\n98109\n\n\n1\n841\n20\n2\n1\n1:33.006\n93006\n\n\n2\n841\n20\n3\n1\n1:32.713\n92713\n\n\n3\n841\n20\n4\n1\n1:32.803\n92803\n\n\n4\n841\n20\n5\n1\n1:32.342\n92342",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-pit_stops",
+    "href": "races.html#tabla-pit_stops",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla pit_stops",
+    "text": "Tabla pit_stops\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT *\n            FROM pit_stops\n            LIMIT 5;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\ndriverid\nstop\nlap\ntime\nduration\nmilliseconds\n\n\n\n\n0\n841\n153\n1\n1\n17:05:23\n26.898\n26898\n\n\n1\n841\n30\n1\n1\n17:05:52\n25.021\n25021\n\n\n2\n841\n17\n1\n11\n17:20:48\n23.426\n23426\n\n\n3\n841\n4\n1\n12\n17:22:34\n23.251\n23251\n\n\n4\n841\n13\n1\n13\n17:24:10\n23.842\n23842",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
+    ]
+  },
+  {
+    "objectID": "races.html#tabla-final",
+    "href": "races.html#tabla-final",
+    "title": "Campeonato Mundial de la Formula 1 (1950 - 2023)",
+    "section": "Tabla final",
+    "text": "Tabla final\nCon base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:\n\nRaces: raceId, year, round, circuitId, name, time.\nCircuits: circuit_ref, name, location, country, lat, lng.\nResults: driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed.\nLap Times: lap, miliseconds.\nPit Stops: stop, lap, milliseconds.\n\nRealicemos entonces la consulta a la base de datos para obtener esta tabla.\n\ntry:\n    connection = connection_db()\n    cursor = connection.cursor()\n\n    cursor.execute(\n        \"\"\"\n            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name, r.time AS race_time,\n                c.circuitref, c.name AS circuit_name, c.location AS circuit_location, c.country AS circuit_country,\n                c.lat AS circuit_lat, c.lng AS circuit_lng,\n                re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds,\n                re.fastestlap AS fastest_lap, re.rank, re.fastestlapspeed,\n                l.lap, l.milliseconds AS lap_time,\n                p.stop, p.lap AS pit_lap, p.milliseconds AS pit_stop_time\n            FROM races AS r\n            JOIN circuits AS c ON r.circuitId = c.circuitId\n            JOIN (\n                SELECT raceId, driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed\n                FROM results\n                WHERE positionOrder = 1\n            ) AS re ON r.raceId = re.raceId\n            LEFT JOIN (\n                SELECT raceId, MIN(lap) AS lap, MIN(milliseconds) AS milliseconds\n                FROM lap_times\n                GROUP BY raceId\n            ) AS l ON r.raceId = l.raceId\n            LEFT JOIN (\n                SELECT raceid, MIN(stop) AS stop, MIN(lap) AS lap, MIN(milliseconds) AS milliseconds\n                FROM pit_stops\n                GROUP BY raceid\n            ) AS p ON r.raceId = p.raceid;\n        \"\"\"\n    )\n\n    records = cursor.fetchall()\n    records_data = pd.DataFrame(records)\n\n    columns = []\n    for column in cursor.description:\n        columns.append(column[0])\n\n    records_data.columns = columns\n\n    display(records_data)\nexcept (Exception, Error) as e:\n    print('Error while executing the query', e)\nfinally:\n    if(connection):\n        cursor.close()\n        connection.close()\n\n\n\n\n\n\n\n\n\nraceid\nyear\nround\ncircuitid\nrace_name\nrace_time\ncircuitref\ncircuit_name\ncircuit_location\ncircuit_country\n...\nlaps\nmilliseconds\nfastest_lap\nrank\nfastestlapspeed\nlap\nlap_time\nstop\npit_lap\npit_stop_time\n\n\n\n\n0\n18\n2008\n1\n1\nAustralian Grand Prix\n04:30:00\nalbert_park\nAlbert Park Grand Prix Circuit\nMelbourne\nAustralia\n...\n58\n5690616\n39.0\n2.0\n218.300\n1.0\n87418.0\nNaN\nNaN\nNaN\n\n\n1\n19\n2008\n2\n2\nMalaysian Grand Prix\n07:00:00\nsepang\nSepang International Circuit\nKuala Lumpur\nMalaysia\n...\n56\n5478555\n37.0\n2.0\n209.158\n1.0\n95366.0\nNaN\nNaN\nNaN\n\n\n2\n20\n2008\n3\n3\nBahrain Grand Prix\n11:30:00\nbahrain\nBahrain International Circuit\nSakhir\nBahrain\n...\n57\n5466970\n38.0\n3.0\n208.153\n1.0\n93193.0\nNaN\nNaN\nNaN\n\n\n3\n21\n2008\n4\n4\nSpanish Grand Prix\n12:00:00\ncatalunya\nCircuit de Barcelona-Catalunya\nMontmeló\nSpain\n...\n66\n5899051\n46.0\n1.0\n205.191\n1.0\n81670.0\nNaN\nNaN\nNaN\n\n\n4\n22\n2008\n5\n5\nTurkish Grand Prix\n12:00:00\nistanbul\nIstanbul Park\nIstanbul\nTurkey\n...\n58\n5209451\n16.0\n3.0\n221.734\n1.0\n86506.0\nNaN\nNaN\nNaN\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n1089\n1106\n2023\n8\n7\nCanadian Grand Prix\n18:00:00\nvilleneuve\nCircuit Gilles Villeneuve\nMontreal\nCanada\n...\n70\n5638348\n68.0\n3.0\n207.683\n1.0\n74481.0\n1.0\n1.0\n23218.0\n\n\n1090\n1107\n2023\n9\n70\nAustrian Grand Prix\n13:00:00\nred_bull_ring\nRed Bull Ring\nSpielberg\nAustria\n...\n71\n5133607\n71.0\n1.0\n231.970\n1.0\n67012.0\n1.0\n1.0\n16246.0\n\n\n1091\n1108\n2023\n10\n9\nBritish Grand Prix\n14:00:00\nsilverstone\nSilverstone Circuit\nSilverstone\nUK\n...\n52\n5116938\n42.0\n1.0\n234.922\n1.0\n90275.0\n1.0\n7.0\n28060.0\n\n\n1092\n1109\n2023\n11\n11\nHungarian Grand Prix\n13:00:00\nhungaroring\nHungaroring\nBudapest\nHungary\n...\n70\n5888634\n53.0\n1.0\n195.910\n1.0\n80504.0\n1.0\n8.0\n20880.0\n\n\n1093\n1110\n2023\n12\n13\nBelgian Grand Prix\n13:00:00\nspa\nCircuit de Spa-Francorchamps\nSpa\nBelgium\n...\n44\n4950450\n32.0\n2.0\n231.490\n1.0\n107305.0\n1.0\n5.0\n22610.0\n\n\n\n\n1094 rows × 26 columns",
+    "crumbs": [
+      "Análisis Exploratorio de Datos (EDA)",
+      "Análisis de la tabla races"
     ]
   }
 ]
