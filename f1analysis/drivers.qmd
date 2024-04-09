@@ -1,5 +1,72 @@
 ---
-title: "Drivers"
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
 ---
 
-About this site
+``` {python load_os}
+#| echo: false
+import os 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# ¿Qué haremos?
+
+En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla `constructors`, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla `constructors` con aquellos de las tablas `circuits` (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), `results` (que proporciona los resultados de las carreras), `pit_stops` (paradas realizadas en boxes).
+
+Es fundamental destacar que, para la tabla `results` nos enfocaremos exclusivamente en los equipos que obtuvieron puntos en cada carrera. Asimismo, de la tabla `pit_stops`, extraeremos únicamente la información correspondiente a la parada en boxes más rápida realizada.
+
+# Librerías
+
+Para este proyecto trabajaremos con las siguientes librerías:
+
+* Pandas
+* Psycopg2
+* Plotly
+* Matplotlib
+* Seaborn
+* Scikit-learn
+
+Pueden instalarse utilizando el siguiente comando desde la terminal: `pip install pandas psycopg2 plotly...`, o bien, mediante el archivo [requirements.txt](https://github.com/unfresh25/f1-dashboard) utilizando `pip install -r requirements.txt` en la terminal.
+
+Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+
+import numpy as np
+
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
+import plotly.graph_objects as go
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('white')
+```
+
+Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Es importante destacar que en esta función, obtenemos una variable de entorno que almacena los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/) que nos permite crear un servidor de bases de datos con `PostgreSQL`. 
+
+# Obtención de los datos
+
+Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas. 

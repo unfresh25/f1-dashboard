@@ -528,6 +528,8 @@ plt.show()
 
 ```
 
+<br>
+
 Se observa que la mayoría de los constructores han participado en una cantidad menor de carreras, con una concentración significativa cerca del cero. Esto indica que hay muchos equipos que han tenido una presencia breve en el deporte (pocas temporadas). Sin embargo, hay un pequeño grupo de equipos, como Ferrari y McLaren, que resaltan con una participación en un número mucho mayor de carreras, superando los 800 Grandes Premios, lo que subraya su posición como pilares históricos de la Fórmula 1 con una larga tradición de competencia continua.
 
 ### Distribución de costructores por nacionalidad
@@ -548,6 +550,8 @@ plt.xticks(rotation=45)
 plt.tight_layout() 
 plt.show()
 ```
+
+<br>
 
 El gráfico muestra la distribución de constructores de Fórmula 1 por nacionalidad. La nacionalidad británica domina claramente con la mayor cantidad de constructores, lo cual resalta la influencia y la historia del Reino Unido en el automovilismo de F1. Le siguen con menor frecuencia los constructores americanos e italianos, reflejando también su papel significativo en la F1. 
 
@@ -572,6 +576,8 @@ plt.xticks()
 plt.show()
 ```
 
+<br>
+
 El gráfico muestra el top 10 de equipos más ganadores en la historia de la Fórmula 1. Ferrari lidera con una diferencia significativa, destacando su legado como la escudería más exitosa. McLaren le sigue, con Mercedes, Williams y Red Bull completando los cinco primeros lugares. Estos equipos han sido fundamentales en el deporte, no solo por su número de victorias sino también por su influencia en la evolución de la competición.
 
 ### Evolución de la velocidad
@@ -585,6 +591,8 @@ plt.ylabel('Velocidad (km/h)')
 plt.legend()
 plt.show()
 ```
+
+<br>
 
 El gráfico presenta la evolución de la velocidad de la vuelta más rápida en la Fórmula 1 a lo largo de los años. Se observan fluctuaciones en la velocidad a lo largo del tiempo, con una tendencia general al aumento. La sombra alrededor de la línea indica la variabilidad en la velocidad de la vuelta más rápida cada año, sugiriendo que, aunque hay años con velocidades pico, también existen otros factores que pueden afectar la velocidad, como las regulaciones técnicas, las condiciones meteorológicas o el diseño de los circuitos.
 
@@ -605,6 +613,8 @@ for ax, team in zip(axes.flatten(), top_constructors['constructor_name']):
 plt.tight_layout()
 plt.show()
 ```
+
+<br>
 
 La **evolución de la velocidad máxima** en la Fórmula 1 a lo largo de los años es un resultado complejo de factores como la tecnología, las regulaciones, el diseño de los circuitos y la competencia entre equipos. Cada equipo tiene su propia trayectoria, y las mejoras constantes o altibajos pueden atribuirse a diversas razones.
 
@@ -637,5 +647,7 @@ for ax, team in zip(axes.flatten(), top_constructors['constructor_name']):
 plt.tight_layout()
 plt.show()
 ```
+
+<br>
 
 La gráfica muestra cómo ha evolucionado el tiempo promedio de parada en boxes para los mejores equipos de Fórmula 1 a lo largo de los años. Las mejoras tecnológicas, el entrenamiento del personal, las estrategias de carrera y los cambios en el diseño de los autos han influido en estos tiempos. Los equipos más eficientes han logrado reducir sus tiempos de parada, demostrando habilidad y dedicación en las carreras.
