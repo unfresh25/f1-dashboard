@@ -30,6 +30,7 @@ Para este proyecto trabajaremos con las siguientes librerías:
 * Plotly
 * Matplotlib
 * Seaborn
+* Scikit-learn
 
 Pueden instalarse utilizando el siguiente comando desde la terminal: `pip install pandas psycopg2 plotly...`, o bien, mediante el archivo [requirements.txt](https://github.com/unfresh25/f1-dashboard) utilizando `pip install -r requirements.txt` en la terminal.
 
@@ -39,6 +40,9 @@ Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la sigu
 import pandas as pd
 import psycopg2 as psy
 from psycopg2 import Error
+
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 ```
 
 Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:
@@ -360,4 +364,45 @@ Estos resultados nos pueden permitir concluir lo siguiente:
 
 ### Limpieza de los datos
 
-Teniendo en cuenta lo encontrado en los datos faltantes, optaremos por trabajar únicamente con la información obtenida desde la primera fecha en que 
+La limpieza de datos es una etapa crucial en cualquier análisis, por lo que en este apartado trataremos los datos faltantes y observaremos si existen datos atípicos en nuestras variables.
+
+#### Datos faltantes
+
+Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la `imputación` de valores faltantes utilizando la `media`, `moda` o `mediana`, o llenando los datos con los valores `anteriores o siguientes`. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.
+
+En nuestro caso, una estrategia efectiva sería utilizar la `imputación` de datos faltantes basada en puntos similares en los datos mediante el algoritmo `KNN (K-Nearest Neighbors)` y `Random Forest Classification`. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.
+
+Inicialmente, creemos un `DataFrame` temporal donde estarán los mismos datos de `records_data` pero sin las columnas correspondientes a tipo `object`.
+
+``` {python}
+temp_df = records_data.select_dtypes(exclude=['object'])
+
+imputer = IterativeImputer(min_value=0, max_iter=30, imputation_order='roman', random_state=1)
+imputed_data = imputer.fit_transform(temp_df)
+
+temp_df_imputed = pd.DataFrame(imputed_data, columns=temp_df.columns)
+temp_df_imputed.isnull().sum()
+```
+
+Bien, ya no tenemos datos faltantes. Ahora, verifiquemos si los resultados obtenidos en las medidas de tendencia central del DataFrame original cambiaron significativamente.
+
+``` {python}
+temp_df_imputed.describe()
+```
+
+<br>
+
+Comparando los resultados de las medidas de tendencia central antes y después de la imputación de datos con el algoritmo `KNN`, observamos algunas diferencias significativas en ciertas variables:
+
+* **Puntos, posición en la parrilla y número de vueltas**: No hubo cambios notables en estas variables, lo que indica que la imputación de datos no tuvo un impacto significativo en su distribución.
+
+* **Tiempo de carrera y velocidad**: La media del tiempo de carrera disminuyó ligeramente después de la imputación de datos, lo que sugiere que los nuevos valores imputados pueden haber afectado este aspecto. Por otro lado, la velocidad media de la vuelta más rápida realizada por el ganador experimentó una disminución significativa en su media y desviación estándar, lo que indica que la imputación de datos pudo haber tenido un impacto más notable en esta variable.
+
+Ahora que hemos realizado la imputación de datos, pasemos estos datos a nuestro dataframe original. 
+
+``` {python}
+records_data[temp_df.columns] = temp_df_imputed
+records_data.isnull().sum()
+```
+
+#### Datos atípicos
