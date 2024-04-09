@@ -17,9 +17,9 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 # ¿Qué haremos?
 
-En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla `constructors`, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla `constructors` con aquellos de las tablas `circuits` (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), `results` (que proporciona los resultados de las carreras), `pit_stops` (paradas realizadas en boxes).
+En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla `drivers`, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla `drivers` con aquellos de las tablas `circuits` (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), `results` (que proporciona los resultados de las carreras) y `constructors` (equipos en los que ha competido).
 
-Es fundamental destacar que, para la tabla `results` nos enfocaremos exclusivamente en los equipos que obtuvieron puntos en cada carrera. Asimismo, de la tabla `pit_stops`, extraeremos únicamente la información correspondiente a la parada en boxes más rápida realizada.
+Es fundamental destacar que, para la tabla `results` nos enfocaremos exclusivamente en los pilotos que obtuvieron puntos en cada carrera.
 
 # Librerías
 
@@ -70,3 +70,472 @@ Es importante destacar que en esta función, obtenemos una variable de entorno q
 # Obtención de los datos
 
 Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas. 
+
+## Tabla drivers
+
+``` {python get_race_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM drivers
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla constructors
+
+``` {python get_race_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM constructors
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla circuits
+
+``` {python get_circuit_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM circuits
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla results
+
+``` {python get_result_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM results
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla final
+
+Con base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:
+
+* **Drivers**: driverid, driverref, code, dob, nationality.
+* **Constructors**: constructorId, name.
+* **Circuits**: name, location, country.
+* **Results**: points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed, number, status.
+
+Realicemos entonces la consulta a la base de datos para obtener esta tabla.
+
+``` {python get_final_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT 
+                d.driverId, d.driverRef, 
+                d.dob, d.nationality,
+                circuits.name AS circuit_name, circuits.location AS circuit_location, circuits.country AS circuit_country,
+                races.year, races.name AS race_name, races.round, 
+                constructors.constructorId, constructors.name AS team_name,
+                results.number, results.grid, results.positionorder, results.points, results.laps, results.milliseconds,
+                results.fastestlap, results.rank, results.fastestlapspeed, results.statusid
+            FROM 
+                drivers d
+            JOIN 
+                results ON d.driverId = results.driverId
+            JOIN 
+                races ON results.raceId = races.raceId
+            JOIN 
+                circuits ON races.circuitId = circuits.circuitId
+            JOIN 
+                constructors ON results.constructorId = constructors.constructorId
+            WHERE 
+                results.points > 0;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data.head())
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+# Análisis exploratorio de datos
+
+En esta sección nos sumergiremos en la comprensión de los datos disponibles, exploraremos los tipos de variables presentes, calcularemos medidas de tendencia central, llevaremos a cabo la depuración de los datos y procederemos a su visualización.
+
+Para llevar a cabo este análisis, nos apoyaremos en el marco de trabajo establecido, APP Framework.
+
+1. **Atención**: Entender el conjunto de datos.
+2. **Propósito**: Establecer objetivos claros.
+3. **Proceso**: Realizar el Análisis Exploratorio de Datos (EDA) propiamente dicho.
+4. **Beneficio**: Extraer y aplicar los resultados obtenidos.
+
+## Conociendo los datos
+
+Conocer los datos es un paso fundamental en cualquier análisis. Proporciona una comprensión inicial del problema, permite validar la calidad de los datos, seleccionar características relevantes, preparar los datos adecuadamente y generar ideas y hipótesis. En resumen, la exploración inicial de los datos sienta las bases para un análisis más profundo y asegura que los resultados sean significativos y confiables.
+
+### Tipos de datos
+
+Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.
+
+``` {python}
+records_data.dtypes
+```
+
+Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna `fastestlapspeed`, que toma valores numéricos pero está siendo interpretada como un dato tipo `object`. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de la variable `driverid` y `constructorid` a tipo `object`.
+
+``` {python}
+records_data['fastestlapspeed'] = pd.to_numeric(records_data['fastestlapspeed'])
+records_data[['driverid', 'constructorid']] = records_data[['driverid', 'constructorid']].astype('object')
+
+records_data.dtypes
+``` 
+
+### Dimensiones de los registros
+
+Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.
+
+``` {python}
+records_data.shape
+```
+
+``` {python}
+len(records_data['driverref'].unique())
+```
+
+Esto indica que desde el año 1950 hasta el 2023, en las más de 1000 carreras que se han llevado a cabo, han competido 73 pilotos en esta competencia. Además, teniendo casi 8000 registros significa que estamos trabajando con una cantidad considerable de datos sobre equipos constructores.
+
+### Datos faltantes
+
+Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.
+
+``` {python}
+records_data.isnull().sum()
+```
+
+Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.
+
+``` {python}
+missing_values = records_data.isnull().sum()
+missing_percentage = round((missing_values / len(records_data)) * 100, 4)
+missing_percentage
+```
+
+Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática.
+
+Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.
+
+``` {python}
+records_data[records_data.isnull().any(axis = 1)]
+```
+
+``` {python}
+#| echo: false
+missing = records_data[records_data.isnull().any(axis = 1)]
+print('Fecha mínima: ', min(missing['year']))
+print('Fecha promedio: ', int(round(missing['year'].mean(), 0)))
+print('Fecha máxima: ', max(missing['year']))
+```
+
+Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. 
+
+## Exploración de los datos
+
+En esta sección realizaremos el verdadero análisis exploratorio de nuestros datos. Abordaremos los siguientes aspectos:
+
+1. **Medidas de tendencia central**: Calcularemos medidas como la media, la mediana y la moda para entender mejor la distribución de nuestros datos.
+
+2. **Limpieza de los datos**: Abordaremos la limpieza de nuestros datos, incluyendo la búsqueda de datos atípicos.
+
+3. **Transformación**: Determinaremos si es necesario aplicar alguna transformación a nuestros datos para facilitar los análisis subsiguientes.
+
+4. **Visualización**: Utilizaremos herramientas gráficas para explorar el comportamiento de nuestros datos y extraer patrones o tendencias.
+
+Esta fase nos permitirá comprender mejor la naturaleza de nuestros datos y prepararlos adecuadamente para análisis más avanzados.
+
+### Medidas de tendencia central
+
+``` {python}
+records_data.describe()
+```
+
+<br>
+
+Estos resultados nos pueden permitir concluir lo siguiente: 
+
+* **Ronda**: El número promedio de rondas por temporada es de aproximadamente 8.72, con una desviación estándar de aproximadamente 5.19. Esto sugiere que hay una variabilidad en la cantidad de rondas que se llevan a cabo en diferentes temporadas de Fórmula 1.
+
+* **Número de participantes, posición de salida y orden de llegada**: Se observa una variabilidad significativa en el número de participantes por carrera, con un promedio de aproximadamente 14.81. Esta variabilidad puede atribuirse a factores como las regulaciones de la Fórmula 1 que pueden influir en la participación de equipos y pilotos en diferentes eventos. La posición en la parrilla de salida, con un promedio de alrededor de 7.12, refleja las diferencias en el rendimiento de los pilotos durante la clasificación, que puede estar influenciada por la aerodinámica del automóvil, la configuración del circuito y las habilidades individuales de los pilotos. A pesar de la variabilidad en la posición inicial, el orden promedio de llegada es de aproximadamente 4.31, lo que sugiere que, en promedio, los pilotos logran avanzar durante la carrera, ya sea mediante adelantamientos en pista o a través de estrategias de pit stop.
+
+* **Número de vueltas y tiempo de carrera**: La cantidad promedio de vueltas completadas por carrera es de aproximadamente 63.61. Esta variabilidad puede ser atribuida a factores como la longitud y complejidad del circuito, así como la presencia de incidentes en pista que pueden afectar la duración de la carrera. El tiempo medio de carrera, aproximadamente 103 minutos, refleja la suma del tiempo requerido para completar todas las vueltas, así como los períodos de posibles intervenciones, como banderas amarillas o detenciones en boxes. La consistencia en la duración de la carrera sugiere una cierta estandarización en el formato de los eventos de la Fórmula 1, aunque la variabilidad aún puede ocurrir debido a diferentes condiciones de pista y estrategias de carrera.
+
+* **Mejor vuelta, velocidad más rápida y puntos**: La vuelta más rápida realizada por el ganador, con un promedio de alrededor de 206.01 km/h y una desviación estándar de aproximadamente 20.58 km/h, refleja el rendimiento máximo alcanzado por los pilotos durante la carrera. Esta velocidad puede variar según las condiciones del circuito y la estrategia de los equipos. En cuanto a los puntos obtenidos, con un promedio de aproximadamente 6.35, reflejan la efectividad de los pilotos y equipos para acumular puntos en cada evento. Esta puntuación puede influir en el desarrollo del campeonato y reflejar la consistencia y el rendimiento a lo largo de la temporada.
+
+### Limpieza de los datos
+
+La limpieza de datos es una etapa crucial en cualquier análisis, por lo que en este apartado trataremos los datos faltantes y observaremos si existen datos atípicos en nuestras variables.
+
+#### Datos faltantes
+
+Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la `imputación` de valores faltantes utilizando la `media`, `moda` o `mediana`, o llenando los datos con los valores `anteriores o siguientes`. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.
+
+En nuestro caso, una estrategia efectiva sería utilizar la `imputación` de datos faltantes basada en puntos similares en los datos mediante el algoritmo `KNN (K-Nearest Neighbors)` y `Random Forest Classification`. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.
+
+Inicialmente, creemos un `DataFrame` temporal donde estarán los mismos datos de `records_data` pero sin las columnas correspondientes a tipo `object`.
+
+``` {python}
+temp_df = records_data.select_dtypes(exclude=['object'])
+
+imputer = IterativeImputer(min_value=0, max_iter=30, imputation_order='roman', random_state=1)
+imputed_data = imputer.fit_transform(temp_df)
+
+temp_df_imputed = pd.DataFrame(imputed_data, columns=temp_df.columns)
+temp_df_imputed.isnull().sum()
+```
+
+Bien, ya no tenemos datos faltantes. Ahora, verifiquemos si los resultados obtenidos en las medidas de tendencia central del DataFrame original cambiaron significativamente.
+
+``` {python}
+temp_df_imputed.describe()
+```
+
+<br>
+
+Comparando los resultados de las medidas de tendencia central antes y después de la imputación de datos con el algoritmo `KNN`, observamos algunas diferencias significativas en ciertas variables:
+
+* **Número de vueltas y tiempo de carrera**: Ambos conjuntos de datos muestran una distribución similar en el número de vueltas por carrera, con una media y desviación estándar comparables. Sin embargo, se observan diferencias mínimas en el tiempo medio de carrera entre los dos conjuntos de datos, lo que indica que no se ha visto afectada la dispersión luego de la imputación.
+
+* **Mejor vuelta y velocidad más rápida**: Las estadísticas de la mejor vuelta y la velocidad más rápida son comparables entre los dos conjuntos de datos, lo que sugiere una consistencia en la imputación de los datos faltantes.
+
+Ahora que hemos realizado la imputación de datos, pasemos estos datos a nuestro dataframe original. 
+
+``` {python}
+records_data[temp_df.columns] = temp_df_imputed
+records_data.isnull().sum()
+```
+
+#### Datos atípicos
+
+Veamos ahora si existen `datos atípicos` en nuestro registro. En este caso, utilizaremos el `rango intercuartílico (IQR)` para identificar los valores atípicos. Si un valor cae por debajo de `Q1 - 1.5 * IQR` o por encima de `Q3 + 1.5 * IQR`, se considera un valor atípico.
+
+``` {python}
+numeric_columns = temp_df.columns
+
+for col in numeric_columns:
+    q1 = records_data[col].quantile(0.25)
+    q3 = records_data[col].quantile(0.75)
+
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outliers = records_data[(records_data[col] < lower_bound) | (records_data[col] > upper_bound)]
+    n_outliers = len(outliers)
+    print(f'#Outliers in {col} are {n_outliers} and represent a {round(n_outliers/len(records_data) * 100, 4)}% of total records')
+```
+
+Como podemos observar, respecto a los más de 7000 registros que tiene la tabla, hay una pequeña cantidad significativa de datos atípicos en nuestras variables. Veamos gráficamente qué es lo que está ocurriendo con ellos. Y, aunque `statusid` tiene una gran cantidad de datos atípicos, esta es una variable categórica y que solo describe el estado de finalización de una carrera.
+
+Realizaremos un gráfico de `caja y bigotes` e `histogramas` para ver el comportamiento y la distribución de nuestros datos.
+
+``` {python}
+plt.figure(figsize=(9,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5,3,i)
+    plt.boxplot(records_data[col],whis=1.5)
+    plt.title(col)
+
+    i += 1
+plt.show()
+```
+
+``` {python}
+plt.figure(figsize=(8,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5, 3, i)
+    sns.histplot(records_data[col], kde=True)
+    plt.title(col)
+    i += 1
+plt.tight_layout()
+plt.show()
+```
+
+<br>
+
+Dada la naturaleza de las variables, en algunos casos como `round`, `positionorder`, `grid`, `points`, entre otros que son datos numéricos `discretos` y representan una `categoría` específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.
+
+## Visualización
+
+La visualización es uno de los puntos más importantes a la hora de realizar una exploración de los datos. Con ella, no solo podemos encontrar las relaciones que existen entre nuestras variables, sino que también podemos representar gráficamente las informaciones más relevantes de los datos.
+
+Comencemos visualizando los gráficos de `correlación` y `dispersión` entre las variables para comprender mejor sus relaciones y encontrar posibles patrones.
+
+### Gráfico de correlación
+
+``` {python}
+corr = records_data[numeric_columns].corr()
+mask = np.triu(np.ones_like(corr, dtype=bool))
+
+sns.heatmap(corr, annot=True, cmap='PRGn', square=True, center=0, mask=mask)
+```
+
+Como podemos observar, las variables con una alta correlación (`>0.5` o `<-0.5`) son aquellas que están relacionadas entre sí, como `laps`, `fastestlapspeed`, `fastest_lap`, `positionorder`, `year`, `fastest_pip_stop` entre otras. Por lo tanto, esto no debería ser un problema y podemos proseguir con la exploración de los datos.
+
+### Gráfico de dispersión 
+
+``` {python}
+plt.figure(figsize=(8, 12))
+sns.pairplot(records_data[numeric_columns])
+plt.show()
+```
+
+<br>
+
+De este gráfico podemos notar que a medida que pasan los años, los equipos han ha evolucionado progresivamente en términos de velocidades y tiempos de carreras obtenidos. La velocidad y duración en boxes han aumentado, lo que indica una mejora en los automóviles y las técnicas de revisión de ellos. Sin embargo, estos cambios en las velocidades y tiempos también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.
+
+### Distribución de carreras por piloto
+
+``` {python}
+driver_stats = records_data.groupby('driverref').size().reset_index(name='total_races')
+driver_stats = driver_stats.sort_values(by='total_races', ascending=False)
+driver_stats = driver_stats.rename(columns={'driverref': 'driver_name'})
+
+top_constructors = driver_stats.head(5)
+
+plt.figure(figsize=(8, 7))
+sns.histplot(driver_stats['total_races'], kde=False, bins=30, color='skyblue', edgecolor='black')
+plt.title('Distribución del número total de carreras por piloto')
+plt.xlabel('Número Total de Carreras')
+plt.ylabel('Frecuencia')
+
+text = '\n'.join([f"{i+1}. {row['driver_name']}: {row['total_races']} carreras" for i, (index, row) in enumerate(top_constructors.iterrows(), start=0)])
+plt.text(max(top_constructors['total_races']) * 1.02, plt.ylim()[1] * 0.9, text, ha='right', va='top', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+```
+
+### Top 5 pilotos más ganadores
+
+``` {python}
+driver_stats = records_data[records_data['positionorder'] == 1]
+driver_stats = records_data.groupby('driverref').size().reset_index(name='total_wins')
+driver_stats = driver_stats.sort_values(by='total_wins', ascending=False)
+driver_stats = driver_stats.rename(columns={'driverref': 'driver_name'})
+
+top_constructors = driver_stats.head(5)
+
+plt.figure(figsize=(8, 7))
+plt.bar(top_constructors['driver_name'], top_constructors['total_wins'], color='skyblue')
+plt.title('Top 5 Equipos Más Ganadores en F1')
+plt.xlabel('Equipo')
+plt.ylabel('Número Total de Victorias')
+plt.xticks()
+plt.show()
+```

@@ -60,7 +60,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -105,6 +105,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
 <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
@@ -198,7 +204,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#qué-haremos" id="toc-qué-haremos" class="nav-link active" data-scroll-target="#qué-haremos">¿Qué haremos?</a></li>
   <li><a href="#librerías" id="toc-librerías" class="nav-link" data-scroll-target="#librerías">Librerías</a></li>
-  <li><a href="#obtención-de-los-datos" id="toc-obtención-de-los-datos" class="nav-link" data-scroll-target="#obtención-de-los-datos">Obtención de los datos</a></li>
+  <li><a href="#obtención-de-los-datos" id="toc-obtención-de-los-datos" class="nav-link" data-scroll-target="#obtención-de-los-datos">Obtención de los datos</a>
+  <ul class="collapse">
+  <li><a href="#tabla-drivers" id="toc-tabla-drivers" class="nav-link" data-scroll-target="#tabla-drivers">Tabla drivers</a></li>
+  <li><a href="#tabla-constructors" id="toc-tabla-constructors" class="nav-link" data-scroll-target="#tabla-constructors">Tabla constructors</a></li>
+  <li><a href="#tabla-circuits" id="toc-tabla-circuits" class="nav-link" data-scroll-target="#tabla-circuits">Tabla circuits</a></li>
+  <li><a href="#tabla-results" id="toc-tabla-results" class="nav-link" data-scroll-target="#tabla-results">Tabla results</a></li>
+  <li><a href="#tabla-final" id="toc-tabla-final" class="nav-link" data-scroll-target="#tabla-final">Tabla final</a></li>
+  </ul></li>
+  <li><a href="#análisis-exploratorio-de-datos" id="toc-análisis-exploratorio-de-datos" class="nav-link" data-scroll-target="#análisis-exploratorio-de-datos">Análisis exploratorio de datos</a>
+  <ul class="collapse">
+  <li><a href="#conociendo-los-datos" id="toc-conociendo-los-datos" class="nav-link" data-scroll-target="#conociendo-los-datos">Conociendo los datos</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-datos" id="toc-tipos-de-datos" class="nav-link" data-scroll-target="#tipos-de-datos">Tipos de datos</a></li>
+  <li><a href="#dimensiones-de-los-registros" id="toc-dimensiones-de-los-registros" class="nav-link" data-scroll-target="#dimensiones-de-los-registros">Dimensiones de los registros</a></li>
+  <li><a href="#datos-faltantes" id="toc-datos-faltantes" class="nav-link" data-scroll-target="#datos-faltantes">Datos faltantes</a></li>
+  </ul></li>
+  <li><a href="#exploración-de-los-datos" id="toc-exploración-de-los-datos" class="nav-link" data-scroll-target="#exploración-de-los-datos">Exploración de los datos</a>
+  <ul class="collapse">
+  <li><a href="#medidas-de-tendencia-central" id="toc-medidas-de-tendencia-central" class="nav-link" data-scroll-target="#medidas-de-tendencia-central">Medidas de tendencia central</a></li>
+  <li><a href="#limpieza-de-los-datos" id="toc-limpieza-de-los-datos" class="nav-link" data-scroll-target="#limpieza-de-los-datos">Limpieza de los datos</a></li>
+  </ul></li>
+  <li><a href="#visualización" id="toc-visualización" class="nav-link" data-scroll-target="#visualización">Visualización</a>
+  <ul class="collapse">
+  <li><a href="#gráfico-de-correlación" id="toc-gráfico-de-correlación" class="nav-link" data-scroll-target="#gráfico-de-correlación">Gráfico de correlación</a></li>
+  <li><a href="#gráfico-de-dispersión" id="toc-gráfico-de-dispersión" class="nav-link" data-scroll-target="#gráfico-de-dispersión">Gráfico de dispersión</a></li>
+  <li><a href="#distribución-de-carreras-por-piloto" id="toc-distribución-de-carreras-por-piloto" class="nav-link" data-scroll-target="#distribución-de-carreras-por-piloto">Distribución de carreras por piloto</a></li>
+  <li><a href="#top-5-pilotos-más-ganadores" id="toc-top-5-pilotos-más-ganadores" class="nav-link" data-scroll-target="#top-5-pilotos-más-ganadores">Top 5 pilotos más ganadores</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -252,8 +286,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="qué-haremos" class="level1">
 <h1>¿Qué haremos?</h1>
-<p>En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla <code>constructors</code>, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla <code>constructors</code> con aquellos de las tablas <code>circuits</code> (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), <code>results</code> (que proporciona los resultados de las carreras), <code>pit_stops</code> (paradas realizadas en boxes).</p>
-<p>Es fundamental destacar que, para la tabla <code>results</code> nos enfocaremos exclusivamente en los equipos que obtuvieron puntos en cada carrera. Asimismo, de la tabla <code>pit_stops</code>, extraeremos únicamente la información correspondiente a la parada en boxes más rápida realizada.</p>
+<p>En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla <code>drivers</code>, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla <code>drivers</code> con aquellos de las tablas <code>circuits</code> (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), <code>results</code> (que proporciona los resultados de las carreras) y <code>constructors</code> (equipos en los que ha competido).</p>
+<p>Es fundamental destacar que, para la tabla <code>results</code> nos enfocaremos exclusivamente en los pilotos que obtuvieron puntos en cada carrera.</p>
 </section>
 <section id="librerías" class="level1">
 <h1>Librerías</h1>
@@ -268,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Pueden instalarse utilizando el siguiente comando desde la terminal: <code>pip install pandas psycopg2 plotly...</code>, o bien, mediante el archivo <a href="https://github.com/unfresh25/f1-dashboard">requirements.txt</a> utilizando <code>pip install -r requirements.txt</code> en la terminal.</p>
 <p>Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:</p>
-<div id="553528ca" class="cell" data-execution_count="2">
+<div id="7fbcfe6f" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
@@ -286,7 +320,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:</p>
-<div id="1d6753e2" class="cell" data-execution_count="3">
+<div id="6380ff7c" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -299,8 +333,1782 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="obtención-de-los-datos" class="level1">
 <h1>Obtención de los datos</h1>
 <p>Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas.</p>
+<section id="tabla-drivers" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-drivers">Tabla drivers</h2>
+<div id="abf06ebf" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT *</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM drivers</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">            LIMIT 5;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">driverid</th>
+<th data-quarto-table-cell-role="th">driverref</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">code</th>
+<th data-quarto-table-cell-role="th">forename</th>
+<th data-quarto-table-cell-role="th">surname</th>
+<th data-quarto-table-cell-role="th">dob</th>
+<th data-quarto-table-cell-role="th">nationality</th>
+<th data-quarto-table-cell-role="th">url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>hamilton</td>
+<td>44.0</td>
+<td>HAM</td>
+<td>Lewis</td>
+<td>Hamilton</td>
+<td>1985-01-07</td>
+<td>British</td>
+<td>http://en.wikipedia.org/wiki/Lewis_Hamilton</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>heidfeld</td>
+<td>NaN</td>
+<td>HEI</td>
+<td>Nick</td>
+<td>Heidfeld</td>
+<td>1977-05-10</td>
+<td>German</td>
+<td>http://en.wikipedia.org/wiki/Nick_Heidfeld</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>rosberg</td>
+<td>6.0</td>
+<td>ROS</td>
+<td>Nico</td>
+<td>Rosberg</td>
+<td>1985-06-27</td>
+<td>German</td>
+<td>http://en.wikipedia.org/wiki/Nico_Rosberg</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>alonso</td>
+<td>14.0</td>
+<td>ALO</td>
+<td>Fernando</td>
+<td>Alonso</td>
+<td>1981-07-29</td>
+<td>Spanish</td>
+<td>http://en.wikipedia.org/wiki/Fernando_Alonso</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>kovalainen</td>
+<td>NaN</td>
+<td>KOV</td>
+<td>Heikki</td>
+<td>Kovalainen</td>
+<td>1981-10-19</td>
+<td>Finnish</td>
+<td>http://en.wikipedia.org/wiki/Heikki_Kovalainen</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tabla-constructors" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-constructors">Tabla constructors</h2>
+<div id="0485b0e0" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT *</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM constructors</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="st">            LIMIT 5;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">constructorid</th>
+<th data-quarto-table-cell-role="th">constructorref</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">nationality</th>
+<th data-quarto-table-cell-role="th">url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>mclaren</td>
+<td>McLaren</td>
+<td>British</td>
+<td>http://en.wikipedia.org/wiki/McLaren</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>bmw_sauber</td>
+<td>BMW Sauber</td>
+<td>German</td>
+<td>http://en.wikipedia.org/wiki/BMW_Sauber</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>williams</td>
+<td>Williams</td>
+<td>British</td>
+<td>http://en.wikipedia.org/wiki/Williams_Grand_Pr...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>renault</td>
+<td>Renault</td>
+<td>French</td>
+<td>http://en.wikipedia.org/wiki/Renault_in_Formul...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>toro_rosso</td>
+<td>Toro Rosso</td>
+<td>Italian</td>
+<td>http://en.wikipedia.org/wiki/Scuderia_Toro_Rosso</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tabla-circuits" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-circuits">Tabla circuits</h2>
+<div id="66367d03" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT *</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM circuits</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="st">            LIMIT 5;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">circuitid</th>
+<th data-quarto-table-cell-role="th">circuitref</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">location</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">lat</th>
+<th data-quarto-table-cell-role="th">lng</th>
+<th data-quarto-table-cell-role="th">alt</th>
+<th data-quarto-table-cell-role="th">url</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>albert_park</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>-37.8497</td>
+<td>144.968</td>
+<td>10</td>
+<td>http://en.wikipedia.org/wiki/Melbourne_Grand_P...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>sepang</td>
+<td>Sepang International Circuit</td>
+<td>Kuala Lumpur</td>
+<td>Malaysia</td>
+<td>2.76083</td>
+<td>101.738</td>
+<td>18</td>
+<td>http://en.wikipedia.org/wiki/Sepang_Internatio...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>bahrain</td>
+<td>Bahrain International Circuit</td>
+<td>Sakhir</td>
+<td>Bahrain</td>
+<td>26.0325</td>
+<td>50.5106</td>
+<td>7</td>
+<td>http://en.wikipedia.org/wiki/Bahrain_Internati...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>catalunya</td>
+<td>Circuit de Barcelona-Catalunya</td>
+<td>Montmeló</td>
+<td>Spain</td>
+<td>41.57</td>
+<td>2.26111</td>
+<td>109</td>
+<td>http://en.wikipedia.org/wiki/Circuit_de_Barcel...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>istanbul</td>
+<td>Istanbul Park</td>
+<td>Istanbul</td>
+<td>Turkey</td>
+<td>40.9517</td>
+<td>29.405</td>
+<td>130</td>
+<td>http://en.wikipedia.org/wiki/Istanbul_Park</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tabla-results" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-results">Tabla results</h2>
+<div id="207bf6fd" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT *</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM results</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="st">            LIMIT 5;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">resultid</th>
+<th data-quarto-table-cell-role="th">raceid</th>
+<th data-quarto-table-cell-role="th">driverid</th>
+<th data-quarto-table-cell-role="th">constructorid</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">position</th>
+<th data-quarto-table-cell-role="th">positiontext</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">time</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlaptime</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">statusid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>18</td>
+<td>1</td>
+<td>1</td>
+<td>22</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>10</td>
+<td>58</td>
+<td>1:34:50.616</td>
+<td>5690616</td>
+<td>39</td>
+<td>2</td>
+<td>1:27.452</td>
+<td>218.300</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>18</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>8</td>
+<td>58</td>
+<td>+5.478</td>
+<td>5696094</td>
+<td>41</td>
+<td>3</td>
+<td>1:27.739</td>
+<td>217.586</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>18</td>
+<td>3</td>
+<td>3</td>
+<td>7</td>
+<td>7</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>6</td>
+<td>58</td>
+<td>+8.163</td>
+<td>5698779</td>
+<td>41</td>
+<td>5</td>
+<td>1:28.090</td>
+<td>216.719</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>18</td>
+<td>4</td>
+<td>4</td>
+<td>5</td>
+<td>11</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>5</td>
+<td>58</td>
+<td>+17.181</td>
+<td>5707797</td>
+<td>58</td>
+<td>7</td>
+<td>1:28.603</td>
+<td>215.464</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>18</td>
+<td>5</td>
+<td>1</td>
+<td>23</td>
+<td>3</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>58</td>
+<td>+18.014</td>
+<td>5708630</td>
+<td>43</td>
+<td>1</td>
+<td>1:27.418</td>
+<td>218.385</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tabla-final" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-final">Tabla final</h2>
+<p>Con base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:</p>
+<ul>
+<li><strong>Drivers</strong>: driverid, driverref, code, dob, nationality.</li>
+<li><strong>Constructors</strong>: constructorId, name.</li>
+<li><strong>Circuits</strong>: name, location, country.</li>
+<li><strong>Results</strong>: points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed, number, status.</li>
+</ul>
+<p>Realicemos entonces la consulta a la base de datos para obtener esta tabla.</p>
+<div id="ee1182eb" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT </span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">                d.driverId, d.driverRef, </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">                d.dob, d.nationality,</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">                circuits.name AS circuit_name, circuits.location AS circuit_location, circuits.country AS circuit_country,</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">                races.year, races.name AS race_name, races.round, </span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="st">                constructors.constructorId, constructors.name AS team_name,</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="st">                results.number, results.grid, results.positionorder, results.points, results.laps, results.milliseconds,</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="st">                results.fastestlap, results.rank, results.fastestlapspeed, results.statusid</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM </span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="st">                drivers d</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN </span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="st">                results ON d.driverId = results.driverId</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN </span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="st">                races ON results.raceId = races.raceId</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN </span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="st">                circuits ON races.circuitId = circuits.circuitId</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN </span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="st">                constructors ON results.constructorId = constructors.constructorId</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="st">            WHERE </span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="st">                results.points &gt; 0;</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    display(records_data.head())</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">driverid</th>
+<th data-quarto-table-cell-role="th">driverref</th>
+<th data-quarto-table-cell-role="th">dob</th>
+<th data-quarto-table-cell-role="th">nationality</th>
+<th data-quarto-table-cell-role="th">circuit_name</th>
+<th data-quarto-table-cell-role="th">circuit_location</th>
+<th data-quarto-table-cell-role="th">circuit_country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">race_name</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">statusid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>hamilton</td>
+<td>1985-01-07</td>
+<td>British</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>22</td>
+<td>1</td>
+<td>1</td>
+<td>10</td>
+<td>58</td>
+<td>5690616.0</td>
+<td>39.0</td>
+<td>2.0</td>
+<td>218.300</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>heidfeld</td>
+<td>1977-05-10</td>
+<td>German</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>3</td>
+<td>5</td>
+<td>2</td>
+<td>8</td>
+<td>58</td>
+<td>5696094.0</td>
+<td>41.0</td>
+<td>3.0</td>
+<td>217.586</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>rosberg</td>
+<td>1985-06-27</td>
+<td>German</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>7</td>
+<td>7</td>
+<td>3</td>
+<td>6</td>
+<td>58</td>
+<td>5698779.0</td>
+<td>41.0</td>
+<td>5.0</td>
+<td>216.719</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>alonso</td>
+<td>1981-07-29</td>
+<td>Spanish</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>5</td>
+<td>11</td>
+<td>4</td>
+<td>5</td>
+<td>58</td>
+<td>5707797.0</td>
+<td>58.0</td>
+<td>7.0</td>
+<td>215.464</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>kovalainen</td>
+<td>1981-10-19</td>
+<td>Finnish</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>23</td>
+<td>3</td>
+<td>5</td>
+<td>4</td>
+<td>58</td>
+<td>5708630.0</td>
+<td>43.0</td>
+<td>1.0</td>
+<td>218.385</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 22 columns</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="análisis-exploratorio-de-datos" class="level1">
+<h1>Análisis exploratorio de datos</h1>
+<p>En esta sección nos sumergiremos en la comprensión de los datos disponibles, exploraremos los tipos de variables presentes, calcularemos medidas de tendencia central, llevaremos a cabo la depuración de los datos y procederemos a su visualización.</p>
+<p>Para llevar a cabo este análisis, nos apoyaremos en el marco de trabajo establecido, APP Framework.</p>
+<ol type="1">
+<li><strong>Atención</strong>: Entender el conjunto de datos.</li>
+<li><strong>Propósito</strong>: Establecer objetivos claros.</li>
+<li><strong>Proceso</strong>: Realizar el Análisis Exploratorio de Datos (EDA) propiamente dicho.</li>
+<li><strong>Beneficio</strong>: Extraer y aplicar los resultados obtenidos.</li>
+</ol>
+<section id="conociendo-los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="conociendo-los-datos">Conociendo los datos</h2>
+<p>Conocer los datos es un paso fundamental en cualquier análisis. Proporciona una comprensión inicial del problema, permite validar la calidad de los datos, seleccionar características relevantes, preparar los datos adecuadamente y generar ideas y hipótesis. En resumen, la exploración inicial de los datos sienta las bases para un análisis más profundo y asegura que los resultados sean significativos y confiables.</p>
+<section id="tipos-de-datos" class="level3">
+<h3 class="anchored" data-anchor-id="tipos-de-datos">Tipos de datos</h3>
+<p>Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.</p>
+<div id="18ff6992" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="136">
+<pre><code>driverid              int64
+driverref            object
+dob                  object
+nationality          object
+circuit_name         object
+circuit_location     object
+circuit_country      object
+year                  int64
+race_name            object
+round                 int64
+constructorid         int64
+team_name            object
+number                int64
+grid                  int64
+positionorder         int64
+points                int64
+laps                  int64
+milliseconds        float64
+fastestlap          float64
+rank                float64
+fastestlapspeed      object
+statusid              int64
+dtype: object</code></pre>
+</div>
+</div>
+<p>Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna <code>fastestlapspeed</code>, que toma valores numéricos pero está siendo interpretada como un dato tipo <code>object</code>. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de la variable <code>driverid</code> y <code>constructorid</code> a tipo <code>object</code>.</p>
+<div id="ec717ec7" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'fastestlapspeed'</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>records_data[[<span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]] <span class="op">=</span> records_data[[<span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]].astype(<span class="st">'object'</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="137">
+<pre><code>driverid             object
+driverref            object
+dob                  object
+nationality          object
+circuit_name         object
+circuit_location     object
+circuit_country      object
+year                  int64
+race_name            object
+round                 int64
+constructorid        object
+team_name            object
+number                int64
+grid                  int64
+positionorder         int64
+points                int64
+laps                  int64
+milliseconds        float64
+fastestlap          float64
+rank                float64
+fastestlapspeed     float64
+statusid              int64
+dtype: object</code></pre>
+</div>
+</div>
+</section>
+<section id="dimensiones-de-los-registros" class="level3">
+<h3 class="anchored" data-anchor-id="dimensiones-de-los-registros">Dimensiones de los registros</h3>
+<p>Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.</p>
+<div id="f5f6b644" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>records_data.shape</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="138">
+<pre><code>(7830, 22)</code></pre>
+</div>
+</div>
+<div id="89c710ca" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(records_data[<span class="st">'driverref'</span>].unique())</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="139">
+<pre><code>349</code></pre>
+</div>
+</div>
+<p>Esto indica que desde el año 1950 hasta el 2023, en las más de 1000 carreras que se han llevado a cabo, han competido 73 pilotos en esta competencia. Además, teniendo casi 8000 registros significa que estamos trabajando con una cantidad considerable de datos sobre equipos constructores.</p>
+</section>
+<section id="datos-faltantes" class="level3">
+<h3 class="anchored" data-anchor-id="datos-faltantes">Datos faltantes</h3>
+<p>Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.</p>
+<div id="28385371" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="140">
+<pre><code>driverid               0
+driverref              0
+dob                    0
+nationality            0
+circuit_name           0
+circuit_location       0
+circuit_country        0
+year                   0
+race_name              0
+round                  0
+constructorid          0
+team_name              0
+number                 0
+grid                   0
+positionorder          0
+points                 0
+laps                   0
+milliseconds        1720
+fastestlap          4277
+rank                4266
+fastestlapspeed     4277
+statusid               0
+dtype: int64</code></pre>
+</div>
+</div>
+<p>Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.</p>
+<div id="a012ca6a" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> records_data.isnull().<span class="bu">sum</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> <span class="bu">round</span>((missing_values <span class="op">/</span> <span class="bu">len</span>(records_data)) <span class="op">*</span> <span class="dv">100</span>, <span class="dv">4</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>missing_percentage</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="141">
+<pre><code>driverid             0.0000
+driverref            0.0000
+dob                  0.0000
+nationality          0.0000
+circuit_name         0.0000
+circuit_location     0.0000
+circuit_country      0.0000
+year                 0.0000
+race_name            0.0000
+round                0.0000
+constructorid        0.0000
+team_name            0.0000
+number               0.0000
+grid                 0.0000
+positionorder        0.0000
+points               0.0000
+laps                 0.0000
+milliseconds        21.9668
+fastestlap          54.6232
+rank                54.4828
+fastestlapspeed     54.6232
+statusid             0.0000
+dtype: float64</code></pre>
+</div>
+</div>
+<p>Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática.</p>
+<p>Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.</p>
+<div id="48c9261d" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>records_data[records_data.isnull().<span class="bu">any</span>(axis <span class="op">=</span> <span class="dv">1</span>)]</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="142">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">driverid</th>
+<th data-quarto-table-cell-role="th">driverref</th>
+<th data-quarto-table-cell-role="th">dob</th>
+<th data-quarto-table-cell-role="th">nationality</th>
+<th data-quarto-table-cell-role="th">circuit_name</th>
+<th data-quarto-table-cell-role="th">circuit_location</th>
+<th data-quarto-table-cell-role="th">circuit_country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">race_name</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">statusid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>6</td>
+<td>nakajima</td>
+<td>1985-01-11</td>
+<td>Japanese</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>8</td>
+<td>13</td>
+<td>6</td>
+<td>3</td>
+<td>57</td>
+<td>NaN</td>
+<td>50.0</td>
+<td>14.0</td>
+<td>212.974</td>
+<td>11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">6</td>
+<td>7</td>
+<td>bourdais</td>
+<td>1979-02-28</td>
+<td>French</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>14</td>
+<td>17</td>
+<td>7</td>
+<td>2</td>
+<td>55</td>
+<td>NaN</td>
+<td>22.0</td>
+<td>12.0</td>
+<td>213.224</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7</td>
+<td>8</td>
+<td>raikkonen</td>
+<td>1979-10-17</td>
+<td>Finnish</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>2008</td>
+<td>Australian Grand Prix</td>
+<td>1</td>
+<td>...</td>
+<td>1</td>
+<td>15</td>
+<td>8</td>
+<td>1</td>
+<td>53</td>
+<td>NaN</td>
+<td>20.0</td>
+<td>4.0</td>
+<td>217.180</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">67</td>
+<td>8</td>
+<td>raikkonen</td>
+<td>1979-10-17</td>
+<td>Finnish</td>
+<td>Silverstone Circuit</td>
+<td>Silverstone</td>
+<td>UK</td>
+<td>2008</td>
+<td>British Grand Prix</td>
+<td>9</td>
+<td>...</td>
+<td>1</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>59</td>
+<td>NaN</td>
+<td>18.0</td>
+<td>1.0</td>
+<td>200.842</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">68</td>
+<td>5</td>
+<td>kovalainen</td>
+<td>1981-10-19</td>
+<td>Finnish</td>
+<td>Silverstone Circuit</td>
+<td>Silverstone</td>
+<td>UK</td>
+<td>2008</td>
+<td>British Grand Prix</td>
+<td>9</td>
+<td>...</td>
+<td>23</td>
+<td>1</td>
+<td>5</td>
+<td>4</td>
+<td>59</td>
+<td>NaN</td>
+<td>17.0</td>
+<td>5.0</td>
+<td>198.728</td>
+<td>11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7688</td>
+<td>846</td>
+<td>norris</td>
+<td>1999-11-13</td>
+<td>British</td>
+<td>Autódromo Hermanos Rodríguez</td>
+<td>Mexico City</td>
+<td>Mexico</td>
+<td>2022</td>
+<td>Mexico City Grand Prix</td>
+<td>20</td>
+<td>...</td>
+<td>4</td>
+<td>8</td>
+<td>9</td>
+<td>2</td>
+<td>70</td>
+<td>NaN</td>
+<td>48.0</td>
+<td>17.0</td>
+<td>185.779</td>
+<td>11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7689</td>
+<td>822</td>
+<td>bottas</td>
+<td>1989-08-28</td>
+<td>Finnish</td>
+<td>Autódromo Hermanos Rodríguez</td>
+<td>Mexico City</td>
+<td>Mexico</td>
+<td>2022</td>
+<td>Mexico City Grand Prix</td>
+<td>20</td>
+<td>...</td>
+<td>77</td>
+<td>6</td>
+<td>10</td>
+<td>1</td>
+<td>70</td>
+<td>NaN</td>
+<td>43.0</td>
+<td>16.0</td>
+<td>185.866</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7768</td>
+<td>846</td>
+<td>norris</td>
+<td>1999-11-13</td>
+<td>British</td>
+<td>Circuit de Monaco</td>
+<td>Monte-Carlo</td>
+<td>Monaco</td>
+<td>2023</td>
+<td>Monaco Grand Prix</td>
+<td>6</td>
+<td>...</td>
+<td>4</td>
+<td>10</td>
+<td>9</td>
+<td>2</td>
+<td>77</td>
+<td>NaN</td>
+<td>46.0</td>
+<td>19.0</td>
+<td>154.324</td>
+<td>11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7769</td>
+<td>857</td>
+<td>piastri</td>
+<td>2001-04-06</td>
+<td>Australian</td>
+<td>Circuit de Monaco</td>
+<td>Monte-Carlo</td>
+<td>Monaco</td>
+<td>2023</td>
+<td>Monaco Grand Prix</td>
+<td>6</td>
+<td>...</td>
+<td>81</td>
+<td>11</td>
+<td>10</td>
+<td>1</td>
+<td>77</td>
+<td>NaN</td>
+<td>47.0</td>
+<td>14.0</td>
+<td>154.983</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">7819</td>
+<td>840</td>
+<td>stroll</td>
+<td>1998-10-29</td>
+<td>Canadian</td>
+<td>Hungaroring</td>
+<td>Budapest</td>
+<td>Hungary</td>
+<td>2023</td>
+<td>Hungarian Grand Prix</td>
+<td>11</td>
+<td>...</td>
+<td>18</td>
+<td>14</td>
+<td>10</td>
+<td>1</td>
+<td>69</td>
+<td>NaN</td>
+<td>54.0</td>
+<td>11.0</td>
+<td>189.051</td>
+<td>11</td>
+</tr>
+</tbody>
+</table>
+
+<p>4720 rows × 22 columns</p>
+</div>
+</div>
+</div>
+</div>
+<div id="119e6485" class="cell" data-execution_count="16">
+<div class="cell-output cell-output-stdout">
+<pre><code>Fecha mínima:  1950
+Fecha promedio:  1984
+Fecha máxima:  2023</code></pre>
+</div>
+</div>
+<p>Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos.</p>
+</section>
+</section>
+<section id="exploración-de-los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="exploración-de-los-datos">Exploración de los datos</h2>
+<p>En esta sección realizaremos el verdadero análisis exploratorio de nuestros datos. Abordaremos los siguientes aspectos:</p>
+<ol type="1">
+<li><p><strong>Medidas de tendencia central</strong>: Calcularemos medidas como la media, la mediana y la moda para entender mejor la distribución de nuestros datos.</p></li>
+<li><p><strong>Limpieza de los datos</strong>: Abordaremos la limpieza de nuestros datos, incluyendo la búsqueda de datos atípicos.</p></li>
+<li><p><strong>Transformación</strong>: Determinaremos si es necesario aplicar alguna transformación a nuestros datos para facilitar los análisis subsiguientes.</p></li>
+<li><p><strong>Visualización</strong>: Utilizaremos herramientas gráficas para explorar el comportamiento de nuestros datos y extraer patrones o tendencias.</p></li>
+</ol>
+<p>Esta fase nos permitirá comprender mejor la naturaleza de nuestros datos y prepararlos adecuadamente para análisis más avanzados.</p>
+<section id="medidas-de-tendencia-central" class="level3">
+<h3 class="anchored" data-anchor-id="medidas-de-tendencia-central">Medidas de tendencia central</h3>
+<div id="c78e4ae5" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>records_data.describe()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="144">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">statusid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">count</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>6.110000e+03</td>
+<td>3553.000000</td>
+<td>3564.000000</td>
+<td>3553.000000</td>
+<td>7830.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">mean</td>
+<td>1995.771520</td>
+<td>8.717880</td>
+<td>14.807791</td>
+<td>7.120817</td>
+<td>4.314815</td>
+<td>6.352618</td>
+<td>63.614304</td>
+<td>6.183581e+06</td>
+<td>46.603152</td>
+<td>6.680415</td>
+<td>206.006290</td>
+<td>3.538697</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">std</td>
+<td>20.267524</td>
+<td>5.186542</td>
+<td>15.616540</td>
+<td>5.022058</td>
+<td>2.505760</td>
+<td>5.574510</td>
+<td>18.795303</td>
+<td>1.514364e+06</td>
+<td>14.355980</td>
+<td>4.232408</td>
+<td>20.582848</td>
+<td>6.342502</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">min</td>
+<td>1950.000000</td>
+<td>1.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>2.070710e+05</td>
+<td>2.000000</td>
+<td>0.000000</td>
+<td>147.980000</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25%</td>
+<td>1980.000000</td>
+<td>4.000000</td>
+<td>5.000000</td>
+<td>3.000000</td>
+<td>2.000000</td>
+<td>2.000000</td>
+<td>54.000000</td>
+<td>5.405438e+06</td>
+<td>39.000000</td>
+<td>3.000000</td>
+<td>195.557000</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50%</td>
+<td>2000.000000</td>
+<td>8.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>4.000000</td>
+<td>4.000000</td>
+<td>62.000000</td>
+<td>5.802887e+06</td>
+<td>48.000000</td>
+<td>6.000000</td>
+<td>206.603000</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">75%</td>
+<td>2013.000000</td>
+<td>13.000000</td>
+<td>20.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>9.000000</td>
+<td>71.000000</td>
+<td>6.415483e+06</td>
+<td>56.000000</td>
+<td>10.000000</td>
+<td>219.005000</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">max</td>
+<td>2023.000000</td>
+<td>22.000000</td>
+<td>117.000000</td>
+<td>33.000000</td>
+<td>33.000000</td>
+<td>50.000000</td>
+<td>200.000000</td>
+<td>1.472659e+07</td>
+<td>85.000000</td>
+<td>20.000000</td>
+<td>257.320000</td>
+<td>131.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Estos resultados nos pueden permitir concluir lo siguiente:</p>
+<ul>
+<li><p><strong>Ronda</strong>: El número promedio de rondas por temporada es de aproximadamente 8.72, con una desviación estándar de aproximadamente 5.19. Esto sugiere que hay una variabilidad en la cantidad de rondas que se llevan a cabo en diferentes temporadas de Fórmula 1.</p></li>
+<li><p><strong>Número de participantes, posición de salida y orden de llegada</strong>: Se observa una variabilidad significativa en el número de participantes por carrera, con un promedio de aproximadamente 14.81. Esta variabilidad puede atribuirse a factores como las regulaciones de la Fórmula 1 que pueden influir en la participación de equipos y pilotos en diferentes eventos. La posición en la parrilla de salida, con un promedio de alrededor de 7.12, refleja las diferencias en el rendimiento de los pilotos durante la clasificación, que puede estar influenciada por la aerodinámica del automóvil, la configuración del circuito y las habilidades individuales de los pilotos. A pesar de la variabilidad en la posición inicial, el orden promedio de llegada es de aproximadamente 4.31, lo que sugiere que, en promedio, los pilotos logran avanzar durante la carrera, ya sea mediante adelantamientos en pista o a través de estrategias de pit stop.</p></li>
+<li><p><strong>Número de vueltas y tiempo de carrera</strong>: La cantidad promedio de vueltas completadas por carrera es de aproximadamente 63.61. Esta variabilidad puede ser atribuida a factores como la longitud y complejidad del circuito, así como la presencia de incidentes en pista que pueden afectar la duración de la carrera. El tiempo medio de carrera, aproximadamente 103 minutos, refleja la suma del tiempo requerido para completar todas las vueltas, así como los períodos de posibles intervenciones, como banderas amarillas o detenciones en boxes. La consistencia en la duración de la carrera sugiere una cierta estandarización en el formato de los eventos de la Fórmula 1, aunque la variabilidad aún puede ocurrir debido a diferentes condiciones de pista y estrategias de carrera.</p></li>
+<li><p><strong>Mejor vuelta, velocidad más rápida y puntos</strong>: La vuelta más rápida realizada por el ganador, con un promedio de alrededor de 206.01 km/h y una desviación estándar de aproximadamente 20.58 km/h, refleja el rendimiento máximo alcanzado por los pilotos durante la carrera. Esta velocidad puede variar según las condiciones del circuito y la estrategia de los equipos. En cuanto a los puntos obtenidos, con un promedio de aproximadamente 6.35, reflejan la efectividad de los pilotos y equipos para acumular puntos en cada evento. Esta puntuación puede influir en el desarrollo del campeonato y reflejar la consistencia y el rendimiento a lo largo de la temporada.</p></li>
+</ul>
+</section>
+<section id="limpieza-de-los-datos" class="level3">
+<h3 class="anchored" data-anchor-id="limpieza-de-los-datos">Limpieza de los datos</h3>
+<p>La limpieza de datos es una etapa crucial en cualquier análisis, por lo que en este apartado trataremos los datos faltantes y observaremos si existen datos atípicos en nuestras variables.</p>
+<section id="datos-faltantes-1" class="level4">
+<h4 class="anchored" data-anchor-id="datos-faltantes-1">Datos faltantes</h4>
+<p>Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la <code>imputación</code> de valores faltantes utilizando la <code>media</code>, <code>moda</code> o <code>mediana</code>, o llenando los datos con los valores <code>anteriores o siguientes</code>. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.</p>
+<p>En nuestro caso, una estrategia efectiva sería utilizar la <code>imputación</code> de datos faltantes basada en puntos similares en los datos mediante el algoritmo <code>KNN (K-Nearest Neighbors)</code> y <code>Random Forest Classification</code>. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.</p>
+<p>Inicialmente, creemos un <code>DataFrame</code> temporal donde estarán los mismos datos de <code>records_data</code> pero sin las columnas correspondientes a tipo <code>object</code>.</p>
+<div id="e9d4358f" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>temp_df <span class="op">=</span> records_data.select_dtypes(exclude<span class="op">=</span>[<span class="st">'object'</span>])</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>imputer <span class="op">=</span> IterativeImputer(min_value<span class="op">=</span><span class="dv">0</span>, max_iter<span class="op">=</span><span class="dv">30</span>, imputation_order<span class="op">=</span><span class="st">'roman'</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>imputed_data <span class="op">=</span> imputer.fit_transform(temp_df)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>temp_df_imputed <span class="op">=</span> pd.DataFrame(imputed_data, columns<span class="op">=</span>temp_df.columns)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>temp_df_imputed.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="145">
+<pre><code>year               0
+round              0
+number             0
+grid               0
+positionorder      0
+points             0
+laps               0
+milliseconds       0
+fastestlap         0
+rank               0
+fastestlapspeed    0
+statusid           0
+dtype: int64</code></pre>
+</div>
+</div>
+<p>Bien, ya no tenemos datos faltantes. Ahora, verifiquemos si los resultados obtenidos en las medidas de tendencia central del DataFrame original cambiaron significativamente.</p>
+<div id="df71c84a" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>temp_df_imputed.describe()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="146">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">statusid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">count</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7.830000e+03</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+<td>7830.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">mean</td>
+<td>1995.771520</td>
+<td>8.717880</td>
+<td>14.807791</td>
+<td>7.120817</td>
+<td>4.314815</td>
+<td>6.352618</td>
+<td>63.614304</td>
+<td>6.357840e+06</td>
+<td>37.583611</td>
+<td>5.902056</td>
+<td>191.230541</td>
+<td>3.538697</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">std</td>
+<td>20.267524</td>
+<td>5.186542</td>
+<td>15.616540</td>
+<td>5.022058</td>
+<td>2.505760</td>
+<td>5.574510</td>
+<td>18.795303</td>
+<td>1.503172e+06</td>
+<td>17.275427</td>
+<td>3.355313</td>
+<td>33.140535</td>
+<td>6.342502</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">min</td>
+<td>1950.000000</td>
+<td>1.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>2.070710e+05</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25%</td>
+<td>1980.000000</td>
+<td>4.000000</td>
+<td>5.000000</td>
+<td>3.000000</td>
+<td>2.000000</td>
+<td>2.000000</td>
+<td>54.000000</td>
+<td>5.484704e+06</td>
+<td>27.278717</td>
+<td>3.307868</td>
+<td>176.963262</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50%</td>
+<td>2000.000000</td>
+<td>8.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>4.000000</td>
+<td>4.000000</td>
+<td>62.000000</td>
+<td>5.952724e+06</td>
+<td>37.110519</td>
+<td>5.285219</td>
+<td>196.594000</td>
+<td>1.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">75%</td>
+<td>2013.000000</td>
+<td>13.000000</td>
+<td>20.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>9.000000</td>
+<td>71.000000</td>
+<td>6.815400e+06</td>
+<td>48.000000</td>
+<td>7.720035</td>
+<td>210.953515</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">max</td>
+<td>2023.000000</td>
+<td>22.000000</td>
+<td>117.000000</td>
+<td>33.000000</td>
+<td>33.000000</td>
+<td>50.000000</td>
+<td>200.000000</td>
+<td>1.520664e+07</td>
+<td>135.030294</td>
+<td>31.667058</td>
+<td>325.915900</td>
+<td>131.000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Comparando los resultados de las medidas de tendencia central antes y después de la imputación de datos con el algoritmo <code>KNN</code>, observamos algunas diferencias significativas en ciertas variables:</p>
+<ul>
+<li><p><strong>Número de vueltas y tiempo de carrera</strong>: Ambos conjuntos de datos muestran una distribución similar en el número de vueltas por carrera, con una media y desviación estándar comparables. Sin embargo, se observan diferencias mínimas en el tiempo medio de carrera entre los dos conjuntos de datos, lo que indica que no se ha visto afectada la dispersión luego de la imputación.</p></li>
+<li><p><strong>Mejor vuelta y velocidad más rápida</strong>: Las estadísticas de la mejor vuelta y la velocidad más rápida son comparables entre los dos conjuntos de datos, lo que sugiere una consistencia en la imputación de los datos faltantes.</p></li>
+</ul>
+<p>Ahora que hemos realizado la imputación de datos, pasemos estos datos a nuestro dataframe original.</p>
+<div id="4f69d68f" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>records_data[temp_df.columns] <span class="op">=</span> temp_df_imputed</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="147">
+<pre><code>driverid            0
+driverref           0
+dob                 0
+nationality         0
+circuit_name        0
+circuit_location    0
+circuit_country     0
+year                0
+race_name           0
+round               0
+constructorid       0
+team_name           0
+number              0
+grid                0
+positionorder       0
+points              0
+laps                0
+milliseconds        0
+fastestlap          0
+rank                0
+fastestlapspeed     0
+statusid            0
+dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="datos-atípicos" class="level4">
+<h4 class="anchored" data-anchor-id="datos-atípicos">Datos atípicos</h4>
+<p>Veamos ahora si existen <code>datos atípicos</code> en nuestro registro. En este caso, utilizaremos el <code>rango intercuartílico (IQR)</code> para identificar los valores atípicos. Si un valor cae por debajo de <code>Q1 - 1.5 * IQR</code> o por encima de <code>Q3 + 1.5 * IQR</code>, se considera un valor atípico.</p>
+<div id="15bc0bc8" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="op">=</span> temp_df.columns</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> numeric_columns:</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    q1 <span class="op">=</span> records_data[col].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    q3 <span class="op">=</span> records_data[col].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    iqr <span class="op">=</span> q3 <span class="op">-</span> q1</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    lower_bound <span class="op">=</span> q1 <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> iqr</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    upper_bound <span class="op">=</span> q3 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> iqr</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    outliers <span class="op">=</span> records_data[(records_data[col] <span class="op">&lt;</span> lower_bound) <span class="op">|</span> (records_data[col] <span class="op">&gt;</span> upper_bound)]</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    n_outliers <span class="op">=</span> <span class="bu">len</span>(outliers)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'#Outliers in </span><span class="sc">{</span>col<span class="sc">}</span><span class="ss"> are </span><span class="sc">{</span>n_outliers<span class="sc">}</span><span class="ss"> and represent a </span><span class="sc">{</span><span class="bu">round</span>(n_outliers<span class="op">/</span><span class="bu">len</span>(records_data) <span class="op">*</span> <span class="dv">100</span>, <span class="dv">4</span>)<span class="sc">}</span><span class="ss">% of total records'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#Outliers in year are 0 and represent a 0.0% of total records
+#Outliers in round are 0 and represent a 0.0% of total records
+#Outliers in number are 544 and represent a 6.9476% of total records
+#Outliers in grid are 105 and represent a 1.341% of total records
+#Outliers in positionorder are 12 and represent a 0.1533% of total records
+#Outliers in points are 274 and represent a 3.4994% of total records
+#Outliers in laps are 412 and represent a 5.2618% of total records
+#Outliers in milliseconds are 542 and represent a 6.9221% of total records
+#Outliers in fastestlap are 63 and represent a 0.8046% of total records
+#Outliers in rank are 196 and represent a 2.5032% of total records
+#Outliers in fastestlapspeed are 331 and represent a 4.2273% of total records
+#Outliers in statusid are 1719 and represent a 21.954% of total records</code></pre>
+</div>
+</div>
+<p>Como podemos observar, respecto a los más de 7000 registros que tiene la tabla, hay una pequeña cantidad significativa de datos atípicos en nuestras variables. Veamos gráficamente qué es lo que está ocurriendo con ellos. Y, aunque <code>statusid</code> tiene una gran cantidad de datos atípicos, esta es una variable categórica y que solo describe el estado de finalización de una carrera.</p>
+<p>Realizaremos un gráfico de <code>caja y bigotes</code> e <code>histogramas</code> para ver el comportamiento y la distribución de nuestros datos.</p>
+<div id="2cb655bc" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">12</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> numeric_columns:</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">5</span>,<span class="dv">3</span>,i)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    plt.boxplot(records_data[col],whis<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    plt.title(col)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-23-output-1.png" width="728" height="764" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="d9c92019" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">12</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> numeric_columns:</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    plt.subplot(<span class="dv">5</span>, <span class="dv">3</span>, i)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    sns.histplot(records_data[col], kde<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    plt.title(col)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-24-output-1.png" width="758" height="945" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Dada la naturaleza de las variables, en algunos casos como <code>round</code>, <code>positionorder</code>, <code>grid</code>, <code>points</code>, entre otros que son datos numéricos <code>discretos</code> y representan una <code>categoría</code> específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.</p>
+</section>
+</section>
+</section>
+<section id="visualización" class="level2">
+<h2 class="anchored" data-anchor-id="visualización">Visualización</h2>
+<p>La visualización es uno de los puntos más importantes a la hora de realizar una exploración de los datos. Con ella, no solo podemos encontrar las relaciones que existen entre nuestras variables, sino que también podemos representar gráficamente las informaciones más relevantes de los datos.</p>
+<p>Comencemos visualizando los gráficos de <code>correlación</code> y <code>dispersión</code> entre las variables para comprender mejor sus relaciones y encontrar posibles patrones.</p>
+<section id="gráfico-de-correlación" class="level3">
+<h3 class="anchored" data-anchor-id="gráfico-de-correlación">Gráfico de correlación</h3>
+<div id="8f15c9f7" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>corr <span class="op">=</span> records_data[numeric_columns].corr()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones_like(corr, dtype<span class="op">=</span><span class="bu">bool</span>))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(corr, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">'PRGn'</span>, square<span class="op">=</span><span class="va">True</span>, center<span class="op">=</span><span class="dv">0</span>, mask<span class="op">=</span>mask)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-25-output-1.png" width="571" height="491" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Como podemos observar, las variables con una alta correlación (<code>&gt;0.5</code> o <code>&lt;-0.5</code>) son aquellas que están relacionadas entre sí, como <code>laps</code>, <code>fastestlapspeed</code>, <code>fastest_lap</code>, <code>positionorder</code>, <code>year</code>, <code>fastest_pip_stop</code> entre otras. Por lo tanto, esto no debería ser un problema y podemos proseguir con la exploración de los datos.</p>
+</section>
+<section id="gráfico-de-dispersión" class="level3">
+<h3 class="anchored" data-anchor-id="gráfico-de-dispersión">Gráfico de dispersión</h3>
+<div id="92ece491" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">12</span>))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>sns.pairplot(records_data[numeric_columns])</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 768x1152 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-26-output-2.png" width="2828" height="2828" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>De este gráfico podemos notar que a medida que pasan los años, los equipos han ha evolucionado progresivamente en términos de velocidades y tiempos de carreras obtenidos. La velocidad y duración en boxes han aumentado, lo que indica una mejora en los automóviles y las técnicas de revisión de ellos. Sin embargo, estos cambios en las velocidades y tiempos también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.</p>
+</section>
+<section id="distribución-de-carreras-por-piloto" class="level3">
+<h3 class="anchored" data-anchor-id="distribución-de-carreras-por-piloto">Distribución de carreras por piloto</h3>
+<div id="3517a27e" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> records_data.groupby(<span class="st">'driverref'</span>).size().reset_index(name<span class="op">=</span><span class="st">'total_races'</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> driver_stats.sort_values(by<span class="op">=</span><span class="st">'total_races'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> driver_stats.rename(columns<span class="op">=</span>{<span class="st">'driverref'</span>: <span class="st">'driver_name'</span>})</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>top_constructors <span class="op">=</span> driver_stats.head(<span class="dv">5</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">7</span>))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>sns.histplot(driver_stats[<span class="st">'total_races'</span>], kde<span class="op">=</span><span class="va">False</span>, bins<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">'skyblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribución del número total de carreras por piloto'</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Número Total de Carreras'</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Frecuencia'</span>)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join([<span class="ss">f"</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">. </span><span class="sc">{</span>row[<span class="st">'driver_name'</span>]<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>row[<span class="st">'total_races'</span>]<span class="sc">}</span><span class="ss"> carreras"</span> <span class="cf">for</span> i, (index, row) <span class="kw">in</span> <span class="bu">enumerate</span>(top_constructors.iterrows(), start<span class="op">=</span><span class="dv">0</span>)])</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>plt.text(<span class="bu">max</span>(top_constructors[<span class="st">'total_races'</span>]) <span class="op">*</span> <span class="fl">1.02</span>, plt.ylim()[<span class="dv">1</span>] <span class="op">*</span> <span class="fl">0.9</span>, text, ha<span class="op">=</span><span class="st">'right'</span>, va<span class="op">=</span><span class="st">'top'</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-27-output-1.png" width="759" height="662" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="top-5-pilotos-más-ganadores" class="level3">
+<h3 class="anchored" data-anchor-id="top-5-pilotos-más-ganadores">Top 5 pilotos más ganadores</h3>
+<div id="81cd9758" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> records_data[records_data[<span class="st">'positionorder'</span>] <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> records_data.groupby(<span class="st">'driverref'</span>).size().reset_index(name<span class="op">=</span><span class="st">'total_wins'</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> driver_stats.sort_values(by<span class="op">=</span><span class="st">'total_wins'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>driver_stats <span class="op">=</span> driver_stats.rename(columns<span class="op">=</span>{<span class="st">'driverref'</span>: <span class="st">'driver_name'</span>})</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>top_constructors <span class="op">=</span> driver_stats.head(<span class="dv">5</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">7</span>))</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>plt.bar(top_constructors[<span class="st">'driver_name'</span>], top_constructors[<span class="st">'total_wins'</span>], color<span class="op">=</span><span class="st">'skyblue'</span>)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 5 Equipos Más Ganadores en F1'</span>)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Equipo'</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Número Total de Victorias'</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>plt.xticks()</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="drivers_files/figure-html/cell-28-output-1.png" width="663" height="595" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

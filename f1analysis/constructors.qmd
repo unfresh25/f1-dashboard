@@ -442,7 +442,7 @@ for col in numeric_columns:
     print(f'#Outliers in {col} are {n_outliers} and represent a {round(n_outliers/len(records_data) * 100, 4)}% of total records')
 ```
 
-Como podemos observar, respecto a los más de 7000 registros que tiene la tabla, hay una pequeña cantidada de datos significativa de datos atípicos en nuestras variables. Veamos gráficamente qué es lo que está ocurriendo con ellos.
+Como podemos observar, respecto a los más de 7000 registros que tiene la tabla, hay una pequeña cantidad significativa de datos atípicos en nuestras variables. Veamos gráficamente qué es lo que está ocurriendo con ellos.
 
 Realizaremos un gráfico de `caja y bigotes` e `histogramas` para ver el comportamiento y la distribución de nuestros datos.
 
@@ -516,7 +516,7 @@ top_constructors = constructor_stats.head(5)
 
 plt.figure(figsize=(8, 7))
 sns.histplot(constructor_stats['total_races'], kde=False, bins=30, color='skyblue', edgecolor='black')
-plt.title('Distribución del Número Total de Carreras por Constructor')
+plt.title('Distribución del número total de carreras por constructor')
 plt.xlabel('Número Total de Carreras')
 plt.ylabel('Frecuencia')
 
@@ -543,7 +543,7 @@ top_constructors = constructor_stats.head(5)
 
 plt.figure(figsize=(8, 7))
 constructor_stats.set_index('constructor_nationality')['num_constructors'].plot(kind='bar')
-plt.title('Número de Constructores por Nacionalidad')
+plt.title('Número de constructores por nacionalidad')
 plt.xlabel('Nacionalidad')
 plt.ylabel('Número de Constructores')
 plt.xticks(rotation=45)  
@@ -569,7 +569,7 @@ top_constructors = constructor_stats.head(5)
 
 plt.figure(figsize=(8, 7))
 plt.bar(top_constructors['constructor_name'], top_constructors['total_wins'], color='skyblue')
-plt.title('Top 5 Equipos Más Ganadores en F1')
+plt.title('Top 5 Equipos más ganadores en F1')
 plt.xlabel('Equipo')
 plt.ylabel('Número Total de Victorias')
 plt.xticks()
