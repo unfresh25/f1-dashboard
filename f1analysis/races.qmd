@@ -515,4 +515,6 @@ plt.tight_layout()
 plt.show()
 ```
 
+<br>
+
 Como se evidenció anteriormente, a medida que avanzan los años, los tiempos de carrera muestran una marcada tendencia a disminuir.
