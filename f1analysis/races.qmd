@@ -41,6 +41,8 @@ import pandas as pd
 import psycopg2 as psy
 from psycopg2 import Error
 
+import numpy as np
+
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
@@ -460,7 +462,55 @@ plt.tight_layout()
 plt.show()
 ```
 
-Dada la naturaleza de las variables, en algunos casos como ``rank``, `lap`, `grid`, `points`, que son datos numéricos `discretos` y representan una `categoría` específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.
+<br>
+
+Dada la naturaleza de las variables, en algunos casos como `rank`, `lap`, `grid`, `points`, que son datos numéricos `discretos` y representan una `categoría` específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.
 
 ## Visualización
 
+La visualización es uno de los puntos más importantes a la hora de realizar una exploración de los datos. Con ella, no solo podemos encontrar las relaciones que existen entre nuestras variables, sino que también podemos representar gráficamente las informaciones más relevantes de los datos.
+
+Comencemos visualizando los gráficos de `correlación` y `dispersión` entre las variables para comprender mejor sus relaciones y encontrar posibles patrones.
+
+### Gráfico de correlación
+
+``` {python}
+corr = records_data[numeric_columns].corr()
+mask = np.triu(np.ones_like(corr, dtype=bool))
+
+sns.heatmap(corr, annot=True, cmap='PRGn', square=True, center=0, mask=mask)
+```
+
+Como podemos observar, las variables con una alta correlación (`>0.5` o `<-0.5`) son aquellas que están relacionadas entre sí, como `laps`, `winner_fastestlapspeed`, `general_fastest_lap`, entre otras. Por lo tanto, esto no debería ser un problema y podemos proseguir con la exploración de los datos.
+
+### Gráfico de dispersión 
+
+``` {python}
+numeric_columns = numeric_columns.drop(['points', 'winner_lap_rank'])
+
+plt.figure(figsize=(8, 12))
+sns.pairplot(records_data[numeric_columns])
+plt.show()
+```
+
+<br>
+
+De este gráfico podemos notar que a medida que pasan los años, la competencia ha evolucionado en términos de velocidades y tiempos de carreras obtenidos. La velocidad ha aumentado, lo que indica una mejora en los automóviles, y afecta directamente la duración de las carreras. Sin embargo, estos cambios en las velocidades y tiempos de carrera también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.
+
+### Distribución de tiempos de vuelta por décadas
+
+Veamos cómo se distribuyen en cada una de las vueltas a lo largo de los años.
+
+``` {python}
+records_data['race_time_in_seconds'] = records_data['race_time_in_milliseconds'] / 1000
+records_data['decade'] = records_data['year'].apply(lambda x: np.floor(x / 10) * 10)
+
+plt.figure(figsize=(8, 12))
+sns.boxplot(x='decade', y='race_time_in_seconds', data=records_data, palette="PRGn")
+plt.title('Distribución de Tiempos de Vuelta por Década')
+plt.xlabel('Década')
+plt.ylabel('Tiempo de Vuelta (segundos)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```

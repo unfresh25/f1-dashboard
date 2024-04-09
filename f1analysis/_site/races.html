@@ -226,7 +226,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#medidas-de-tendencia-central" id="toc-medidas-de-tendencia-central" class="nav-link" data-scroll-target="#medidas-de-tendencia-central">Medidas de tendencia central</a></li>
   <li><a href="#limpieza-de-los-datos" id="toc-limpieza-de-los-datos" class="nav-link" data-scroll-target="#limpieza-de-los-datos">Limpieza de los datos</a></li>
   </ul></li>
-  <li><a href="#visualización" id="toc-visualización" class="nav-link" data-scroll-target="#visualización">Visualización</a></li>
+  <li><a href="#visualización" id="toc-visualización" class="nav-link" data-scroll-target="#visualización">Visualización</a>
+  <ul class="collapse">
+  <li><a href="#gráfico-de-correlación" id="toc-gráfico-de-correlación" class="nav-link" data-scroll-target="#gráfico-de-correlación">Gráfico de correlación</a></li>
+  <li><a href="#gráfico-de-dispersión" id="toc-gráfico-de-dispersión" class="nav-link" data-scroll-target="#gráfico-de-dispersión">Gráfico de dispersión</a></li>
+  <li><a href="#distribución-de-tiempos-de-vuelta-por-décadas" id="toc-distribución-de-tiempos-de-vuelta-por-décadas" class="nav-link" data-scroll-target="#distribución-de-tiempos-de-vuelta-por-décadas">Distribución de tiempos de vuelta por décadas</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -297,22 +302,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Pueden instalarse utilizando el siguiente comando desde la terminal: <code>pip install pandas psycopg2 plotly...</code>, o bien, mediante el archivo <a href="https://github.com/unfresh25/f1-dashboard">requirements.txt</a> utilizando <code>pip install -r requirements.txt</code> en la terminal.</p>
 <p>Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:</p>
-<div id="7c68cfde" class="cell" data-execution_count="2">
+<div id="7e294f5d" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.experimental <span class="im">import</span> enable_iterative_imputer</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> IterativeImputer</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.experimental <span class="im">import</span> enable_iterative_imputer</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> IterativeImputer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:</p>
-<div id="7d1d2fb5" class="cell" data-execution_count="3">
+<div id="b57e414c" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -327,7 +334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas.</p>
 <section id="tabla-races" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-races">Tabla races</h2>
-<div id="fc0eacf1" class="cell" data-execution_count="4">
+<div id="9369f04e" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -501,7 +508,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-circuits" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-circuits">Tabla circuits</h2>
-<div id="39ccbb17" class="cell" data-execution_count="5">
+<div id="7ef12d93" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -621,7 +628,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-results" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-results">Tabla results</h2>
-<div id="e43cd203" class="cell" data-execution_count="6">
+<div id="506a92d2" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -795,7 +802,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-lap_times" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-lap_times">Tabla lap_times</h2>
-<div id="c8d7f68c" class="cell" data-execution_count="7">
+<div id="0376e575" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -905,7 +912,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Lap Times</strong>: lap, miliseconds.</li>
 </ul>
 <p>Realicemos entonces la consulta a la base de datos para obtener esta tabla.</p>
-<div id="ed8ffc52" class="cell" data-execution_count="8">
+<div id="ba27046c" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -1133,9 +1140,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="tipos-de-datos" class="level3">
 <h3 class="anchored" data-anchor-id="tipos-de-datos">Tipos de datos</h3>
 <p>Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.</p>
-<div id="92eca993" class="cell" data-execution_count="9">
+<div id="2afc4c6f" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <pre><code>raceid                         int64
 year                           int64
 round                          int64
@@ -1162,12 +1169,12 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna <code>winner_fastestlapspeed</code>, que toma valores numéricos pero está siendo interpretada como un dato tipo <code>object</code>. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de las variables <code>raceid</code>, <code>round</code>, <code>circuitid</code>, <code>driverid</code> y <code>constructorid</code> a tipo <code>object</code>.</p>
-<div id="92303c0e" class="cell" data-execution_count="10">
+<div id="6d85c815" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'winner_fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'winner_fastestlapspeed'</span>])</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>records_data[[<span class="st">'raceid'</span>, <span class="st">'round'</span>, <span class="st">'circuitid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]] <span class="op">=</span> records_data[[<span class="st">'raceid'</span>, <span class="st">'round'</span>, <span class="st">'circuitid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]].astype(<span class="st">'object'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <pre><code>raceid                        object
 year                           int64
 round                         object
@@ -1197,9 +1204,9 @@ dtype: object</code></pre>
 <section id="dimensiones-de-los-registros" class="level3">
 <h3 class="anchored" data-anchor-id="dimensiones-de-los-registros">Dimensiones de los registros</h3>
 <p>Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.</p>
-<div id="5b05bfc9" class="cell" data-execution_count="11">
+<div id="12f734e5" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>records_data.shape</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <pre><code>(1094, 22)</code></pre>
 </div>
 </div>
@@ -1208,9 +1215,9 @@ dtype: object</code></pre>
 <section id="datos-faltantes" class="level3">
 <h3 class="anchored" data-anchor-id="datos-faltantes">Datos faltantes</h3>
 <p>Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.</p>
-<div id="8d86282b" class="cell" data-execution_count="12">
+<div id="3e9106a0" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="37">
 <pre><code>raceid                         0
 year                           0
 round                          0
@@ -1237,11 +1244,11 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.</p>
-<div id="938608fa" class="cell" data-execution_count="13">
+<div id="b9dd7dcc" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> records_data.isnull().<span class="bu">sum</span>()</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> <span class="bu">round</span>((missing_values <span class="op">/</span> <span class="bu">len</span>(records_data)) <span class="op">*</span> <span class="dv">100</span>, <span class="dv">4</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>missing_percentage</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="35">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>raceid                        0.0000
 year                          0.0000
 round                         0.0000
@@ -1269,9 +1276,9 @@ dtype: float64</code></pre>
 </div>
 <p>Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática.</p>
 <p>Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.</p>
-<div id="7cc906c2" class="cell" data-execution_count="14">
+<div id="b1560cf1" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>records_data[records_data.isnull().<span class="bu">any</span>(axis <span class="op">=</span> <span class="dv">1</span>)]</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="36">
+<div class="cell-output cell-output-display" data-execution_count="39">
 <div>
 <div>
 
@@ -1576,7 +1583,7 @@ dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="ceffe416" class="cell" data-execution_count="15">
+<div id="3f74936c" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-stdout">
 <pre><code>Fecha mínima:  1950
 Fecha promedio:  1980
@@ -1598,9 +1605,9 @@ Fecha máxima:  2021</code></pre>
 <p>Esta fase nos permitirá comprender mejor la naturaleza de nuestros datos y prepararlos adecuadamente para análisis más avanzados.</p>
 <section id="medidas-de-tendencia-central" class="level3">
 <h3 class="anchored" data-anchor-id="medidas-de-tendencia-central">Medidas de tendencia central</h3>
-<div id="36114dc6" class="cell" data-execution_count="16">
+<div id="cffde15f" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>records_data.describe()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <div>
 <div>
 
@@ -1748,7 +1755,7 @@ Fecha máxima:  2021</code></pre>
 <p>Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la <code>imputación</code> de valores faltantes utilizando la <code>media</code>, <code>moda</code> o <code>mediana</code>, o llenando los datos con los valores <code>anteriores o siguientes</code>. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.</p>
 <p>En nuestro caso, una estrategia efectiva sería utilizar la <code>imputación</code> de datos faltantes basada en puntos similares en los datos mediante el algoritmo <code>KNN (K-Nearest Neighbors)</code> y <code>Random Forest Classification</code>. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.</p>
 <p>Inicialmente, creemos un <code>DataFrame</code> temporal donde estarán los mismos datos de <code>records_data</code> pero sin las columnas correspondientes a tipo <code>object</code>.</p>
-<div id="d3caa2b4" class="cell" data-execution_count="17">
+<div id="20e23360" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>temp_df <span class="op">=</span> records_data.select_dtypes(exclude<span class="op">=</span>[<span class="st">'object'</span>])</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>imputer <span class="op">=</span> IterativeImputer(min_value<span class="op">=</span><span class="dv">0</span>, max_iter<span class="op">=</span><span class="dv">30</span>, imputation_order<span class="op">=</span><span class="st">'roman'</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
@@ -1756,7 +1763,7 @@ Fecha máxima:  2021</code></pre>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>temp_df_imputed <span class="op">=</span> pd.DataFrame(imputed_data, columns<span class="op">=</span>temp_df.columns)</span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>temp_df_imputed.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell-output cell-output-display" data-execution_count="42">
 <pre><code>year                         0
 points                       0
 grid                         0
@@ -1771,9 +1778,9 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Bien, ya no tenemos datos faltantes. Ahora, verifiquemos si los resultados obtenidos en las medidas de tendencia central del DataFrame original cambiaron significativamente.</p>
-<div id="ebf14645" class="cell" data-execution_count="18">
+<div id="eaf1bb5a" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>temp_df_imputed.describe()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell-output cell-output-display" data-execution_count="43">
 <div>
 <div>
 
@@ -1913,10 +1920,10 @@ dtype: int64</code></pre>
 <li><p><strong>Tiempo de carrera y velocidad</strong>: La media del tiempo de carrera disminuyó ligeramente después de la imputación de datos, lo que sugiere que los nuevos valores imputados pueden haber afectado este aspecto. Por otro lado, la velocidad media de la vuelta más rápida realizada por el ganador experimentó una disminución significativa en su media y desviación estándar, lo que indica que la imputación de datos pudo haber tenido un impacto más notable en esta variable.</p></li>
 </ul>
 <p>Ahora que hemos realizado la imputación de datos, pasemos estos datos a nuestro dataframe original.</p>
-<div id="1f5386b0" class="cell" data-execution_count="19">
+<div id="688770a1" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>records_data[temp_df.columns] <span class="op">=</span> temp_df_imputed</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="41">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <pre><code>raceid                       0
 year                         0
 round                        0
@@ -1946,7 +1953,7 @@ dtype: int64</code></pre>
 <section id="datos-atípicos" class="level4">
 <h4 class="anchored" data-anchor-id="datos-atípicos">Datos atípicos</h4>
 <p>Veamos ahora si existen <code>datos atípicos</code> en nuestro registro. En este caso, utilizaremos el <code>rango intercuartílico (IQR)</code> para identificar los valores atípicos. Si un valor cae por debajo de <code>Q1 - 1.5 * IQR</code> o por encima de <code>Q3 + 1.5 * IQR</code>, se considera un valor atípico.</p>
-<div id="4313886f" class="cell" data-execution_count="20">
+<div id="f3479f8e" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="op">=</span> temp_df.columns</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> numeric_columns:</span>
@@ -1974,7 +1981,7 @@ dtype: int64</code></pre>
 </div>
 <p>Como podemos observar, tenemos una cantidad significativa de datos atípicos en algunas de nuestras variables. Esto podría afectar más adelante en los modelos estadísticos que querramos implementar. Veamos gráficamente qué es lo que está ocurriendo con ellos.</p>
 <p>Realizaremos un gráfico de <code>caja y bigotes</code> e <code>histogramas</code> para ver el comportamiento y la distribución de nuestros datos.</p>
-<div id="5d86d4f7" class="cell" data-execution_count="21">
+<div id="90b95661" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">12</span>))</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">1</span></span>
@@ -1993,7 +2000,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="bdce63aa" class="cell" data-execution_count="22">
+<div id="833b8e14" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">12</span>))</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>i <span class="op">=</span> <span class="dv">1</span></span>
@@ -2012,14 +2019,89 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
+<p><br></p>
 <p>Dada la naturaleza de las variables, en algunos casos como <code>rank</code>, <code>lap</code>, <code>grid</code>, <code>points</code>, que son datos numéricos <code>discretos</code> y representan una <code>categoría</code> específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.</p>
 </section>
 </section>
 </section>
 <section id="visualización" class="level2">
 <h2 class="anchored" data-anchor-id="visualización">Visualización</h2>
+<p>La visualización es uno de los puntos más importantes a la hora de realizar una exploración de los datos. Con ella, no solo podemos encontrar las relaciones que existen entre nuestras variables, sino que también podemos representar gráficamente las informaciones más relevantes de los datos.</p>
+<p>Comencemos visualizando los gráficos de <code>correlación</code> y <code>dispersión</code> entre las variables para comprender mejor sus relaciones y encontrar posibles patrones.</p>
+<section id="gráfico-de-correlación" class="level3">
+<h3 class="anchored" data-anchor-id="gráfico-de-correlación">Gráfico de correlación</h3>
+<div id="bcfe5ee3" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>corr <span class="op">=</span> records_data[numeric_columns].corr()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones_like(corr, dtype<span class="op">=</span><span class="bu">bool</span>))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>sns.heatmap(corr, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">'PRGn'</span>, square<span class="op">=</span><span class="va">True</span>, center<span class="op">=</span><span class="dv">0</span>, mask<span class="op">=</span>mask)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="races_files/figure-html/cell-24-output-1.png" width="635" height="555" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Como podemos observar, las variables con una alta correlación (<code>&gt;0.5</code> o <code>&lt;-0.5</code>) son aquellas que están relacionadas entre sí, como <code>laps</code>, <code>winner_fastestlapspeed</code>, <code>general_fastest_lap</code>, entre otras. Por lo tanto, esto no debería ser un problema y podemos proseguir con la exploración de los datos.</p>
+</section>
+<section id="gráfico-de-dispersión" class="level3">
+<h3 class="anchored" data-anchor-id="gráfico-de-dispersión">Gráfico de dispersión</h3>
+<div id="8e93f072" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="op">=</span> numeric_columns.drop([<span class="st">'points'</span>, <span class="st">'winner_lap_rank'</span>])</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">12</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>sns.pairplot(records_data[numeric_columns])</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 768x1152 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="races_files/figure-html/cell-25-output-2.png" width="1888" height="1887" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>De este gráfico podemos notar que a medida que pasan los años, la competencia ha evolucionado en términos de velocidades y tiempos de carreras obtenidos. La velocidad ha aumentado, lo que indica una mejora en los automóviles, y afecta directamente la duración de las carreras. Sin embargo, estos cambios en las velocidades y tiempos de carrera también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.</p>
+</section>
+<section id="distribución-de-tiempos-de-vuelta-por-décadas" class="level3">
+<h3 class="anchored" data-anchor-id="distribución-de-tiempos-de-vuelta-por-décadas">Distribución de tiempos de vuelta por décadas</h3>
+<p>Veamos cómo se distribuyen en cada una de las vueltas a lo largo de los años.</p>
+<div id="c489b02b" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'race_time_in_seconds'</span>] <span class="op">=</span> records_data[<span class="st">'race_time_in_milliseconds'</span>] <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'decade'</span>] <span class="op">=</span> records_data[<span class="st">'year'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.floor(x <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">12</span>))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>sns.boxplot(x<span class="op">=</span><span class="st">'decade'</span>, y<span class="op">=</span><span class="st">'race_time_in_seconds'</span>, data<span class="op">=</span>records_data, palette<span class="op">=</span><span class="st">"PRGn"</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribución de Tiempos de Vuelta por Década'</span>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Década'</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Tiempo de Vuelta (segundos)'</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\jborja\AppData\Local\Temp\ipykernel_20928\2323797752.py:5: FutureWarning:
 
 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="races_files/figure-html/cell-26-output-2.png" width="758" height="1142" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
 </section>
 </section>
 
