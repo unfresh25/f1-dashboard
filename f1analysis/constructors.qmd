@@ -346,4 +346,46 @@ print('Fecha promedio: ', int(round(missing['year'].mean(), 0)))
 print('Fecha máxima: ', max(missing['year']))
 ```
 
-Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en alguna de estas variables.
+Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en las variables `fastest_pit_stop` y `fastest_pit_stop_time`.
+
+## Exploración de los datos
+
+En esta sección realizaremos el verdadero análisis exploratorio de nuestros datos. Abordaremos los siguientes aspectos:
+
+1. **Medidas de tendencia central**: Calcularemos medidas como la media, la mediana y la moda para entender mejor la distribución de nuestros datos.
+
+2. **Limpieza de los datos**: Abordaremos la limpieza de nuestros datos, incluyendo la búsqueda de datos atípicos.
+
+3. **Transformación**: Determinaremos si es necesario aplicar alguna transformación a nuestros datos para facilitar los análisis subsiguientes.
+
+4. **Visualización**: Utilizaremos herramientas gráficas para explorar el comportamiento de nuestros datos y extraer patrones o tendencias.
+
+Esta fase nos permitirá comprender mejor la naturaleza de nuestros datos y prepararlos adecuadamente para análisis más avanzados.
+
+### Medidas de tendencia central
+
+``` {python}
+records_data.describe()
+```
+
+<br>
+
+Estos resultados nos pueden permitir concluir lo siguiente: 
+
+* **Puntos, posición en la parrilla y número de vueltas**: Los datos muestran que el promedio de puntos obtenidos por carrera es de aproximadamente 6.47. La posición promedio en la parrilla de salida es alrededor de 7.14. En cuanto al número de vueltas, el promedio es de aproximadamente 62.39. Estas variabilidades indican que hay una amplia gama de resultados en términos de puntos, posición en la parrilla y número de vueltas, lo que podría atribuirse a diferencias en la dificultad de los circuitos, la calidad de los vehículos y las estrategias de los equipos en cada carrera.
+
+* **Tiempo de carrera y velocidad**: El tiempo medio de carrera es de aproximadamente 5.99 millones de milisegundos (alrededor de 99.83 minutos) millones de milisegundos. Esta variabilidad en los tiempos de carrera puede deberse a la longitud del circuito, las condiciones climáticas y la cantidad de incidentes en la pista. La velocidad media de la vuelta más rápida realizada por el ganador es de alrededor de 206.01 km/h. Estas diferencias en la velocidad pueden ser atribuibles a las características específicas del circuito y la competencia entre los conductores.
+
+* **Paradas en boxes**: El tiempo medio para la parada en boxes más rápida es de aproximadamente 31.73 segundos. Las paradas en boxes indican que hay una variabilidad en los tiempos de pit stop entre las carreras, que puede estar influenciada por factores como la estrategia del equipo y la eficiencia en el box.
+
+### Limpieza de los datos
+
+La limpieza de datos es una etapa crucial en cualquier análisis, por lo que en este apartado trataremos los datos faltantes y observaremos si existen datos atípicos en nuestras variables.
+
+#### Datos faltantes
+
+Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la `imputación` de valores faltantes utilizando la `media`, `moda` o `mediana`, o llenando los datos con los valores `anteriores o siguientes`. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.
+
+En nuestro caso, una estrategia efectiva sería utilizar la `imputación` de datos faltantes basada en puntos similares en los datos mediante el algoritmo `KNN (K-Nearest Neighbors)` y `Random Forest Classification`. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.
+
+Inicialmente, creemos un `DataFrame` temporal donde estarán los mismos datos de `records_data` pero sin las columnas correspondientes a tipo `object`.

@@ -12,4 +12,18 @@ format:
 
 La Fórmula 1, reconocida como la máxima expresión del automovilismo deportivo, constituye un fascinante universo donde convergen la tecnología y la destreza de los pilotos para brindar un espectáculo emocionante en circuitos de todo el mundo [consultar en @ABC2020]. Cada temporada de Fórmula 1 se erige como un emocionante periplo repleto de una competencia feroz, innovación tecnológica y cambiantes clasificaciones de pilotos y equipos. Este apasionante deporte atrae no solo a fervientes aficionados del automovilismo, sino también a estadísticos y científicos de datos que buscan desentrañar los secretos detrás de cada carrera.
 
-En el epicentro de la Fórmula 1 yace un vasto tesoro de datos que abarca décadas de competiciones, equipos, pilotos y circuitos. Gracias a los avances tecnológicos y a la meticulosa recopilación de datos, los aficionados y expertos en análisis de datos pueden sumergirse en una exploración profunda de este deporte de alto rendimiento [@AMOLLEDO2020]. En este proyecto, llevaremos a cabo un análisis exploratorio y predictivo de los datos extraídos de [Ergast API](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) recopilados por [Vopani](https://github.com/vopani). Sin embargo, en este artículo nos centraremos exclusivamente en el análisis exploratorio de los datos para comprender su naturaleza, estructura, distribución y otros aspectos relevantes.
+En el epicentro de la Fórmula 1 yace un vasto tesoro de datos que abarca décadas de competiciones, equipos, pilotos y circuitos. Gracias a los avances tecnológicos y a la meticulosa recopilación de datos, los aficionados y expertos en análisis de datos pueden sumergirse en una exploración profunda de este deporte de alto rendimiento [@AMOLLEDO2020]. En este proyecto, llevaremos a cabo un análisis exploratorio y predictivo de los datos extraídos de [Ergast API](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) recopilados por [Vopani](https://github.com/vopani).
+
+En este contexto, nos proponemos realizar un análisis predictivo de los datos de la Fórmula 1 utilizando diversas técnicas y modelos estadísticos. Entre estos modelos se incluyen:
+
+1. **Series de tiempo:** Este enfoque nos permitirá analizar patrones temporales en los datos, como la evolución de rendimiento de un equipo o piloto a lo largo de las temporadas.
+
+2. **Regresión logística:** Utilizaremos este modelo para investigar la relación entre variables predictoras y variables de interés, como por ejemplo, predecir la probabilidad de que un equipo obtenga un determinado resultado en una carrera.
+
+3. **Análisis de componentes principales:** Con este método, buscaremos reducir la dimensionalidad de nuestros datos y encontrar patrones subyacentes que expliquen la variabilidad en el desempeño de los equipos y pilotos.
+
+4. **Análisis discriminante:** Este modelo nos ayudará a clasificar datos en función de múltiples variables predictoras, como predecir el rendimiento de un equipo en diferentes tipos de circuitos.
+
+5. **Clasificación mediante KNN (K-Nearest Neighbors):** Utilizaremos este algoritmo de aprendizaje supervisado para clasificar nuevos datos en función de la similitud con ejemplos previamente clasificados, como predecir la posición final de un piloto en una carrera dada ciertas condiciones.
+
+Al combinar estos diversos enfoques, buscamos obtener una comprensión más profunda de los factores que influyen en el desempeño en la Fórmula 1 y generar predicciones precisas sobre los resultados de las carreras y los campeonatos futuros.

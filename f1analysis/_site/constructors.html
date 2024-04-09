@@ -221,6 +221,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#dimensiones-de-los-registros" id="toc-dimensiones-de-los-registros" class="nav-link" data-scroll-target="#dimensiones-de-los-registros">Dimensiones de los registros</a></li>
   <li><a href="#datos-faltantes" id="toc-datos-faltantes" class="nav-link" data-scroll-target="#datos-faltantes">Datos faltantes</a></li>
   </ul></li>
+  <li><a href="#exploración-de-los-datos" id="toc-exploración-de-los-datos" class="nav-link" data-scroll-target="#exploración-de-los-datos">Exploración de los datos</a>
+  <ul class="collapse">
+  <li><a href="#medidas-de-tendencia-central" id="toc-medidas-de-tendencia-central" class="nav-link" data-scroll-target="#medidas-de-tendencia-central">Medidas de tendencia central</a></li>
+  <li><a href="#limpieza-de-los-datos" id="toc-limpieza-de-los-datos" class="nav-link" data-scroll-target="#limpieza-de-los-datos">Limpieza de los datos</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -291,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Pueden instalarse utilizando el siguiente comando desde la terminal: <code>pip install pandas psycopg2 plotly...</code>, o bien, mediante el archivo <a href="https://github.com/unfresh25/f1-dashboard">requirements.txt</a> utilizando <code>pip install -r requirements.txt</code> en la terminal.</p>
 <p>Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:</p>
-<div id="f2beae15" class="cell" data-execution_count="2">
+<div id="f7ae5982" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
@@ -309,7 +314,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'white'</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:</p>
-<div id="1013fa67" class="cell" data-execution_count="3">
+<div id="2921d745" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -324,7 +329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas.</p>
 <section id="tabla-constructors" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-constructors">Tabla constructors</h2>
-<div id="0cd0dea5" class="cell" data-execution_count="4">
+<div id="02550fa8" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -420,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-circuits" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-circuits">Tabla circuits</h2>
-<div id="234da3fa" class="cell" data-execution_count="5">
+<div id="be143c0a" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -540,7 +545,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-results" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-results">Tabla results</h2>
-<div id="f17f6696" class="cell" data-execution_count="6">
+<div id="d38e14d0" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -714,7 +719,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-pit-stops" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-pit-stops">Tabla pit stops</h2>
-<div id="3c5288b7" class="cell" data-execution_count="7">
+<div id="c533624f" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -830,7 +835,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Pit Stops</strong>: stop, miliseconds.</li>
 </ul>
 <p>Realicemos entonces la consulta a la base de datos para obtener esta tabla.</p>
-<div id="22eb534b" class="cell" data-execution_count="8">
+<div id="cde66d68" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -1061,9 +1066,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="tipos-de-datos" class="level3">
 <h3 class="anchored" data-anchor-id="tipos-de-datos">Tipos de datos</h3>
 <p>Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.</p>
-<div id="930d8c5e" class="cell" data-execution_count="9">
+<div id="f395306f" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="57">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>constructorid              int64
 constructorref            object
 name                      object
@@ -1090,12 +1095,12 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna <code>fastestlapspeed</code>, que toma valores numéricos pero está siendo interpretada como un dato tipo <code>object</code>. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de las variables <code>raceid</code>, <code>statusid</code>,<code>circuitid</code>, <code>driverid</code> y <code>constructorid</code> a tipo <code>object</code>.</p>
-<div id="2eba9777" class="cell" data-execution_count="10">
+<div id="fb2f3d27" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'fastestlapspeed'</span>])</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>records_data[[<span class="st">'raceid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>, <span class="st">'statusid'</span>]] <span class="op">=</span> records_data[[<span class="st">'raceid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>, <span class="st">'statusid'</span>]].astype(<span class="st">'object'</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="58">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>constructorid             object
 constructorref            object
 name                      object
@@ -1125,15 +1130,15 @@ dtype: object</code></pre>
 <section id="dimensiones-de-los-registros" class="level3">
 <h3 class="anchored" data-anchor-id="dimensiones-de-los-registros">Dimensiones de los registros</h3>
 <p>Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.</p>
-<div id="625cc956" class="cell" data-execution_count="11">
+<div id="7e7d52e0" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>records_data.shape</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="59">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>(7441, 22)</code></pre>
 </div>
 </div>
-<div id="22a2794f" class="cell" data-execution_count="12">
+<div id="53264897" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(records_data[<span class="st">'constructorref'</span>].unique())</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="60">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>88</code></pre>
 </div>
 </div>
@@ -1142,9 +1147,9 @@ dtype: object</code></pre>
 <section id="datos-faltantes" class="level3">
 <h3 class="anchored" data-anchor-id="datos-faltantes">Datos faltantes</h3>
 <p>Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.</p>
-<div id="5e9db875" class="cell" data-execution_count="13">
+<div id="b93378a4" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="61">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>constructorid               0
 constructorref              0
 name                        0
@@ -1171,11 +1176,11 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.</p>
-<div id="d53caf98" class="cell" data-execution_count="14">
+<div id="40016f3b" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> records_data.isnull().<span class="bu">sum</span>()</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> <span class="bu">round</span>((missing_values <span class="op">/</span> <span class="bu">len</span>(records_data)) <span class="op">*</span> <span class="dv">100</span>, <span class="dv">4</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>missing_percentage</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="62">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>constructorid             0.0000
 constructorref            0.0000
 name                      0.0000
@@ -1203,9 +1208,9 @@ dtype: float64</code></pre>
 </div>
 <p>Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática.</p>
 <p>Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.</p>
-<div id="70d53353" class="cell" data-execution_count="15">
+<div id="3a078129" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>records_data[records_data.isnull().<span class="bu">any</span>(axis <span class="op">=</span> <span class="dv">1</span>)]</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="63">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 <div>
 
@@ -1510,16 +1515,200 @@ dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div id="cc4be0c2" class="cell" data-execution_count="16">
+<div id="bf5c3bc6" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-stdout">
 <pre><code>Fecha mínima:  1958
 Fecha promedio:  1990
 Fecha máxima:  2023</code></pre>
 </div>
 </div>
-<p>Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en alguna de estas variables.</p>
+<p>Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en las variables <code>fastest_pit_stop</code> y <code>fastest_pit_stop_time</code>.</p>
+</section>
+</section>
+<section id="exploración-de-los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="exploración-de-los-datos">Exploración de los datos</h2>
+<p>En esta sección realizaremos el verdadero análisis exploratorio de nuestros datos. Abordaremos los siguientes aspectos:</p>
+<ol type="1">
+<li><p><strong>Medidas de tendencia central</strong>: Calcularemos medidas como la media, la mediana y la moda para entender mejor la distribución de nuestros datos.</p></li>
+<li><p><strong>Limpieza de los datos</strong>: Abordaremos la limpieza de nuestros datos, incluyendo la búsqueda de datos atípicos.</p></li>
+<li><p><strong>Transformación</strong>: Determinaremos si es necesario aplicar alguna transformación a nuestros datos para facilitar los análisis subsiguientes.</p></li>
+<li><p><strong>Visualización</strong>: Utilizaremos herramientas gráficas para explorar el comportamiento de nuestros datos y extraer patrones o tendencias.</p></li>
+</ol>
+<p>Esta fase nos permitirá comprender mejor la naturaleza de nuestros datos y prepararlos adecuadamente para análisis más avanzados.</p>
+<section id="medidas-de-tendencia-central" class="level3">
+<h3 class="anchored" data-anchor-id="medidas-de-tendencia-central">Medidas de tendencia central</h3>
+<div id="9ed5ee55" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>records_data.describe()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+<div>
 
 
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">number</th>
+<th data-quarto-table-cell-role="th">grid</th>
+<th data-quarto-table-cell-role="th">positionorder</th>
+<th data-quarto-table-cell-role="th">points</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">fastestlap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">fastest_pit_stop</th>
+<th data-quarto-table-cell-role="th">fastest_pit_stop_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">count</td>
+<td>7441.000000</td>
+<td>7441.000000</td>
+<td>7441.000000</td>
+<td>7441.000000</td>
+<td>7441.000000</td>
+<td>7441.000000</td>
+<td>5.895000e+03</td>
+<td>3553.000000</td>
+<td>3564.000000</td>
+<td>3553.000000</td>
+<td>2509.000000</td>
+<td>2.509000e+03</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">mean</td>
+<td>1997.963177</td>
+<td>14.495498</td>
+<td>7.137078</td>
+<td>4.354522</td>
+<td>6.467679</td>
+<td>62.388792</td>
+<td>5.989774e+06</td>
+<td>46.603152</td>
+<td>6.680415</td>
+<td>206.006290</td>
+<td>1.536070</td>
+<td>3.173199e+04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">std</td>
+<td>18.309481</td>
+<td>15.192749</td>
+<td>4.989723</td>
+<td>2.463845</td>
+<td>5.667732</td>
+<td>13.737097</td>
+<td>1.089727e+06</td>
+<td>14.355980</td>
+<td>4.232408</td>
+<td>20.582848</td>
+<td>0.761929</td>
+<td>9.771809e+04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">min</td>
+<td>1958.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>1.000000</td>
+<td>2.070710e+05</td>
+<td>2.000000</td>
+<td>0.000000</td>
+<td>147.980000</td>
+<td>1.000000</td>
+<td>1.317300e+04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25%</td>
+<td>1983.000000</td>
+<td>5.000000</td>
+<td>3.000000</td>
+<td>2.000000</td>
+<td>2.000000</td>
+<td>54.000000</td>
+<td>5.388156e+06</td>
+<td>39.000000</td>
+<td>3.000000</td>
+<td>195.557000</td>
+<td>1.000000</td>
+<td>2.147400e+04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">50%</td>
+<td>2002.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>4.000000</td>
+<td>4.000000</td>
+<td>61.000000</td>
+<td>5.771321e+06</td>
+<td>48.000000</td>
+<td>6.000000</td>
+<td>206.603000</td>
+<td>1.000000</td>
+<td>2.287400e+04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">75%</td>
+<td>2014.000000</td>
+<td>19.000000</td>
+<td>10.000000</td>
+<td>6.000000</td>
+<td>9.000000</td>
+<td>71.000000</td>
+<td>6.295221e+06</td>
+<td>56.000000</td>
+<td>10.000000</td>
+<td>219.005000</td>
+<td>2.000000</td>
+<td>2.463900e+04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">max</td>
+<td>2023.000000</td>
+<td>99.000000</td>
+<td>26.000000</td>
+<td>21.000000</td>
+<td>50.000000</td>
+<td>110.000000</td>
+<td>1.472659e+07</td>
+<td>85.000000</td>
+<td>20.000000</td>
+<td>257.320000</td>
+<td>6.000000</td>
+<td>1.517308e+06</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Estos resultados nos pueden permitir concluir lo siguiente:</p>
+<ul>
+<li><p><strong>Puntos, posición en la parrilla y número de vueltas</strong>: Los datos muestran que el promedio de puntos obtenidos por carrera es de aproximadamente 6.47. La posición promedio en la parrilla de salida es alrededor de 7.14. En cuanto al número de vueltas, el promedio es de aproximadamente 62.39. Estas variabilidades indican que hay una amplia gama de resultados en términos de puntos, posición en la parrilla y número de vueltas, lo que podría atribuirse a diferencias en la dificultad de los circuitos, la calidad de los vehículos y las estrategias de los equipos en cada carrera.</p></li>
+<li><p><strong>Tiempo de carrera y velocidad</strong>: El tiempo medio de carrera es de aproximadamente 5.99 millones de milisegundos (alrededor de 99.83 minutos) millones de milisegundos. Esta variabilidad en los tiempos de carrera puede deberse a la longitud del circuito, las condiciones climáticas y la cantidad de incidentes en la pista. La velocidad media de la vuelta más rápida realizada por el ganador es de alrededor de 206.01 km/h. Estas diferencias en la velocidad pueden ser atribuibles a las características específicas del circuito y la competencia entre los conductores.</p></li>
+<li><p><strong>Paradas en boxes</strong>: El tiempo medio para la parada en boxes más rápida es de aproximadamente 31.73 segundos. Las paradas en boxes indican que hay una variabilidad en los tiempos de pit stop entre las carreras, que puede estar influenciada por factores como la estrategia del equipo y la eficiencia en el box.</p></li>
+</ul>
+</section>
+<section id="limpieza-de-los-datos" class="level3">
+<h3 class="anchored" data-anchor-id="limpieza-de-los-datos">Limpieza de los datos</h3>
+<p>La limpieza de datos es una etapa crucial en cualquier análisis, por lo que en este apartado trataremos los datos faltantes y observaremos si existen datos atípicos en nuestras variables.</p>
+<section id="datos-faltantes-1" class="level4">
+<h4 class="anchored" data-anchor-id="datos-faltantes-1">Datos faltantes</h4>
+<p>Existen diversas estrategias para abordar este problema. Usualmente, en este tipo de análisis se recurre a la <code>imputación</code> de valores faltantes utilizando la <code>media</code>, <code>moda</code> o <code>mediana</code>, o llenando los datos con los valores <code>anteriores o siguientes</code>. Sin embargo, estas técnicas pueden no ser óptimas para conjuntos de datos extensos o con características específicas.</p>
+<p>En nuestro caso, una estrategia efectiva sería utilizar la <code>imputación</code> de datos faltantes basada en puntos similares en los datos mediante el algoritmo <code>KNN (K-Nearest Neighbors)</code> y <code>Random Forest Classification</code>. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.</p>
+<p>Inicialmente, creemos un <code>DataFrame</code> temporal donde estarán los mismos datos de <code>records_data</code> pero sin las columnas correspondientes a tipo <code>object</code>.</p>
+
+
+</section>
 </section>
 </section>
 </section>
