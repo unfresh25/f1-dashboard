@@ -229,7 +229,16 @@ div.csl-indent {
 <section id="introducción" class="level1">
 <h1>Introducción</h1>
 <p>La Fórmula 1, reconocida como la máxima expresión del automovilismo deportivo, constituye un fascinante universo donde convergen la tecnología y la destreza de los pilotos para brindar un espectáculo emocionante en circuitos de todo el mundo <span class="citation" data-cites="ABC2020">(consultar en <a href="#ref-ABC2020" role="doc-biblioref">ABC 2020</a>)</span>. Cada temporada de Fórmula 1 se erige como un emocionante periplo repleto de una competencia feroz, innovación tecnológica y cambiantes clasificaciones de pilotos y equipos. Este apasionante deporte atrae no solo a fervientes aficionados del automovilismo, sino también a estadísticos y científicos de datos que buscan desentrañar los secretos detrás de cada carrera.</p>
-<p>En el epicentro de la Fórmula 1 yace un vasto tesoro de datos que abarca décadas de competiciones, equipos, pilotos y circuitos. Gracias a los avances tecnológicos y a la meticulosa recopilación de datos, los aficionados y expertos en análisis de datos pueden sumergirse en una exploración profunda de este deporte de alto rendimiento <span class="citation" data-cites="AMOLLEDO2020">(<a href="#ref-AMOLLEDO2020" role="doc-biblioref">Amo Lledo 2020</a>)</span>. En este proyecto, llevaremos a cabo un análisis exploratorio y predictivo de los datos extraídos de <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020">Ergast API</a> recopilados por <a href="https://github.com/vopani">Vopani</a>. Sin embargo, en este artículo nos centraremos exclusivamente en el análisis exploratorio de los datos para comprender su naturaleza, estructura, distribución y otros aspectos relevantes.</p>
+<p>En el epicentro de la Fórmula 1 yace un vasto tesoro de datos que abarca décadas de competiciones, equipos, pilotos y circuitos. Gracias a los avances tecnológicos y a la meticulosa recopilación de datos, los aficionados y expertos en análisis de datos pueden sumergirse en una exploración profunda de este deporte de alto rendimiento <span class="citation" data-cites="AMOLLEDO2020">(<a href="#ref-AMOLLEDO2020" role="doc-biblioref">Amo Lledo 2020</a>)</span>. En este proyecto, llevaremos a cabo un análisis exploratorio y predictivo de los datos extraídos de <a href="https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020">Ergast API</a> recopilados por <a href="https://github.com/vopani">Vopani</a>.</p>
+<p>En este contexto, nos proponemos realizar un análisis predictivo de los datos de la Fórmula 1 utilizando diversas técnicas y modelos estadísticos. Entre estos modelos se incluyen:</p>
+<ol type="1">
+<li><p><strong>Series de tiempo:</strong> Este enfoque nos permitirá analizar patrones temporales en los datos, como la evolución de rendimiento de un equipo o piloto a lo largo de las temporadas.</p></li>
+<li><p><strong>Regresión logística:</strong> Utilizaremos este modelo para investigar la relación entre variables predictoras y variables de interés, como por ejemplo, predecir la probabilidad de que un equipo obtenga un determinado resultado en una carrera.</p></li>
+<li><p><strong>Análisis de componentes principales:</strong> Con este método, buscaremos reducir la dimensionalidad de nuestros datos y encontrar patrones subyacentes que expliquen la variabilidad en el desempeño de los equipos y pilotos.</p></li>
+<li><p><strong>Análisis discriminante:</strong> Este modelo nos ayudará a clasificar datos en función de múltiples variables predictoras, como predecir el rendimiento de un equipo en diferentes tipos de circuitos.</p></li>
+<li><p><strong>Clasificación mediante KNN (K-Nearest Neighbors):</strong> Utilizaremos este algoritmo de aprendizaje supervisado para clasificar nuevos datos en función de la similitud con ejemplos previamente clasificados, como predecir la posición final de un piloto en una carrera dada ciertas condiciones.</p></li>
+</ol>
+<p>Al combinar estos diversos enfoques, buscamos obtener una comprensión más profunda de los factores que influyen en el desempeño en la Fórmula 1 y generar predicciones precisas sobre los resultados de las carreras y los campeonatos futuros.</p>
 
 
 
@@ -324,7 +333,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/94580cb9-4644-47da-a917-bff71ee61d5e\.netlify\.app\/");
+      var filterRegex = new RegExp('/' + window.location.host + '/');
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
