@@ -43,6 +43,12 @@ from psycopg2 import Error
 
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('white')
 ```
 
 Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:
@@ -406,3 +412,55 @@ records_data.isnull().sum()
 ```
 
 #### Datos atípicos
+
+Veamos ahora si existen `datos atípicos` en nuestro registro. En este caso, utilizaremos el `rango intercuartílico (IQR)` para identificar los valores atípicos. Si un valor cae por debajo de `Q1 - 1.5 * IQR` o por encima de `Q3 + 1.5 * IQR`, se considera un valor atípico.
+
+``` {python}
+numeric_columns = temp_df.columns
+
+for col in numeric_columns:
+    q1 = records_data[col].quantile(0.25)
+    q3 = records_data[col].quantile(0.75)
+
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outliers = records_data[(records_data[col] < lower_bound) | (records_data[col] > upper_bound)]
+    n_outliers = len(outliers)
+    print(f'#Outliers in {col} are {n_outliers} and represent a {round(n_outliers/len(records_data) * 100, 4)}% of total records')
+```
+
+Como podemos observar, tenemos una cantidad significativa de datos atípicos en algunas de nuestras variables. Esto podría afectar más adelante en los modelos estadísticos que querramos implementar. Veamos gráficamente qué es lo que está ocurriendo con ellos.
+
+Realizaremos un gráfico de `caja y bigotes` e `histogramas` para ver el comportamiento y la distribución de nuestros datos.
+
+``` {python}
+plt.figure(figsize=(9,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5,3,i)
+    plt.boxplot(records_data[col],whis=1.5)
+    plt.title(col)
+
+    i += 1
+plt.show()
+```
+
+``` {python}
+plt.figure(figsize=(8,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5, 3, i)
+    sns.histplot(records_data[col], kde=True)
+    plt.title(col)
+    i += 1
+plt.tight_layout()
+plt.show()
+```
+
+Dada la naturaleza de las variables, en algunos casos como ``rank``, `lap`, `grid`, `points`, que son datos numéricos `discretos` y representan una `categoría` específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.
+
+## Visualización
+
