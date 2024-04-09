@@ -202,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">En esta página</h2>
    
-  <ul class="collapse">
+  <ul>
   <li><a href="#qué-haremos" id="toc-qué-haremos" class="nav-link active" data-scroll-target="#qué-haremos">¿Qué haremos?</a></li>
   <li><a href="#librerías" id="toc-librerías" class="nav-link" data-scroll-target="#librerías">Librerías</a></li>
   <li><a href="#obtención-de-los-datos" id="toc-obtención-de-los-datos" class="nav-link" data-scroll-target="#obtención-de-los-datos">Obtención de los datos</a>
@@ -213,6 +213,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tabla-lap_times" id="toc-tabla-lap_times" class="nav-link" data-scroll-target="#tabla-lap_times">Tabla lap_times</a></li>
   <li><a href="#tabla-pit_stops" id="toc-tabla-pit_stops" class="nav-link" data-scroll-target="#tabla-pit_stops">Tabla pit_stops</a></li>
   <li><a href="#tabla-final" id="toc-tabla-final" class="nav-link" data-scroll-target="#tabla-final">Tabla final</a></li>
+  </ul></li>
+  <li><a href="#análisis-exploratorio-de-datos" id="toc-análisis-exploratorio-de-datos" class="nav-link" data-scroll-target="#análisis-exploratorio-de-datos">Análisis exploratorio de datos</a>
+  <ul class="collapse">
+  <li><a href="#conociendo-los-datos" id="toc-conociendo-los-datos" class="nav-link" data-scroll-target="#conociendo-los-datos">Conociendo los datos</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-datos" id="toc-tipos-de-datos" class="nav-link" data-scroll-target="#tipos-de-datos">Tipos de datos</a></li>
+  <li><a href="#dimensiones-de-los-registros" id="toc-dimensiones-de-los-registros" class="nav-link" data-scroll-target="#dimensiones-de-los-registros">Dimensiones de los registros</a></li>
+  <li><a href="#datos-faltantes" id="toc-datos-faltantes" class="nav-link" data-scroll-target="#datos-faltantes">Datos faltantes</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -282,13 +291,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Pueden instalarse utilizando el siguiente comando desde la terminal: <code>pip install pandas psycopg2 plotly...</code>, o bien, mediante el archivo <a href="https://github.com/unfresh25/f1-dashboard">requirements.txt</a> utilizando <code>pip install -r requirements.txt</code> en la terminal.</p>
 <p>Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:</p>
-<div id="5599fc6b" class="cell" data-execution_count="2">
+<div id="38b6902b" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:</p>
-<div id="5458ac82" class="cell" data-execution_count="3">
+<div id="5336f3e0" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -303,7 +312,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas.</p>
 <section id="tabla-races" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-races">Tabla races</h2>
-<div id="a812a53e" class="cell" data-execution_count="4">
+<div id="42a8a017" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -477,7 +486,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-circuits" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-circuits">Tabla circuits</h2>
-<div id="2a163dbb" class="cell" data-execution_count="5">
+<div id="c4d79733" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -597,7 +606,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-results" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-results">Tabla results</h2>
-<div id="91147a7d" class="cell" data-execution_count="6">
+<div id="a4d0b1ff" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -771,7 +780,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-lap_times" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-lap_times">Tabla lap_times</h2>
-<div id="5a3118b3" class="cell" data-execution_count="7">
+<div id="b862882e" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -873,7 +882,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-pit_stops" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-pit_stops">Tabla pit_stops</h2>
-<div id="e3c50946" class="cell" data-execution_count="8">
+<div id="ef1abe97" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -983,24 +992,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="tabla-final">Tabla final</h2>
 <p>Con base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:</p>
 <ul>
-<li>Races: raceId, year, round, circuitId, name, time.</li>
-<li>Circuits: circuit_ref, name, location, country, lat, lng.</li>
-<li>Results: driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed.</li>
-<li>Lap Times: lap, miliseconds.</li>
-<li>Pit Stops: stop, lap, milliseconds.</li>
+<li><strong>Races</strong>: raceId, year, round, circuitId, name, time.</li>
+<li><strong>Circuits</strong>: circuit_ref, name, location, country, lat, lng.</li>
+<li><strong>Results</strong>: driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed.</li>
+<li><strong>Lap Times</strong>: lap, miliseconds.</li>
+<li><strong>Pit Stops</strong>: stop, lap, milliseconds.</li>
 </ul>
 <p>Realicemos entonces la consulta a la base de datos para obtener esta tabla.</p>
-<div id="d75ed4f5" class="cell" data-execution_count="9">
+<div id="a92babe0" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name, r.time AS race_time,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name,</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="st">                c.circuitref, c.name AS circuit_name, c.location AS circuit_location, c.country AS circuit_country,</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="st">                c.lat AS circuit_lat, c.lng AS circuit_lng,</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="st">                re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds,</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="st">                re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds as race_time,</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="st">                re.fastestlap AS fastest_lap, re.rank, re.fastestlapspeed,</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="st">                l.lap, l.milliseconds AS lap_time,</span></span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="st">                p.stop, p.lap AS pit_lap, p.milliseconds AS pit_stop_time</span></span>
@@ -1054,14 +1063,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th">round</th>
 <th data-quarto-table-cell-role="th">circuitid</th>
 <th data-quarto-table-cell-role="th">race_name</th>
-<th data-quarto-table-cell-role="th">race_time</th>
 <th data-quarto-table-cell-role="th">circuitref</th>
 <th data-quarto-table-cell-role="th">circuit_name</th>
 <th data-quarto-table-cell-role="th">circuit_location</th>
 <th data-quarto-table-cell-role="th">circuit_country</th>
+<th data-quarto-table-cell-role="th">circuit_lat</th>
 <th data-quarto-table-cell-role="th">...</th>
 <th data-quarto-table-cell-role="th">laps</th>
-<th data-quarto-table-cell-role="th">milliseconds</th>
+<th data-quarto-table-cell-role="th">race_time</th>
 <th data-quarto-table-cell-role="th">fastest_lap</th>
 <th data-quarto-table-cell-role="th">rank</th>
 <th data-quarto-table-cell-role="th">fastestlapspeed</th>
@@ -1080,11 +1089,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>1</td>
 <td>1</td>
 <td>Australian Grand Prix</td>
-<td>04:30:00</td>
 <td>albert_park</td>
 <td>Albert Park Grand Prix Circuit</td>
 <td>Melbourne</td>
 <td>Australia</td>
+<td>-37.8497</td>
 <td>...</td>
 <td>58</td>
 <td>5690616</td>
@@ -1104,11 +1113,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>2</td>
 <td>2</td>
 <td>Malaysian Grand Prix</td>
-<td>07:00:00</td>
 <td>sepang</td>
 <td>Sepang International Circuit</td>
 <td>Kuala Lumpur</td>
 <td>Malaysia</td>
+<td>2.76083</td>
 <td>...</td>
 <td>56</td>
 <td>5478555</td>
@@ -1128,11 +1137,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>3</td>
 <td>3</td>
 <td>Bahrain Grand Prix</td>
-<td>11:30:00</td>
 <td>bahrain</td>
 <td>Bahrain International Circuit</td>
 <td>Sakhir</td>
 <td>Bahrain</td>
+<td>26.0325</td>
 <td>...</td>
 <td>57</td>
 <td>5466970</td>
@@ -1152,11 +1161,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>4</td>
 <td>4</td>
 <td>Spanish Grand Prix</td>
-<td>12:00:00</td>
 <td>catalunya</td>
 <td>Circuit de Barcelona-Catalunya</td>
 <td>Montmeló</td>
 <td>Spain</td>
+<td>41.57</td>
 <td>...</td>
 <td>66</td>
 <td>5899051</td>
@@ -1176,11 +1185,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>5</td>
 <td>5</td>
 <td>Turkish Grand Prix</td>
-<td>12:00:00</td>
 <td>istanbul</td>
 <td>Istanbul Park</td>
 <td>Istanbul</td>
 <td>Turkey</td>
+<td>40.9517</td>
 <td>...</td>
 <td>58</td>
 <td>5209451</td>
@@ -1196,13 +1205,487 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>5 rows × 26 columns</p>
+<p>5 rows × 25 columns</p>
+</div>
+</div>
+</div>
+</div>
+<p>Notemos que las columnas relacionadas a la tabla <code>pit_stops</code> estarán vacíos los datos hasta que estemos viendo los <code>raceId &gt; 841</code> ya que no hay registros para las anteriores carreras en la base de datos.</p>
+</section>
+</section>
+<section id="análisis-exploratorio-de-datos" class="level1">
+<h1>Análisis exploratorio de datos</h1>
+<p>En esta sección nos sumergiremos en la comprensión de los datos disponibles, exploraremos los tipos de variables presentes, calcularemos medidas de tendencia central, llevaremos a cabo la depuración de los datos y procederemos a su visualización.</p>
+<p>Para llevar a cabo este análisis, nos apoyaremos en el marco de trabajo establecido, APP Framework.</p>
+<ol type="1">
+<li><strong>Atención</strong>: Entender el conjunto de datos.</li>
+<li><strong>Propósito</strong>: Establecer objetivos claros.</li>
+<li><strong>Proceso</strong>: Realizar el Análisis Exploratorio de Datos (EDA) propiamente dicho.</li>
+<li><strong>Beneficio</strong>: Extraer y aplicar los resultados obtenidos.</li>
+</ol>
+<section id="conociendo-los-datos" class="level2">
+<h2 class="anchored" data-anchor-id="conociendo-los-datos">Conociendo los datos</h2>
+<p>Conocer los datos es un paso fundamental en cualquier análisis. Proporciona una comprensión inicial del problema, permite validar la calidad de los datos, seleccionar características relevantes, preparar los datos adecuadamente y generar ideas y hipótesis. En resumen, la exploración inicial de los datos sienta las bases para un análisis más profundo y asegura que los resultados sean significativos y confiables.</p>
+<section id="tipos-de-datos" class="level3">
+<h3 class="anchored" data-anchor-id="tipos-de-datos">Tipos de datos</h3>
+<p>Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.</p>
+<div id="fafbdf48" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>raceid                int64
+year                  int64
+round                 int64
+circuitid             int64
+race_name            object
+circuitref           object
+circuit_name         object
+circuit_location     object
+circuit_country      object
+circuit_lat          object
+circuit_lng          object
+driverid              int64
+constructorid         int64
+points                int64
+grid                  int64
+laps                  int64
+race_time             int64
+fastest_lap         float64
+rank                float64
+fastestlapspeed      object
+lap                 float64
+lap_time            float64
+stop                float64
+pit_lap             float64
+pit_stop_time       float64
+dtype: object</code></pre>
+</div>
+</div>
+<p>Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna <code>fastestlapspeed</code>, que toma valores numéricos pero está siendo interpretada como un dato tipo <code>object</code>. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de las variables <code>raceid</code>, <code>round</code>, <code>circuitid</code>, <code>driverid</code> y <code>constructorid</code> a tipo <code>object</code>.</p>
+<div id="8cac6e54" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>records_data[<span class="st">'fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'fastestlapspeed'</span>])</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>records_data[[<span class="st">'raceid'</span>, <span class="st">'round'</span>, <span class="st">'circuitid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]] <span class="op">=</span> records_data[[<span class="st">'raceid'</span>, <span class="st">'round'</span>, <span class="st">'circuitid'</span>, <span class="st">'driverid'</span>, <span class="st">'constructorid'</span>]].astype(<span class="st">'object'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>records_data.dtypes</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>raceid               object
+year                  int64
+round                object
+circuitid            object
+race_name            object
+circuitref           object
+circuit_name         object
+circuit_location     object
+circuit_country      object
+circuit_lat          object
+circuit_lng          object
+driverid             object
+constructorid        object
+points                int64
+grid                  int64
+laps                  int64
+race_time             int64
+fastest_lap         float64
+rank                float64
+fastestlapspeed     float64
+lap                 float64
+lap_time            float64
+stop                float64
+pit_lap             float64
+pit_stop_time       float64
+dtype: object</code></pre>
+</div>
+</div>
+</section>
+<section id="dimensiones-de-los-registros" class="level3">
+<h3 class="anchored" data-anchor-id="dimensiones-de-los-registros">Dimensiones de los registros</h3>
+<p>Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.</p>
+<div id="28762d59" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>records_data.shape</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>(1094, 25)</code></pre>
+</div>
+</div>
+<p>Esto indica que desde el año 1950 hasta el 2023 se llevaron a cabo más de 1000 carreras, lo que significa que estamos trabajando con una cantidad considerable de datos sobre carreras.</p>
+</section>
+<section id="datos-faltantes" class="level3">
+<h3 class="anchored" data-anchor-id="datos-faltantes">Datos faltantes</h3>
+<p>Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.</p>
+<div id="082b94f2" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>records_data.isnull().<span class="bu">sum</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>raceid                0
+year                  0
+round                 0
+circuitid             0
+race_name             0
+circuitref            0
+circuit_name          0
+circuit_location      0
+circuit_country       0
+circuit_lat           0
+circuit_lng           0
+driverid              0
+constructorid         0
+points                0
+grid                  0
+laps                  0
+race_time             0
+fastest_lap         717
+rank                716
+fastestlapspeed     717
+lap                 584
+lap_time            584
+stop                843
+pit_lap             843
+pit_stop_time       843
+dtype: int64</code></pre>
+</div>
+</div>
+<p>Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.</p>
+<div id="05e6db70" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>missing_values <span class="op">=</span> records_data.isnull().<span class="bu">sum</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>missing_percentage <span class="op">=</span> <span class="bu">round</span>((missing_values <span class="op">/</span> <span class="bu">len</span>(records_data)) <span class="op">*</span> <span class="dv">100</span>, <span class="dv">4</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>missing_percentage</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>raceid               0.0000
+year                 0.0000
+round                0.0000
+circuitid            0.0000
+race_name            0.0000
+circuitref           0.0000
+circuit_name         0.0000
+circuit_location     0.0000
+circuit_country      0.0000
+circuit_lat          0.0000
+circuit_lng          0.0000
+driverid             0.0000
+constructorid        0.0000
+points               0.0000
+grid                 0.0000
+laps                 0.0000
+race_time            0.0000
+fastest_lap         65.5393
+rank                65.4479
+fastestlapspeed     65.5393
+lap                 53.3821
+lap_time            53.3821
+stop                77.0567
+pit_lap             77.0567
+pit_stop_time       77.0567
+dtype: float64</code></pre>
+</div>
+</div>
+<p>Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática. Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.</p>
+<div id="25734c64" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>records_data[records_data.isnull().<span class="bu">any</span>(axis <span class="op">=</span> <span class="dv">1</span>)]</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">raceid</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">round</th>
+<th data-quarto-table-cell-role="th">circuitid</th>
+<th data-quarto-table-cell-role="th">race_name</th>
+<th data-quarto-table-cell-role="th">circuitref</th>
+<th data-quarto-table-cell-role="th">circuit_name</th>
+<th data-quarto-table-cell-role="th">circuit_location</th>
+<th data-quarto-table-cell-role="th">circuit_country</th>
+<th data-quarto-table-cell-role="th">circuit_lat</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">laps</th>
+<th data-quarto-table-cell-role="th">race_time</th>
+<th data-quarto-table-cell-role="th">fastest_lap</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">lap</th>
+<th data-quarto-table-cell-role="th">lap_time</th>
+<th data-quarto-table-cell-role="th">stop</th>
+<th data-quarto-table-cell-role="th">pit_lap</th>
+<th data-quarto-table-cell-role="th">pit_stop_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>18</td>
+<td>2008</td>
+<td>1</td>
+<td>1</td>
+<td>Australian Grand Prix</td>
+<td>albert_park</td>
+<td>Albert Park Grand Prix Circuit</td>
+<td>Melbourne</td>
+<td>Australia</td>
+<td>-37.8497</td>
+<td>...</td>
+<td>58</td>
+<td>5690616</td>
+<td>39.0</td>
+<td>2.0</td>
+<td>218.300</td>
+<td>1.0</td>
+<td>87418.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>19</td>
+<td>2008</td>
+<td>2</td>
+<td>2</td>
+<td>Malaysian Grand Prix</td>
+<td>sepang</td>
+<td>Sepang International Circuit</td>
+<td>Kuala Lumpur</td>
+<td>Malaysia</td>
+<td>2.76083</td>
+<td>...</td>
+<td>56</td>
+<td>5478555</td>
+<td>37.0</td>
+<td>2.0</td>
+<td>209.158</td>
+<td>1.0</td>
+<td>95366.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>20</td>
+<td>2008</td>
+<td>3</td>
+<td>3</td>
+<td>Bahrain Grand Prix</td>
+<td>bahrain</td>
+<td>Bahrain International Circuit</td>
+<td>Sakhir</td>
+<td>Bahrain</td>
+<td>26.0325</td>
+<td>...</td>
+<td>57</td>
+<td>5466970</td>
+<td>38.0</td>
+<td>3.0</td>
+<td>208.153</td>
+<td>1.0</td>
+<td>93193.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>21</td>
+<td>2008</td>
+<td>4</td>
+<td>4</td>
+<td>Spanish Grand Prix</td>
+<td>catalunya</td>
+<td>Circuit de Barcelona-Catalunya</td>
+<td>Montmeló</td>
+<td>Spain</td>
+<td>41.57</td>
+<td>...</td>
+<td>66</td>
+<td>5899051</td>
+<td>46.0</td>
+<td>1.0</td>
+<td>205.191</td>
+<td>1.0</td>
+<td>81670.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>22</td>
+<td>2008</td>
+<td>5</td>
+<td>5</td>
+<td>Turkish Grand Prix</td>
+<td>istanbul</td>
+<td>Istanbul Park</td>
+<td>Istanbul</td>
+<td>Turkey</td>
+<td>40.9517</td>
+<td>...</td>
+<td>58</td>
+<td>5209451</td>
+<td>16.0</td>
+<td>3.0</td>
+<td>221.734</td>
+<td>1.0</td>
+<td>86506.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">838</td>
+<td>352</td>
+<td>2010</td>
+<td>16</td>
+<td>22</td>
+<td>Japanese Grand Prix</td>
+<td>suzuka</td>
+<td>Suzuka Circuit</td>
+<td>Suzuka</td>
+<td>Japan</td>
+<td>34.8431</td>
+<td>...</td>
+<td>53</td>
+<td>5427323</td>
+<td>51.0</td>
+<td>3.0</td>
+<td>223.219</td>
+<td>1.0</td>
+<td>93474.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">839</td>
+<td>353</td>
+<td>2010</td>
+<td>17</td>
+<td>35</td>
+<td>Korean Grand Prix</td>
+<td>yeongam</td>
+<td>Korean International Circuit</td>
+<td>Yeongam County</td>
+<td>Korea</td>
+<td>34.7333</td>
+<td>...</td>
+<td>55</td>
+<td>10100810</td>
+<td>42.0</td>
+<td>1.0</td>
+<td>183.335</td>
+<td>1.0</td>
+<td>110257.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">840</td>
+<td>354</td>
+<td>2010</td>
+<td>18</td>
+<td>18</td>
+<td>Brazilian Grand Prix</td>
+<td>interlagos</td>
+<td>Autódromo José Carlos Pace</td>
+<td>São Paulo</td>
+<td>Brazil</td>
+<td>-23.7036</td>
+<td>...</td>
+<td>71</td>
+<td>5591803</td>
+<td>70.0</td>
+<td>6.0</td>
+<td>208.828</td>
+<td>1.0</td>
+<td>73851.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">841</td>
+<td>355</td>
+<td>2010</td>
+<td>19</td>
+<td>24</td>
+<td>Abu Dhabi Grand Prix</td>
+<td>yas_marina</td>
+<td>Yas Marina Circuit</td>
+<td>Abu Dhabi</td>
+<td>UAE</td>
+<td>24.4672</td>
+<td>...</td>
+<td>55</td>
+<td>5976837</td>
+<td>50.0</td>
+<td>4.0</td>
+<td>196.526</td>
+<td>1.0</td>
+<td>101274.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1049</td>
+<td>1063</td>
+<td>2021</td>
+<td>12</td>
+<td>13</td>
+<td>Belgian Grand Prix</td>
+<td>spa</td>
+<td>Circuit de Spa-Francorchamps</td>
+<td>Spa</td>
+<td>Belgium</td>
+<td>50.4372</td>
+<td>...</td>
+<td>1</td>
+<td>207071</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.0</td>
+<td>207071.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>843 rows × 25 columns</p>
 </div>
 </div>
 </div>
 </div>
 
 
+</section>
 </section>
 </section>
 

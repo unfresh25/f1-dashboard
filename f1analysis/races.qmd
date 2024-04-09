@@ -228,11 +228,11 @@ finally:
 
 Con base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:
 
-* Races: raceId, year, round, circuitId, name, time.
-* Circuits: circuit_ref, name, location, country, lat, lng.
-* Results: driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed.
-* Lap Times: lap, miliseconds.
-* Pit Stops: stop, lap, milliseconds.
+* **Races**: raceId, year, round, circuitId, name, time.
+* **Circuits**: circuit_ref, name, location, country, lat, lng.
+* **Results**: driverId, constructorId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed.
+* **Lap Times**: lap, miliseconds.
+* **Pit Stops**: stop, lap, milliseconds.
 
 Realicemos entonces la consulta a la base de datos para obtener esta tabla.
 
@@ -243,10 +243,10 @@ try:
 
     cursor.execute(
         """
-            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name, r.time AS race_time,
+            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name,
                 c.circuitref, c.name AS circuit_name, c.location AS circuit_location, c.country AS circuit_country,
                 c.lat AS circuit_lat, c.lng AS circuit_lng,
-                re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds,
+                re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds as race_time,
                 re.fastestlap AS fastest_lap, re.rank, re.fastestlapspeed,
                 l.lap, l.milliseconds AS lap_time,
                 p.stop, p.lap AS pit_lap, p.milliseconds AS pit_stop_time
@@ -286,4 +286,70 @@ finally:
     if(connection):
         cursor.close()
         connection.close()
+```
+
+Notemos que las columnas relacionadas a la tabla `pit_stops` estarán vacíos los datos hasta que estemos viendo los `raceId > 841` ya que no hay registros para las anteriores carreras en la base de datos.
+
+# Análisis exploratorio de datos
+
+En esta sección nos sumergiremos en la comprensión de los datos disponibles, exploraremos los tipos de variables presentes, calcularemos medidas de tendencia central, llevaremos a cabo la depuración de los datos y procederemos a su visualización.
+
+Para llevar a cabo este análisis, nos apoyaremos en el marco de trabajo establecido, APP Framework.
+
+1. **Atención**: Entender el conjunto de datos.
+2. **Propósito**: Establecer objetivos claros.
+3. **Proceso**: Realizar el Análisis Exploratorio de Datos (EDA) propiamente dicho.
+4. **Beneficio**: Extraer y aplicar los resultados obtenidos.
+
+## Conociendo los datos
+
+Conocer los datos es un paso fundamental en cualquier análisis. Proporciona una comprensión inicial del problema, permite validar la calidad de los datos, seleccionar características relevantes, preparar los datos adecuadamente y generar ideas y hipótesis. En resumen, la exploración inicial de los datos sienta las bases para un análisis más profundo y asegura que los resultados sean significativos y confiables.
+
+### Tipos de datos
+
+Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.
+
+``` {python}
+records_data.dtypes
+```
+
+Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna `fastestlapspeed`, que toma valores numéricos pero está siendo interpretada como un dato tipo `object`. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de las variables `raceid`, `round`, `circuitid`, `driverid` y `constructorid` a tipo `object`.
+
+``` {python}
+records_data['fastestlapspeed'] = pd.to_numeric(records_data['fastestlapspeed'])
+records_data[['raceid', 'round', 'circuitid', 'driverid', 'constructorid']] = records_data[['raceid', 'round', 'circuitid', 'driverid', 'constructorid']].astype('object')
+
+records_data.dtypes
+``` 
+
+### Dimensiones de los registros
+
+Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.
+
+``` {python}
+records_data.shape
+```
+
+Esto indica que desde el año 1950 hasta el 2023 se llevaron a cabo más de 1000 carreras, lo que significa que estamos trabajando con una cantidad considerable de datos sobre carreras.
+
+### Datos faltantes
+
+Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.
+
+``` {python}
+records_data.isnull().sum()
+```
+
+Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.
+
+``` {python}
+missing_values = records_data.isnull().sum()
+missing_percentage = round((missing_values / len(records_data)) * 100, 4)
+missing_percentage
+```
+
+Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática. Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.
+
+``` {python}
+records_data[records_data.isnull().any(axis = 1)]
 ```
