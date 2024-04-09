@@ -503,14 +503,16 @@ Veamos cómo se distribuyen en cada una de las vueltas a lo largo de los años.
 
 ``` {python}
 records_data['race_time_in_seconds'] = records_data['race_time_in_milliseconds'] / 1000
-records_data['decade'] = records_data['year'].apply(lambda x: np.floor(x / 10) * 10)
+records_data['decade'] = records_data['year'].apply(lambda x: int(np.floor(x / 10) * 10))
 
-plt.figure(figsize=(8, 12))
-sns.boxplot(x='decade', y='race_time_in_seconds', data=records_data, palette="PRGn")
-plt.title('Distribución de Tiempos de Vuelta por Década')
+plt.figure(figsize=(8, 8))
+sns.boxplot(x='decade', y='race_time_in_seconds', data=records_data, palette="PRGn", hue='decade', legend=False)
+plt.title('Distribución de Duración de Carreras por Década')
 plt.xlabel('Década')
-plt.ylabel('Tiempo de Vuelta (segundos)')
+plt.ylabel('Duración de Carreras (segundos)')
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 ```
+
+Como se evidenció anteriormente, a medida que avanzan los años, los tiempos de carrera muestran una marcada tendencia a disminuir.
