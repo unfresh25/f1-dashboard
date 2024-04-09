@@ -1,5 +1,349 @@
 ---
-title: "Constructors"
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
 ---
 
-About this site
+``` {python load_os}
+#| echo: false
+import os 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# ¿Qué haremos?
+
+En esta sección, llevaremos a cabo un análisis exploratorio centrado en la tabla `constructors`, que abarca los datos de los equipos que han competido en las carreras disputadas desde 1950 hasta 2023. Sin embargo, para llevar a cabo este análisis de manera integral, necesitamos consolidar información proveniente de diversas fuentes. Utilizaremos consultas para unificar los datos de la tabla `constructors` con aquellos de las tablas `circuits` (que contiene información sobre los circuitos donde se celebran las carreras de Fórmula 1), `results` (que proporciona los resultados de las carreras), `pit_stops` (paradas realizadas en boxes).
+
+Es fundamental destacar que, para la tabla `results` nos enfocaremos exclusivamente en los equipos que obtuvieron puntos en cada carrera. Asimismo, de la tabla `pit_stops`, extraeremos únicamente la información correspondiente a la parada en boxes más rápida realizada.
+
+# Librerías
+
+Para este proyecto trabajaremos con las siguientes librerías:
+
+* Pandas
+* Psycopg2
+* Plotly
+* Matplotlib
+* Seaborn
+* Scikit-learn
+
+Pueden instalarse utilizando el siguiente comando desde la terminal: `pip install pandas psycopg2 plotly...`, o bien, mediante el archivo [requirements.txt](https://github.com/unfresh25/f1-dashboard) utilizando `pip install -r requirements.txt` en la terminal.
+
+Una vez instaladas, podemos importarlas en nuestro entorno de trabajo de la siguiente manera:
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+
+import numpy as np
+
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
+import plotly.graph_objects as go
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('white')
+```
+
+Además, haremos uso de la siguiente función para evitar la repetición de código y facilitar la conexión a la base de datos:
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Es importante destacar que en esta función, obtenemos una variable de entorno que almacena los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/) que nos permite crear un servidor de bases de datos con `PostgreSQL`. 
+
+# Obtención de los datos
+
+Veamos inicialmente las columnas que tenemos para cada una de las tablas mencionadas. 
+
+## Tabla constructors
+
+``` {python get_race_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM constructors
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla circuits
+
+``` {python get_circuit_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM circuits
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla results
+
+``` {python get_result_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM results
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla pit stops
+
+``` {python get_lap_times_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT *
+            FROM pit_stops
+            LIMIT 5;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+## Tabla final
+
+Con base en las columnas proporcionadas de cada tabla, podemos listar las que se utilizarán en el análisis de la siguiente manera:
+
+* **constructors**: constructorId, constructorRef, name, nationality
+* **Circuits**: name, location, country.
+* **Results**: raceId, driverId, points, grid, laps, milliseconds, fastestlap, rank, fastestlapspeed, number, status.
+* **Pit Stops**: stop, miliseconds.
+
+Realicemos entonces la consulta a la base de datos para obtener esta tabla.
+
+``` {python get_final_table}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT 
+                c.constructorid, c.constructorref, c.name, c.nationality,
+                circuits.name AS circuit_name, circuits.location AS circuit_location, circuits.country AS circuit_country,
+                races.year,
+                r.raceid, r.driverid, r.number, r.grid, r.positionorder, r.points, r.laps, r.milliseconds, r.fastestlap, r.rank, r.fastestlapspeed, r.statusid,
+                fastest_pit_stop.stop AS fastest_pit_stop, fastest_pit_stop.milliseconds AS fastest_pit_stop_time
+            FROM constructors c
+            JOIN constructor_results ON c.constructorId = constructor_results.constructorId
+            JOIN races ON constructor_results.raceId = races.raceId
+            JOIN circuits ON races.circuitId = circuits.circuitId
+            JOIN (
+                SELECT raceId, constructorId, MAX(points) AS points
+                FROM constructor_standings
+                GROUP BY raceId, constructorId
+            ) AS cs ON constructor_results.raceId = cs.raceId AND constructor_results.constructorId = cs.constructorId
+            JOIN results as r ON constructor_results.raceId = r.raceId AND constructor_results.constructorId = r.constructorId AND r.points > 0
+            LEFT JOIN (
+                SELECT ps.raceId, ps.driverId, ps.stop, ps.milliseconds
+                FROM pit_stops ps
+                JOIN drivers d ON ps.driverId = d.driverId
+                WHERE (ps.raceId, ps.driverId, ps.milliseconds) IN (
+                    SELECT raceId, driverId, MIN(milliseconds)
+                    FROM pit_stops
+                    GROUP BY raceId, driverId
+                )
+            ) AS fastest_pit_stop ON constructor_results.raceId = fastest_pit_stop.raceId AND r.driverId = fastest_pit_stop.driverId;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    display(records_data.head())
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+# Análisis exploratorio de datos
+
+En esta sección nos sumergiremos en la comprensión de los datos disponibles, exploraremos los tipos de variables presentes, calcularemos medidas de tendencia central, llevaremos a cabo la depuración de los datos y procederemos a su visualización.
+
+Para llevar a cabo este análisis, nos apoyaremos en el marco de trabajo establecido, APP Framework.
+
+1. **Atención**: Entender el conjunto de datos.
+2. **Propósito**: Establecer objetivos claros.
+3. **Proceso**: Realizar el Análisis Exploratorio de Datos (EDA) propiamente dicho.
+4. **Beneficio**: Extraer y aplicar los resultados obtenidos.
+
+## Conociendo los datos
+
+Conocer los datos es un paso fundamental en cualquier análisis. Proporciona una comprensión inicial del problema, permite validar la calidad de los datos, seleccionar características relevantes, preparar los datos adecuadamente y generar ideas y hipótesis. En resumen, la exploración inicial de los datos sienta las bases para un análisis más profundo y asegura que los resultados sean significativos y confiables.
+
+### Tipos de datos
+
+Para realizar un análisis exploratorio, primero debes conocer el tipo de variables con las que estamos tratando. Conocer si tenemos variables numéricas o categóricas podrían determinar el rumbo del análisis que realizaremos.
+
+``` {python}
+records_data.dtypes
+```
+
+Observemos que todas las variables tienen el tipo de dato correcto, excepto la columna `fastestlapspeed`, que toma valores numéricos pero está siendo interpretada como un dato tipo `object`. Por lo tanto, es necesario convertir esta columna en tipo numérico. Además, vamos a cambiar los tipos de datos de las variables `raceid`,  `statusid`,`circuitid`, `driverid` y `constructorid` a tipo `object`.
+
+``` {python}
+records_data['fastestlapspeed'] = pd.to_numeric(records_data['fastestlapspeed'])
+records_data[['raceid', 'driverid', 'constructorid', 'statusid']] = records_data[['raceid', 'driverid', 'constructorid', 'statusid']].astype('object')
+
+records_data.dtypes
+``` 
+
+### Dimensiones de los registros
+
+Determinar el tamaño de nuestros registros es fundamental, ya que nos permite comprender la magnitud de la información que estamos manejando. Esto a su vez nos ayuda a establecer posibles caminos a seguir en caso de realizar transformaciones y análisis adicionales.
+
+``` {python}
+records_data.shape
+```
+
+``` {python}
+len(records_data['constructorref'].unique())
+```
+
+Esto indica que desde el año 1950 hasta el 2023, en las más de 1000 carreras que se han llevado a cabo, han competido 88 equipos en esta competencia. Además, teniendo más de 7000 registros significa que estamos trabajando con una cantidad considerable de datos sobre equipos constructores.
+
+### Datos faltantes
+
+Determinar la presencia de datos faltantes es crucial, ya que puede indicar si podemos confiar en una columna para el análisis o si necesitamos tomar medidas para imputar esos valores ausentes.
+
+``` {python}
+records_data.isnull().sum()
+```
+
+Con los resultados obtenidos, observamos que tenemos una cantidad significativa de datos faltantes. Esta situación puede afectar los análisis futuros, dependiendo del tipo de variable que estemos considerando. Es importante determinar un método adecuado para la imputación de datos en caso de que sea necesario. Veamos el porcentaje que representa esta cantidad de datos faltantes en el total de nuestros datos.
+
+``` {python}
+missing_values = records_data.isnull().sum()
+missing_percentage = round((missing_values / len(records_data)) * 100, 4)
+missing_percentage
+```
+
+Tenemos un gran porcentaje de datos faltantes en nuestras variables. Sin embargo, estos datos faltantes parecen estar concentrados en las variables relacionadas con medidas de tiempos y velocidades. Esto sugiere que estos datos podrían faltar debido a limitaciones técnicas o falta de registro en las fechas más antiguas, donde la toma de estas medidas podría no haber sido sistemática.
+
+Para comprender mejor la distribución de estos datos faltantes, examinemos en qué fechas están ocurriendo y verifiquemos la fecha máxima y mínima en la que faltan estas observaciones.
+
+``` {python}
+records_data[records_data.isnull().any(axis = 1)]
+```
+
+``` {python}
+#| echo: false
+missing = records_data[records_data.isnull().any(axis = 1)]
+print('Fecha mínima: ', min(missing['year']))
+print('Fecha promedio: ', int(round(missing['year'].mean(), 0)))
+print('Fecha máxima: ', max(missing['year']))
+```
+
+Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en alguna de estas variables.

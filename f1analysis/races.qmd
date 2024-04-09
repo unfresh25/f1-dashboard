@@ -222,7 +222,8 @@ try:
 
     cursor.execute(
         """
-            SELECT r.raceId, r.year, r.round, r.circuitId, r.name AS race_name,
+            SELECT 
+                r.raceId, r.year, r.round, r.circuitId, r.name AS race_name,
                 c.circuitref, c.name AS circuit_name, c.location AS circuit_location, c.country AS circuit_country,
                 c.lat AS circuit_lat, c.lng AS circuit_lng,
                 re.driverId, re.constructorId, re.points, re.grid, re.laps, re.milliseconds as race_time_in_milliseconds,
@@ -264,8 +265,6 @@ finally:
         cursor.close()
         connection.close()
 ```
-
-Notemos que las columnas relacionadas a la tabla `pit_stops` estarán vacíos los datos hasta que estemos viendo los `raceId > 841` ya que no hay registros para las anteriores carreras en la base de datos.
 
 # Análisis exploratorio de datos
 
@@ -341,7 +340,7 @@ print('Fecha promedio: ', int(round(missing['year'].mean(), 0)))
 print('Fecha máxima: ', max(missing['year']))
 ```
 
-Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en alguna de estas variables.
+Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes.
 
 ## Exploración de los datos
 
@@ -558,9 +557,15 @@ El incremento significativo de la velocidad a partir de la mitad de la década d
 ### Mapa de las carreras realizadas
 
 ``` {python}
-fig = px.scatter_mapbox(records_data, lat="circuit_lat", lon="circuit_lng", hover_name="race_name",
+country_counts = records_data['circuit_country'].value_counts().reset_index()
+country_counts.columns = ['circuit_country', 'num_races']
+
+temp_df = pd.merge(records_data, country_counts, on='circuit_country')
+
+fig = px.scatter_mapbox(temp_df, lat="circuit_lat", lon="circuit_lng", hover_name="race_name",
                          hover_data={"raceid": True, "race_time_in_milliseconds": True, "general_fastest_lap_time": True},
-                         zoom=2)
+                         size="num_races",
+                         zoom=4)
 
 fig.update_layout(mapbox_style="open-street-map")
 fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
