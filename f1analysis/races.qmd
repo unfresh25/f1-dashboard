@@ -497,7 +497,7 @@ plt.show()
 
 De este gráfico podemos notar que a medida que pasan los años, la competencia ha evolucionado en términos de velocidades y tiempos de carreras obtenidos. La velocidad ha aumentado, lo que indica una mejora en los automóviles, y afecta directamente la duración de las carreras. Sin embargo, estos cambios en las velocidades y tiempos de carrera también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.
 
-### Distribución de tiempos de vuelta por décadas
+### Distribución de tiempos de carrera por décadas
 
 Veamos cómo se distribuyen en cada una de las vueltas a lo largo de los años.
 

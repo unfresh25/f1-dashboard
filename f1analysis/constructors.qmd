@@ -346,7 +346,7 @@ print('Fecha promedio: ', int(round(missing['year'].mean(), 0)))
 print('Fecha máxima: ', max(missing['year']))
 ```
 
-Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes. En este caso, podríamos considerar imputar datos a partir de la fecha en que se realizó el primer registro en las variables `fastest_pit_stop` y `fastest_pit_stop_time`.
+Observando estos resultados, podemos confirmar nuestra teoría. Estos registros faltantes pueden ser debidos a limitaciones técnicas en aquellos tiempos. Sin embargo, también tenemos datos faltantes recientes.
 
 ## Exploración de los datos
 
@@ -389,3 +389,253 @@ Existen diversas estrategias para abordar este problema. Usualmente, en este tip
 En nuestro caso, una estrategia efectiva sería utilizar la `imputación` de datos faltantes basada en puntos similares en los datos mediante el algoritmo `KNN (K-Nearest Neighbors)` y `Random Forest Classification`. Este método considera las características de observaciones similares para estimar los valores faltantes de manera más precisa y realista, lo que resulta especialmente útil en conjuntos de datos complejos como el nuestro.
 
 Inicialmente, creemos un `DataFrame` temporal donde estarán los mismos datos de `records_data` pero sin las columnas correspondientes a tipo `object`.
+
+``` {python}
+temp_df = records_data.select_dtypes(exclude=['object'])
+
+imputer = IterativeImputer(min_value=0, max_iter=30, imputation_order='roman', random_state=1)
+imputed_data = imputer.fit_transform(temp_df)
+
+temp_df_imputed = pd.DataFrame(imputed_data, columns=temp_df.columns)
+temp_df_imputed.isnull().sum()
+```
+
+Bien, ya no tenemos datos faltantes. Ahora, verifiquemos si los resultados obtenidos en las medidas de tendencia central del DataFrame original cambiaron significativamente.
+
+``` {python}
+temp_df_imputed.describe()
+```
+
+<br>
+
+Comparando los resultados de las medidas de tendencia central antes y después de la imputación de datos con el algoritmo `KNN`, observamos algunas diferencias significativas en ciertas variables:
+
+* **Puntos, posición en la parrilla y número de vueltas**: No se observan cambios significativos en las medidas de tendencia central y dispersión de los puntos obtenidos, la posición en la parrilla de salida y el número de vueltas antes y después de la imputación de datos.
+
+* **Tiempo de carrera y velocidad**: Después de la imputación de datos, se observa un ligero aumento en la media del tiempo de carrera, mientras que la desviación estándar disminuye. Esto sugiere una mayor consistencia en los tiempos de carrera entre las carreras. Por otro lado, no hay cambios significativos en las estadísticas de velocidad de la vuelta más rápida antes y después de la imputación.
+
+* **Paradas en boxes**: Después de la imputación de datos, se observa un aumento en la media del tiempo de la parada más rápida, lo que indica que las paradas en boxes pueden haber sido ligeramente más lentas en promedio después de la imputación. Sin embargo, la desviación estándar disminuye, lo que sugiere una mayor consistencia en los tiempos de parada más rápida entre las carreras.
+
+Ahora que hemos realizado la imputación de datos, pasemos estos datos a nuestro dataframe original. 
+
+``` {python}
+records_data[temp_df.columns] = temp_df_imputed
+records_data.isnull().sum()
+```
+
+#### Datos atípicos
+
+Veamos ahora si existen `datos atípicos` en nuestro registro. En este caso, utilizaremos el `rango intercuartílico (IQR)` para identificar los valores atípicos. Si un valor cae por debajo de `Q1 - 1.5 * IQR` o por encima de `Q3 + 1.5 * IQR`, se considera un valor atípico.
+
+``` {python}
+numeric_columns = temp_df.columns
+
+for col in numeric_columns:
+    q1 = records_data[col].quantile(0.25)
+    q3 = records_data[col].quantile(0.75)
+
+    iqr = q3 - q1
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+    outliers = records_data[(records_data[col] < lower_bound) | (records_data[col] > upper_bound)]
+    n_outliers = len(outliers)
+    print(f'#Outliers in {col} are {n_outliers} and represent a {round(n_outliers/len(records_data) * 100, 4)}% of total records')
+```
+
+Como podemos observar, respecto a los más de 7000 registros que tiene la tabla, hay una pequeña cantidada de datos significativa de datos atípicos en nuestras variables. Veamos gráficamente qué es lo que está ocurriendo con ellos.
+
+Realizaremos un gráfico de `caja y bigotes` e `histogramas` para ver el comportamiento y la distribución de nuestros datos.
+
+``` {python}
+plt.figure(figsize=(9,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5,3,i)
+    plt.boxplot(records_data[col],whis=1.5)
+    plt.title(col)
+
+    i += 1
+plt.show()
+```
+
+``` {python}
+plt.figure(figsize=(8,12))
+
+i = 1
+for col in numeric_columns:
+    plt.subplot(5, 3, i)
+    sns.histplot(records_data[col], kde=True)
+    plt.title(col)
+    i += 1
+plt.tight_layout()
+plt.show()
+```
+
+<br>
+
+Dada la naturaleza de las variables, en algunos casos como `rank`, `lap`, `grid`, `points`, entre otros que son datos numéricos `discretos` y representan una `categoría` específica, es normal que existan datos atípicos. Por otro lado, para las otras variables en nuestra base de datos, estos datos atípicos no están afectando mucho la distribución de cada una de ellas, por lo tanto, no realizaremos cambios en ellas.
+
+## Visualización
+
+La visualización es uno de los puntos más importantes a la hora de realizar una exploración de los datos. Con ella, no solo podemos encontrar las relaciones que existen entre nuestras variables, sino que también podemos representar gráficamente las informaciones más relevantes de los datos.
+
+Comencemos visualizando los gráficos de `correlación` y `dispersión` entre las variables para comprender mejor sus relaciones y encontrar posibles patrones.
+
+### Gráfico de correlación
+
+``` {python}
+corr = records_data[numeric_columns].corr()
+mask = np.triu(np.ones_like(corr, dtype=bool))
+
+sns.heatmap(corr, annot=True, cmap='PRGn', square=True, center=0, mask=mask)
+```
+
+Como podemos observar, las variables con una alta correlación (`>0.5` o `<-0.5`) son aquellas que están relacionadas entre sí, como `laps`, `fastestlapspeed`, `fastest_lap`, `positionorder`, `year`, `fastest_pip_stop` entre otras. Por lo tanto, esto no debería ser un problema y podemos proseguir con la exploración de los datos.
+
+### Gráfico de dispersión 
+
+``` {python}
+plt.figure(figsize=(8, 12))
+sns.pairplot(records_data[numeric_columns])
+plt.show()
+```
+
+<br>
+
+De este gráfico podemos notar que a medida que pasan los años, los equipos han ha evolucionado progresivamente en términos de velocidades y tiempos de carreras obtenidos. La velocidad y duración en boxes han aumentado, lo que indica una mejora en los automóviles y las técnicas de revisión de ellos. Sin embargo, estos cambios en las velocidades y tiempos también se han vuelto más dispersos a lo largo de los años, lo que implica que ha habido una gran diferencia entre los equipos constructores. Además, también podemos observar algunas relaciones proporcionales en nuestras variables, como aquellas relacionadas nuevamente con las velocidades y tiempos.
+
+### Distribución de carreras
+
+``` {python}
+constructor_stats = records_data.groupby('name').size().reset_index(name='total_races')
+constructor_stats = constructor_stats.sort_values(by='total_races', ascending=False)
+constructor_stats = constructor_stats.rename(columns={'name': 'constructor_name'})
+
+top_constructors = constructor_stats.head(5)
+
+plt.figure(figsize=(8, 7))
+sns.histplot(constructor_stats['total_races'], kde=False, bins=30, color='skyblue', edgecolor='black')
+plt.title('Distribución del Número Total de Carreras por Constructor')
+plt.xlabel('Número Total de Carreras')
+plt.ylabel('Frecuencia')
+
+text = '\n'.join([f"{i+1}. {row['constructor_name']}: {row['total_races']} carreras" for i, (index, row) in enumerate(top_constructors.iterrows(), start=0)])
+plt.text(max(top_constructors['total_races']) * 1.02, plt.ylim()[1] * 0.9, text, ha='right', va='top', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+Se observa que la mayoría de los constructores han participado en una cantidad menor de carreras, con una concentración significativa cerca del cero. Esto indica que hay muchos equipos que han tenido una presencia breve en el deporte (pocas temporadas). Sin embargo, hay un pequeño grupo de equipos, como Ferrari y McLaren, que resaltan con una participación en un número mucho mayor de carreras, superando los 800 Grandes Premios, lo que subraya su posición como pilares históricos de la Fórmula 1 con una larga tradición de competencia continua.
+
+### Distribución de costructores por nacionalidad
+
+``` {python}
+constructor_stats = records_data.groupby('nationality').size().reset_index(name='num_constructors')
+constructor_stats = constructor_stats.sort_values(by='num_constructors', ascending=False)
+constructor_stats = constructor_stats.rename(columns={'nationality': 'constructor_nationality'})
+
+top_constructors = constructor_stats.head(5)
+
+plt.figure(figsize=(8, 7))
+constructor_stats.set_index('constructor_nationality')['num_constructors'].plot(kind='bar')
+plt.title('Número de Constructores por Nacionalidad')
+plt.xlabel('Nacionalidad')
+plt.ylabel('Número de Constructores')
+plt.xticks(rotation=45)  
+plt.tight_layout() 
+plt.show()
+```
+
+El gráfico muestra la distribución de constructores de Fórmula 1 por nacionalidad. La nacionalidad británica domina claramente con la mayor cantidad de constructores, lo cual resalta la influencia y la historia del Reino Unido en el automovilismo de F1. Le siguen con menor frecuencia los constructores americanos e italianos, reflejando también su papel significativo en la F1. 
+
+La presencia de una variedad de otras nacionalidades indica la diversidad internacional de los equipos, aunque con una representación mucho menor comparada con las tres principales. Esta distribución no solo refleja la historia y geografía del deporte sino también las industrias automotrices nacionales y su apoyo al automovilismo.
+
+### Top 5 equipos más ganadores
+
+``` {python}
+constructor_stats = records_data[records_data['positionorder'] == 1]
+constructor_stats = records_data.groupby('name').size().reset_index(name='total_wins')
+constructor_stats = constructor_stats.sort_values(by='total_wins', ascending=False)
+constructor_stats = constructor_stats.rename(columns={'name': 'constructor_name'})
+
+top_constructors = constructor_stats.head(5)
+
+plt.figure(figsize=(8, 7))
+plt.bar(top_constructors['constructor_name'], top_constructors['total_wins'], color='skyblue')
+plt.title('Top 5 Equipos Más Ganadores en F1')
+plt.xlabel('Equipo')
+plt.ylabel('Número Total de Victorias')
+plt.xticks()
+plt.show()
+```
+
+El gráfico muestra el top 10 de equipos más ganadores en la historia de la Fórmula 1. Ferrari lidera con una diferencia significativa, destacando su legado como la escudería más exitosa. McLaren le sigue, con Mercedes, Williams y Red Bull completando los cinco primeros lugares. Estos equipos han sido fundamentales en el deporte, no solo por su número de victorias sino también por su influencia en la evolución de la competición.
+
+### Evolución de la velocidad
+
+``` {python}
+plt.figure(figsize=(8, 8))
+sns.lineplot(x='year', y='fastestlapspeed', data=records_data, label='Velocidad de Vuelta Más Rápida')
+plt.title('Evolución de la velocidad a lo largo de los años')
+plt.xlabel('Año')
+plt.ylabel('Velocidad (km/h)')
+plt.legend()
+plt.show()
+```
+
+El gráfico presenta la evolución de la velocidad de la vuelta más rápida en la Fórmula 1 a lo largo de los años. Se observan fluctuaciones en la velocidad a lo largo del tiempo, con una tendencia general al aumento. La sombra alrededor de la línea indica la variabilidad en la velocidad de la vuelta más rápida cada año, sugiriendo que, aunque hay años con velocidades pico, también existen otros factores que pueden afectar la velocidad, como las regulaciones técnicas, las condiciones meteorológicas o el diseño de los circuitos.
+
+El incremento significativo de la velocidad podría atribuirse a avances tecnológicos en los motores y la aerodinámica, así como a cambios en las regulaciones de la F1 que permiten vehículos más rápidos. Sin embargo, el pico en los años recientes también puede reflejar el desarrollo y perfeccionamiento constante en las estrategias de carrera y la optimización del rendimiento del vehículo.
+
+### Evolución de la velocidad máxima alcanzada por equipo
+
+``` {python}
+fig, axes = plt.subplots(3, 2, figsize=(12, 8))
+
+for ax, team in zip(axes.flatten(), top_constructors['constructor_name']):
+    team_data = records_data[records_data['name'] == team]
+    sns.lineplot(x='year', y='fastestlapspeed', data=team_data, ax=ax)
+    ax.set_title(f'Evolución de {team} - Velocidad máxima alcanzada')
+    ax.set_xlabel('Año')
+    ax.set_ylabel('Velocidad máxima alcanzada (km/h)')
+
+plt.tight_layout()
+plt.show()
+```
+
+La **evolución de la velocidad máxima** en la Fórmula 1 a lo largo de los años es un resultado complejo de factores como la tecnología, las regulaciones, el diseño de los circuitos y la competencia entre equipos. Cada equipo tiene su propia trayectoria, y las mejoras constantes o altibajos pueden atribuirse a diversas razones.
+
+### Evolución de las paradas en boxes
+
+``` {python}
+records_data['fastest_pit_stop_time_in_seconds'] = records_data['fastest_pit_stop_time'] / 1000
+
+plt.figure(figsize=(8, 8))
+sns.lineplot(x='year', y='fastestlapspeed', data=records_data, label='Velocidad de Vuelta Más Rápida')
+plt.title('Evolución de la velocidad a lo largo de los años')
+plt.xlabel('Año')
+plt.ylabel('Velocidad (km/h)')
+plt.legend()
+plt.show()
+```
+
+### Evolución de las paradas en boxes por equipo
+
+``` {python}
+fig, axes = plt.subplots(3, 2, figsize=(12, 12))
+
+for ax, team in zip(axes.flatten(), top_constructors['constructor_name']):
+    team_data = records_data[records_data['name'] == team]
+    sns.lineplot(x='year', y='fastest_pit_stop_time_in_seconds', data=team_data, ax=ax)
+    ax.set_title(f'Evolución de {team} - Tiempo Promedio de Parada en Boxes')
+    ax.set_xlabel('Año')
+    ax.set_ylabel('Tiempo Promedio de Parada en Boxes (segundos)')
+
+plt.tight_layout()
+plt.show()
+```
+
+La gráfica muestra cómo ha evolucionado el tiempo promedio de parada en boxes para los mejores equipos de Fórmula 1 a lo largo de los años. Las mejoras tecnológicas, el entrenamiento del personal, las estrategias de carrera y los cambios en el diseño de los autos han influido en estos tiempos. Los equipos más eficientes han logrado reducir sus tiempos de parada, demostrando habilidad y dedicación en las carreras.
