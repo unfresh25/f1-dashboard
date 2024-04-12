@@ -18,7 +18,7 @@ header {
 
     animation: header-scroll linear both;
     animation-timeline: scroll(root block);
-    animation-range: 0 200px;
+    animation-range: 0 400px;
     z-index: 1;
 }
 
@@ -29,10 +29,47 @@ header {
     }
 }
 
+.circle, .circle2, .circle3, .circle4 {
+    border-radius: 9999px;
+    width: 450px;
+    height: 450px;
+    background: linear-gradient(to bottom, #e10600 40%, #980500 50%);
+    filter: blur(120px);
+    position: fixed;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.circle{
+    bottom: -30%;
+    left: -10%;
+}
+
+.circle2{
+    bottom: 10%;
+    left: 15%;
+}
+
+.circle3{
+    bottom: -10%;
+    left: 55%;
+}
+
+.circle4 {
+    bottom: 30%;
+    right: -20%;
+}
+
 h1 {
     font-size: 70px;
     font-weight: 600;   
     letter-spacing: 5px;
+}
+
+h3 {
+    font-size: 30px;
+    font-weight: 600;
+    color: #fff;
 }
 
 h4{
