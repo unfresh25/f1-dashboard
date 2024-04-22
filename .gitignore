@@ -1,3 +1,6 @@
 f1_env/
 */EDA_files/
+
 .env
+*.ipynb
+*.csv

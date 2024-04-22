@@ -4,7 +4,6 @@ project:
 author:
   - name: Jorge Borja
     url: https://www.linkedin.com/in/jorgeborjas25/
-    #email: jborjaa@uninorte.edu.co
     degrees:
       - Mag
     affiliation: 
@@ -14,7 +13,6 @@ author:
        url: https://uninorte.edu.co/
   - name: Jose Mercado
     url: https://www.linkedin.com/in/jose-javier-mercado-reyes-246352214/
-    #email: reyesjj@uninorte.edu.co
     degrees:
       - Mag
 

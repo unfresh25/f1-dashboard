@@ -13,13 +13,16 @@ cache = diskcache.Cache("./cache")
 background_callback_manager = DiskcacheManager(cache)
 
 app = Dash(
-        __name__, 
-        external_stylesheets=[dbc.themes.CYBORG], 
-        title="F1 Dashboard", 
-        update_title=None,
-        use_pages=True,
-        background_callback_manager=background_callback_manager
-    )
+    __name__, 
+    external_stylesheets=[dbc.themes.CYBORG], 
+    title="F1 Dashboard", 
+    update_title=None,
+    use_pages=True,
+    background_callback_manager=background_callback_manager,
+    suppress_callback_exceptions=True
+)
+
+app._favicon = "favicon.ico"
 
 server=app.server
 

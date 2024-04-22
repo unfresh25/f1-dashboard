@@ -77,6 +77,11 @@ h4{
     font-weight: 400;
 }
 
+h5 {
+    font-size: 20px !important;
+    font-weight: 300;
+}
+
 .line {
     width: 60%;
     height: 2px;
@@ -101,6 +106,8 @@ p {
     background-color: transparent !important;
     color: #fff !important;
     cursor: default;
+    border-radius: 0;
+    border-bottom: 1px solid #888;
 }
 
 .nav-link:hover {
@@ -109,3 +116,38 @@ p {
     color: #fff !important;
 }
 
+.shadow {
+    animation: shadow 1.8s infinite alternate;
+}
+
+.img404 {
+    animation: floaty 1.8s infinite alternate;
+}
+
+@keyframes floaty {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(15px);
+    }
+}
+
+@keyframes shadow {
+    0% {
+        transform: scale(1, 1);
+    }
+    100% {
+        transform: scale(.85, .85);
+    }
+}
+
+.Select-value-label {
+    color: #fff !important;
+}
+
+.Select-value {
+    border: .5px solid #e10600;
+    border-radius: 50px;
+    border-top: none;
+}

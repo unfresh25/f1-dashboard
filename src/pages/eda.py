@@ -1,68 +1,267 @@
 import dash
 from dash import dcc, html, Input, Output, callback
+import dash_loading_spinners as dls
+
 import os
 from dotenv import load_dotenv
-import psycopg2 as psy
-from psycopg2 import Error
+
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+
+from functions import get_fastest_constructor_data, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
 
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+MAPBOX_TOKEN = os.getenv('MAPBOX_TOKEN')
 
-dash.register_page(__name__)
+dash.register_page(__name__, title='F1 Dashboard - Exploratory Analysis')
+
+dates = get_seasons()
+dates = dates.sort_values(by='year', ascending=True)
 
 layout = html.Main([
-
-    dcc.Graph(id='map-graph'),
-
-    html.H3('Constructors'),
-    html.Hr(id='xd'),
     html.Section([
-        html.Article([
+        dls.Grid([
+            dcc.Graph(id='map-graph')
+        ],
+        color='#fff',
+        speed_multiplier=2,
+        show_initially=True
+        )
+    ]),
 
-        ])
+    html.Section([
+        html.H3('Constructors'),
+        html.Hr(id='xd'),
+        html.Nav([
+            html.Article([
+                html.Span('Season', style={'font-weight': 'regular', 'color': 'rgba(255, 255, 255, 0.35)', 'margin-left': '12px', 'position': 'relative', 'top': '5px'}),
+                dcc.Dropdown(
+                    id='seasons-dropdown',
+                    options=[{'label': k, 'value': k} for i, k in enumerate(dates['year'])],
+                    value=dates['year'].min(),
+                    style={
+                        "color": "black", 
+                        "background-color": "transparent", 
+                        "border": "none", 
+                    },
+                ),
+            ])            
+        ], style={'width': '200px'}),
+        html.Section([
+            # html.Article([
+            #     html.Div(id='fastest-constructor'),
+            # ],
+            # style={
+            #     "padding": "20px",
+            #     "border-radius": "12px",
+            #     "border": "1px solid rgba(255, 255, 255, 0.125)",
+            #     "margin-top": "10px",
+            #     "background-color": "rgba(0, 0, 0, 0.7)",
+            #     "backdrop-filter": 'blur(5px)',
+            #     'width': '60%'
+            # }),
+
+            html.Article([
+                html.H5(id='race-point-distribution-title', style={'text-align': 'center'}),
+                dls.Grid([
+                    dcc.Graph(id='race-point-distribution-graph')
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '60%'
+            }),
+        ],
+        style={
+            'display': 'flex',
+        }),
+        html.Section([
+            html.Article([
+                html.H5(id='race-distribution-title', style={'text-align': 'center'}),
+                dls.Grid([
+                    dcc.Graph(id='race-distribution-graph')
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '60%'
+            })
+        ],
+        style={
+            'display': 'flex',
+        })
     ],
     style={
-        'display': 'flex',
+        'margin-top': '50px'
     })
 
 ], 
 style={
     'width': '90%',
     'margin': '0 auto',
-    'margin-top': '80px'
+    'margin-top': '50px'
     }
 )
 
-# @callback(
-#     Output('map-graph', 'figure'),
-#     Input('xd', 'children')
-# )
-# def update_graph(value):
-#     country_counts = records_data['circuit_country'].value_counts().reset_index()
-#     country_counts.columns = ['circuit_country', 'num_races']
+@callback(
+    Output('map-graph', 'figure'),
+    Input('seasons-dropdown', 'value')
+)
+def update_map_graph(value):
+    records_data = get_map_data(value)
 
-#     temp_df = pd.merge(records_data, country_counts, on='circuit_country')
+    country_counts = records_data['circuit_country'].value_counts().reset_index()
+    country_counts.columns = ['circuit_country', 'num_races']
 
-#     fig = px.scatter_mapbox(temp_df, lat="circuit_lat", lon="circuit_lng", hover_name="race_name",
-#                             hover_data={"raceid": True, "race_time_in_milliseconds": True, "general_fastest_lap_time": True},
-#                             size="num_races",
-#                             zoom=4)
+    temp_df = pd.merge(records_data, country_counts, on='circuit_country')
 
-#     fig.update_layout(mapbox_style="open-street-map")
-#     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    fig = px.scatter_mapbox(
+        temp_df, lat="circuit_lat", lon="circuit_lng", hover_name="race_name",
+        hover_data={"num_races": False, "race_time_in_milliseconds": True, "general_fastest_lap_time": True},
+        size="num_races",
+        zoom=2,
+        title='Countries with most races'
+    )
 
-#     fig.show()
+    fig.update_layout(
+        mapbox = dict(center= dict(lat=52.370216, lon=4.895168),            
+        accesstoken=MAPBOX_TOKEN,
+        zoom=2,
+        style="dark"
+    ))
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
-# def connection_db() -> psy.extensions.connection:
-#     try:
-#         conn = psy.connect(DATABASE_URL)
-#         return conn
-#     except (Exception, Error) as e:
-#         print('Error while connecting to PostgreSQL', e)
+    return fig
 
+@callback(
+    Output('race-distribution-graph', 'figure'),
+    Output('race-distribution-title', 'children'),
+    Output('race-point-distribution-graph', 'figure'),
+    Output('race-point-distribution-title', 'children'),
+    #Output('fastest-constructor', 'children'),
+    Input('seasons-dropdown', 'value')
+)
+def update_constructors_graphs(value):
+    records_data = get_constructors_data(value)
 
-# def get_map_data():
-#     conn = connection_db()
-#     cur = conn.cursor()
+    top_constructors = records_data.head(5)
+    histogram = go.Histogram(x=records_data['total_races'], nbinsx=30, marker=dict(color='#ea432d', line=dict(color='black', width=1.5)))
+    layout = go.Layout(
+        xaxis=dict(title='Número Total de Carreras'),
+        yaxis=dict(title='Frecuencia'),
+        showlegend=False
+    )
+    fig = go.Figure(data=[histogram], layout=layout)
 
+    fig.update_yaxes(visible=False, showticklabels=False)
+    fig.update_layout(
+        margin={'b': 0, 'r': 30, 'l': 30, 't': 0},
+        xaxis={'gridcolor': 'rgba(0, 0, 0, 0.0)', 'tickfont': {'color': 'white'}},
+        yaxis={'gridcolor': 'rgba(0, 0, 0, 0.0)', 'tickfont': {'color': 'white'}},
+        plot_bgcolor='rgba(0, 0, 0, 0.0)',
+        paper_bgcolor='rgba(0, 0, 0, 0.0)',
+        font_color="white"
+    )
+
+    text = [f"{i+1}. {row['constructor_name']}: {row['total_races']} carreras" for i, (_, row) in enumerate(top_constructors.iterrows(), start=0)]
+    annotation_spacing = 0.03
+
+    for i, annotation_text in enumerate(text):
+        fig.add_annotation(
+            xref="paper",
+            yref="paper",
+            x=1.02,
+            y=1 - i * annotation_spacing,
+            text=annotation_text,
+            showarrow=False,
+            font=dict(size=12),
+            align='left'
+        )
+
+    results = get_sankey_data(value)
+
+    nodes = {'Puntos': 0}
+    constructors = {}
+    drivers = {}
+    links = []
+
+    node_labels = ['Puntos']
+    node_values = [0]
+
+    for row in results:
+        constructor_id, constructor_ref, constructor_name, constructor_nationality, driver_name, points = row
+        
+        if constructor_name not in nodes:
+            nodes[constructor_name] = len(nodes)
+            node_labels.append(constructor_name)
+            node_values.append(0)
+        
+        if driver_name not in nodes:
+            nodes[driver_name] = len(nodes)
+            node_labels.append(driver_name)
+            node_values.append(0)
+        
+        node_values[nodes[constructor_name]] += points
+        node_values[nodes[driver_name]] += points
+        
+        links.append({
+            'source': nodes['Puntos'],
+            'target': nodes[constructor_name],
+            'value': points,
+            'color': random_color()
+        })
+        
+        links.append({
+            'source': nodes[constructor_name],
+            'target': nodes[driver_name],
+            'value': points,
+            'color': random_color()
+        })
+
+    fig2 = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=node_labels,
+            color=[random_color() for _ in range(len(nodes))],
+            customdata=node_values,
+            hovertemplate='%{label}: %{customdata} puntos<br>',
+        ),
+        link=dict(
+            source=[link['source'] for link in links],
+            target=[link['target'] for link in links],
+            value=[link['value'] for link in links],
+            color=[link['color'] for link in links]
+        )
+    )])
+
+    fig2.update_layout(
+        plot_bgcolor='rgba(0, 0, 0, 0.0)',
+        paper_bgcolor='rgba(0, 0, 0, 0.0)',
+        font_color="white"
+    )
+
+    #records = get_fastest_constructor_data(value)
+
+    return fig, f'Number of races per constructor since season {value}', fig2, f'Top 20 constructor total points won since season {value}'#, f'{1}: {1}km/h'
