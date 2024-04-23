@@ -151,3 +151,7 @@ p {
     border-radius: 50px;
     border-top: none;
 }
+
+.team:hover {
+    text-decoration: underline;
+}

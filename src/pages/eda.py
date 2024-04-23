@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-from functions import get_fastest_constructor_data, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
+from functions import convert_milliseconds, get_constructor_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
 
 load_dotenv()
 
@@ -18,7 +18,7 @@ MAPBOX_TOKEN = os.getenv('MAPBOX_TOKEN')
 dash.register_page(__name__, title='F1 Dashboard - Exploratory Analysis')
 
 dates = get_seasons()
-dates = dates.sort_values(by='year', ascending=True)
+dates = dates.sort_values(by='year', ascending=False)
 
 layout = html.Main([
     html.Section([
@@ -40,7 +40,7 @@ layout = html.Main([
                 dcc.Dropdown(
                     id='seasons-dropdown',
                     options=[{'label': k, 'value': k} for i, k in enumerate(dates['year'])],
-                    value=dates['year'].min(),
+                    value=dates['year'].max(),
                     style={
                         "color": "black", 
                         "background-color": "transparent", 
@@ -50,18 +50,104 @@ layout = html.Main([
             ])            
         ], style={'width': '200px'}),
         html.Section([
-            # html.Article([
-            #     html.Div(id='fastest-constructor'),
-            # ],
-            # style={
-            #     "padding": "20px",
-            #     "border-radius": "12px",
-            #     "border": "1px solid rgba(255, 255, 255, 0.125)",
-            #     "margin-top": "10px",
-            #     "background-color": "rgba(0, 0, 0, 0.7)",
-            #     "backdrop-filter": 'blur(5px)',
-            #     'width': '60%'
-            # }),
+            html.Article([
+                html.Aside([
+                    html.Label('Fastest Constructor', style={'font-size': '12px'}),
+                    html.Div([
+                        html.Span(id='fastest-constructor', style={'font-size': '18px', 'font-weight': '600'}, className='team'),
+                        html.Div([
+                            html.Img(src='../assets/webicons/speed.svg', alt='speed icon', style={'width': '15px'}),
+                            html.Span(id='fastest-constructor-speed', style={'color': '#fff', 'font-size': '16px', 'font-weight': '300'})
+                        ],
+                        style={
+                            'display': 'flex',
+                            'align-items': 'flex-end',
+                            'gap': '10px'
+                        }),
+                    ],
+                    style={
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'align-items': 'center',
+                        'margin-top': '15px',
+                        'margin-bottom': '15px',
+                        'gap': '5px'
+                    })
+                ],
+                style={
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '10px',
+                }),
+                html.Aside([
+                    html.Label('Most Winner Constructor', style={'font-size': '12px'}),
+                    html.Div([
+                        html.Span(id='most-winner-constructor', style={'font-size': '18px', 'font-weight': '600'}, className='team'),
+                        html.Div([
+                            html.Img(src='../assets/webicons/winner.svg', alt='winner icon', style={'width': '15px'}),
+                            html.Span(id='most-winner-constructor-wins', style={'color': '#fff', 'font-size': '16px', 'font-weight': '300'})
+                        ],
+                        style={
+                            'display': 'flex',
+                            'align-items': 'flex-end',
+                            'gap': '10px'
+                        }),
+                    ],
+                    style={
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'align-items': 'center',
+                        'margin-top': '15px',
+                        'margin-bottom': '15px',
+                        'gap': '5px'
+                    })
+                ],
+                style={
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '10px',
+                    'margin-top': '20px'
+                }),
+                html.Aside([
+                    html.Label('Most Problematic Constructor', style={'font-size': '12px'}),
+                    html.Div([
+                        html.Span(id='most-problematic-constructor', style={'font-size': '18px', 'font-weight': '600'}, className='team'),
+                        html.Div([
+                            html.Img(src='../assets/webicons/problematicteam.svg', alt='problematic icon', style={'width': '15px'}),
+                            html.Span(id='most-problematic-constructor-problems', style={'color': '#fff', 'font-size': '16px', 'font-weight': '300'})
+                        ],
+                        style={
+                            'display': 'flex',
+                            'align-items': 'flex-end',
+                            'gap': '10px'
+                        }),
+                    ],
+                    style={
+                        'display': 'flex',
+                        'flex-direction': 'column',
+                        'align-items': 'center',
+                        'margin-top': '15px',
+                        'margin-bottom': '15px',
+                        'gap': '5px'
+                    })
+                ],
+                style={
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '10px',
+                    'margin-top': '20px'
+                }),
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '30%',
+                'place-content': 'center'
+            }),
 
             html.Article([
                 html.H5(id='race-point-distribution-title', style={'text-align': 'center'}),
@@ -80,11 +166,12 @@ layout = html.Main([
                 "margin-top": "10px",
                 "background-color": "rgba(0, 0, 0, 0.7)",
                 "backdrop-filter": 'blur(5px)',
-                'width': '60%'
+                'width': '70%'
             }),
         ],
         style={
             'display': 'flex',
+            'gap': '10px'
         }),
         html.Section([
             html.Article([
@@ -104,7 +191,7 @@ layout = html.Main([
                 "margin-top": "10px",
                 "background-color": "rgba(0, 0, 0, 0.7)",
                 "backdrop-filter": 'blur(5px)',
-                'width': '60%'
+                'width': '100%'
             })
         ],
         style={
@@ -130,23 +217,25 @@ style={
 def update_map_graph(value):
     records_data = get_map_data(value)
 
+    records_data['race_time'] = records_data['race_time_in_milliseconds'].apply(convert_milliseconds) 
+
     country_counts = records_data['circuit_country'].value_counts().reset_index()
     country_counts.columns = ['circuit_country', 'num_races']
 
     temp_df = pd.merge(records_data, country_counts, on='circuit_country')
 
     fig = px.scatter_mapbox(
-        temp_df, lat="circuit_lat", lon="circuit_lng", hover_name="race_name",
-        hover_data={"num_races": False, "race_time_in_milliseconds": True, "general_fastest_lap_time": True},
-        size="num_races",
+        temp_df, lat='circuit_lat', lon='circuit_lng', hover_name='race_name',
+        hover_data={'num_races': False, 'Race Duration': records_data['race_time'], 'Fastest Lap Speed': (temp_df['fastest_lap_speed'].astype(str)+ ' km/h'), 'circuit_lat': False, 'circuit_lng': False},
+        size='num_races',
         zoom=2,
-        title='Countries with most races'
+        title='Countries with most races',
     )
+
 
     fig.update_layout(
         mapbox = dict(center= dict(lat=52.370216, lon=4.895168),            
         accesstoken=MAPBOX_TOKEN,
-        zoom=2,
         style="dark"
     ))
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
@@ -158,39 +247,58 @@ def update_map_graph(value):
     Output('race-distribution-title', 'children'),
     Output('race-point-distribution-graph', 'figure'),
     Output('race-point-distribution-title', 'children'),
-    #Output('fastest-constructor', 'children'),
+    Output('fastest-constructor', 'children'),
+    Output('fastest-constructor-speed', 'children'),
+    Output('most-winner-constructor', 'children'),
+    Output('most-winner-constructor-wins', 'children'),
+    Output('most-problematic-constructor', 'children'),
+    Output('most-problematic-constructor-problems', 'children'),
     Input('seasons-dropdown', 'value')
 )
 def update_constructors_graphs(value):
     records_data = get_constructors_data(value)
 
-    top_constructors = records_data.head(5)
-    histogram = go.Histogram(x=records_data['total_races'], nbinsx=30, marker=dict(color='#ea432d', line=dict(color='black', width=1.5)))
-    layout = go.Layout(
-        xaxis=dict(title='Número Total de Carreras'),
-        yaxis=dict(title='Frecuencia'),
-        showlegend=False
-    )
-    fig = go.Figure(data=[histogram], layout=layout)
+    fig = go.Figure()
 
+    races = records_data['race_name'].unique()
+    
+    top_constructors = records_data[records_data['race_name'] == races[-1]].head(5)
+
+    for constructor in records_data['constructor_name'].unique():
+        constructor_data = records_data[records_data['constructor_name'] == constructor]
+        fig.add_trace(go.Scatter(x=races, y=constructor_data['total_points'],
+                                mode='lines', name=constructor))
+
+    fig.update_layout(
+        xaxis=dict(title='Carrera'),
+        yaxis=dict(title='Puntos acumulados'),
+        showlegend=True
+    )
+
+    fig.update_traces(hovertemplate=None)
     fig.update_yaxes(visible=False, showticklabels=False)
+    fig.update_xaxes(visible=False, showticklabels=False)
+    fig.update_layout(hovermode="x unified")
     fig.update_layout(
         margin={'b': 0, 'r': 30, 'l': 30, 't': 0},
-        xaxis={'gridcolor': 'rgba(0, 0, 0, 0.0)', 'tickfont': {'color': 'white'}},
-        yaxis={'gridcolor': 'rgba(0, 0, 0, 0.0)', 'tickfont': {'color': 'white'}},
+        xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+        yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
         plot_bgcolor='rgba(0, 0, 0, 0.0)',
         paper_bgcolor='rgba(0, 0, 0, 0.0)',
-        font_color="white"
+        font_color="white",
+        hoverlabel=dict(
+            bgcolor="#111"
+        )
     )
 
-    text = [f"{i+1}. {row['constructor_name']}: {row['total_races']} carreras" for i, (_, row) in enumerate(top_constructors.iterrows(), start=0)]
+    text = [f"{i+1}. {row['constructor_name']}: {row['total_points']} puntos" for i, (_, row) in enumerate(top_constructors.iterrows(), start=0)]
     annotation_spacing = 0.03
 
     for i, annotation_text in enumerate(text):
         fig.add_annotation(
             xref="paper",
             yref="paper",
-            x=1.02,
+            x=0,
             y=1 - i * annotation_spacing,
             text=annotation_text,
             showarrow=False,
@@ -262,6 +370,16 @@ def update_constructors_graphs(value):
         font_color="white"
     )
 
-    #records = get_fastest_constructor_data(value)
+    constructor_standings = f'Constructor standings in the {value} season'
+    top_sankey_constructors = f'Top constructor and drivers by points accumulated since the {value} season'
 
-    return fig, f'Number of races per constructor since season {value}', fig2, f'Top 20 constructor total points won since season {value}'#, f'{1}: {1}km/h'
+    fastest_constructor, most_winner_constructor, most_problematic_constructor = get_constructor_info(value)
+    
+    fastest_constructor_name = html.A(f"{fastest_constructor.name[0]}", href=f"{fastest_constructor.url[0]}", target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    fastest_constructor_speed = f'{fastest_constructor.speed[0]} km/h'
+    most_winner_constructor_name = html.A(f'{most_winner_constructor.name[0]}', href=f'{most_winner_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    most_winner_constructor_wins = f'{int(most_winner_constructor.wins[0])} wins'
+    most_problematic_constructor_name = html.A(f'{most_problematic_constructor.name[0]}', href=f'{most_problematic_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    most_problematic_constructor_problems = f'{int(most_problematic_constructor.problems[0])} problems'
+
+    return fig, constructor_standings, fig2, top_sankey_constructors, fastest_constructor_name, fastest_constructor_speed, most_winner_constructor_name, most_winner_constructor_wins, most_problematic_constructor_name, most_problematic_constructor_problems

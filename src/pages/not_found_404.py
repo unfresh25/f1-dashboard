@@ -17,7 +17,7 @@ layout = html.Main(
         ], style = {'text-align': 'center'}),
         html.Article([
             html.Img(
-                src='../assets/404.svg', 
+                src='../assets/imgs/404.svg', 
                 alt='404 Error', 
                 style={
                     'height': '250px', 

@@ -32,7 +32,7 @@ layout = html.Main([
         ]),
 
         html.Aside([
-            html.Img(src='../assets/f1_car.avif', alt='Formula 1 Red Bull Car', style={'height': '569px'}),
+            html.Img(src='../assets/imgs/f1_car.avif', alt='Formula 1 Red Bull Car', style={'height': '569px'}),
         ])
     ], 
     style={
@@ -190,13 +190,13 @@ layout = html.Main([
 
        html.Article([
            html.Aside([
-               html.Img(src='../assets/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px'}),
+               html.Img(src='../assets/imgs/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px'}),
                html.Span("Jorge Borja Serrano", style={'margin-top': '15px'}),
                html.Span("Mg. Applied Statistic"),
            ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
 
            html.Aside([
-               html.Img(src='../assets/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px', 'transform': 'scaleX(-1)'}),
+               html.Img(src='../assets/imgs/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px', 'transform': 'scaleX(-1)'}),
                html.Span("Jose Mercado Reyes", style={'margin-top': '15px'}),
                html.Span("Mg. Applied Statistic"),
            ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'})

@@ -21,11 +21,17 @@ def connection_db() -> psy.extensions.connection:
         return None
 
 def random_color():
-    r = random.randint(0, 255)
-    g = random.randint(0, 255)
-    b = random.randint(0, 255)
+    r = random.randint(100, 255)
+    g = random.randint(100, 255)
+    b = random.randint(100, 255)
     o = random.randint(30, 100)/100
     return 'rgba({}, {}, {}, {})'.format(r, g, b, o)
+
+def convert_milliseconds(ms):
+    segundos, milisegundos = divmod(ms, 1000)
+    minutos, segundos = divmod(segundos, 60)
+    horas, minutos = divmod(minutos, 60)
+    return f"{horas}h {minutos} min {segundos} secs"
 
 @lru_cache(maxsize=None)
 def get_seasons():
@@ -64,11 +70,11 @@ def get_map_data(year):
                 r.year, r.name AS race_name,
                 c.lat AS circuit_lat, c.lng AS circuit_lng, c.country as circuit_country,
                 re.milliseconds AS race_time_in_milliseconds,
-                l.milliseconds AS general_fastest_lap_time
+                MAX(re.fastestlapspeed) AS fastest_lap_speed
             FROM races AS r
             JOIN circuits AS c ON r.circuitId = c.circuitId
             JOIN (
-                SELECT raceId, milliseconds
+                SELECT raceId, milliseconds, fastestlapspeed
                 FROM results
                 WHERE positionOrder = 1
             ) AS re ON r.raceId = re.raceId
@@ -77,7 +83,8 @@ def get_map_data(year):
                 FROM lap_times
                 GROUP BY raceId
             ) AS l ON r.raceId = l.raceId
-            WHERE r.year > %s;
+            WHERE r.year = %s
+            GROUP BY r.year, race_name, circuit_lat, circuit_lng, circuit_country, race_time_in_milliseconds;
         """, (year,)
     )
     
@@ -104,17 +111,22 @@ def get_constructors_data(year):
     cur.execute(
         """
             SELECT 
-                c.name AS constructor_name, 
-                COUNT(DISTINCT r.raceId) AS total_races
-            FROM 
-                constructors c
-            JOIN constructor_results cr ON c.constructorId = cr.constructorId
-            JOIN races r ON cr.raceId = r.raceId
-            WHERE r.year > %s
-            GROUP BY 
-                c.name
-            ORDER BY 
-                total_races DESC;
+                race_name, 
+                constructor_name, 
+                SUM(total_points) OVER(PARTITION BY constructor_name ORDER BY race_date) AS total_points
+            FROM (
+                SELECT 
+                    r.name as race_name, 
+                    c.name AS constructor_name, 
+                    SUM(rs.points) AS total_points,
+                    r.date as race_date
+                FROM constructors c
+                JOIN results rs ON c.constructorid = rs.constructorid
+                JOIN races r ON rs.raceid = r.raceid
+                WHERE r.year = %s
+                GROUP BY r.name, c.name, r.date
+            ) AS subquery
+            ORDER BY race_date ASC, total_points DESC;
         """, (year,)
     )
 
@@ -129,6 +141,8 @@ def get_constructors_data(year):
         columns.append(column[0])
 
     records_data.columns = columns
+    records_data['race_name'] = records_data['race_name'].str.replace('Grand Prix', 'GP')
+    records_data['total_points'] = records_data['total_points'].astype(int)
 
     return records_data
 
@@ -161,7 +175,7 @@ def get_sankey_data(year):
     return records
 
 @lru_cache(maxsize=None)
-def get_fastest_constructor_data(year):
+def get_constructor_info(year):
     conn = connection_db()
     cur = conn.cursor()
     
@@ -170,27 +184,19 @@ def get_fastest_constructor_data(year):
     
     cur.execute(
         """
-            SELECT 
-                c.constructorid, c.constructorref, c.name, c.nationality,
-                d.driverref,
-                MAX(r.fastestlapspeed) AS max_fastestlapspeed
-            FROM constructors c
-            JOIN constructor_results ON c.constructorId = constructor_results.constructorId
-            JOIN races ON constructor_results.raceId = races.raceId
-            JOIN results as r ON constructor_results.raceId = r.raceId AND constructor_results.constructorId = r.constructorId AND r.points > 0
-            JOIN drivers as d ON r.driverid = d.driverid
-            WHERE races.year = %s
-            GROUP BY c.constructorid, c.constructorref, c.name, c.nationality, d.driverref
-            ORDER BY max_fastestlapspeed DESC
+            select 
+                c.name, max(r.fastestlapspeed) as speed, c.url
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join constructors c on r.constructorid = c.constructorid
+            WHERE ra.year = %s
+            GROUP BY r.raceid, c.name, c.url
+            ORDER BY speed desc
             LIMIT 1;
         """, (year,)
     )
 
-    records = cur.fetchall()
-    print(records)
-    cur.close()
-    conn.close()
-
+    records = cur.fetchall()    
     records_data = pd.DataFrame(records)
 
     columns = []
@@ -199,6 +205,54 @@ def get_fastest_constructor_data(year):
 
     records_data.columns = columns
 
-    print(records_data)
+    cur.execute(
+        """
+            select 
+                c.name, sum(r.position) as wins, c.url
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join constructors c on r.constructorid = c.constructorid
+            WHERE ra.year = %s and r.position = 1
+            GROUP BY c.name, c.url
+            ORDER BY wins desc
+            LIMIT 1;
+        """, (year,)
+    )
 
-    return records_data
+    records = cur.fetchall()
+    records_data2 = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data2.columns = columns
+
+    cur.execute(
+        """
+            select 
+                c.name, count(s.status_category) as problems, c.url
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join constructors c on r.constructorid = c.constructorid
+            join categorize_status() s on r.statusid = s.statusid
+            WHERE ra.year = %s and not s.status_category in ('Finished', 'Not finished')
+            GROUP BY c.name, c.url
+            ORDER BY problems DESC
+            LIMIT 1;
+        """, (year,)
+    )
+
+    records = cur.fetchall()
+    records_data3 = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data3.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data, records_data2, records_data3
