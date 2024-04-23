@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-from functions import convert_milliseconds, get_constructor_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
+from functions import convert_milliseconds, get_constructor_info, get_constructor_stats_info, get_constructor_stats_names, get_constructor_stats_table, get_constructor_status_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
 
 load_dotenv()
 
@@ -20,6 +20,8 @@ dash.register_page(__name__, title='F1 Dashboard - Exploratory Analysis')
 dates = get_seasons()
 dates = dates.sort_values(by='year', ascending=False)
 
+constructor_names = get_constructor_stats_names('2023')
+
 layout = html.Main([
     html.Section([
         dls.Grid([
@@ -29,7 +31,10 @@ layout = html.Main([
         speed_multiplier=2,
         show_initially=True
         )
-    ]),
+    ],
+    style={
+        'background-color': 'rgba(0, 0, 0, 0.7)',
+    }),
 
     html.Section([
         html.H3('Constructors'),
@@ -196,6 +201,165 @@ layout = html.Main([
         ],
         style={
             'display': 'flex',
+        }),
+        html.Section([
+            html.Article([
+                html.H5(id='constructor-radar-status-title', style={'text-align': 'center'}),
+                dls.Grid([
+                    dcc.Graph(id='constructor-radar-status-graph')
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '70%'
+            }),
+            html.Article([
+                html.H6('Constructor Stats', style={'text-align': 'center'}),
+                html.Nav(
+                    dcc.Dropdown(
+                        id='constructor-selector',
+                        options=[{'label': name, 'value': name} for i, name in enumerate(constructor_names['name'])],
+                        value=constructor_names['name'][0],
+                        style={
+                            "color": "black", 
+                            "background-color": "transparent", 
+                            "border": "none", 
+                        }
+                    ),
+                    style={'margin-top': '20px'}
+                ),
+                dls.Grid([
+                    html.H5(id='constructor-name', style={'margin-top': '25px', 'text-align': 'center'}),
+                    html.Hr(),
+                    html.Aside([
+                        html.Span([
+                            html.Label('Drivers'),
+                            html.Div([
+                                html.Img(src='../assets/webicons/f1car.svg', alt='driver icon', style={'width': '15px'}),
+                                html.Span(id='constructor-total-drivers')
+                            ],
+                            style={
+                                'display': 'flex',
+                                'align-items': 'flex-end',
+                                'gap': '10px'
+                            }),
+                        ],
+                        style={
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'align-items': 'center',
+                            'gap': '5px'
+                        }),
+                        html.Span([
+                            html.Label('Speed'),
+                            html.Div([
+                                html.Img(src='../assets/webicons/speed.svg', alt='speed icon', style={'width': '15px'}),
+                                html.Span(id='constructor-max-speed')
+                            ],
+                            style={
+                                'display': 'flex',
+                                'align-items': 'flex-end',
+                                'gap': '10px'
+                            }),
+                        ],
+                        style={
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'align-items': 'center',
+                            'gap': '5px'
+                        }),
+                        html.Span([
+                            html.Label('Points'),
+                            html.Div([
+                                html.Img(src='../assets/webicons/points.svg', alt='points icon', style={'width': '15px'}),
+                                html.Span(id='constructor-total-points')
+                            ],
+                            style={
+                                'display': 'flex',
+                                'align-items': 'flex-end',
+                                'gap': '10px'
+                            }),
+                        ],
+                        style={
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'align-items': 'center',
+                            'gap': '5px'
+                        }),
+                        html.Span([
+                            html.Label('Wins'),
+                            html.Div([
+                                html.Img(src='../assets/webicons/winner.svg', alt='wins icon', style={'width': '15px'}),
+                                html.Span(id='constructor-total-wins')
+                            ],
+                            style={
+                                'display': 'flex',
+                                'align-items': 'flex-end',
+                                'gap': '10px'
+                            }),
+                        ],
+                        style={
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'align-items': 'center',
+                            'gap': '5px'
+                        }),
+                    ],
+                    style={
+                        'display': 'flex',
+                        'gap': '20px',
+                        'justify-content': 'space-between',
+                    }),
+                    dash.dash_table.DataTable(
+                        id='constructor-stats-table',
+                        style_cell={
+                            "backgroundColor": "transparent",
+                            "color": "gray",
+                            "border": "0.5px solid #666",
+                            "font-size": "16px",
+                            "textAlign": "center",
+                            'font-size': '14px'
+                        },
+                        style_data={
+                            "whiteSpace": "normal",
+                            "height": "auto",    
+                        },
+                        style_table={
+                            'font-size': '12px',
+                            'margin-top': '30px'
+                        },
+                        style_header={
+                            "border": "0.5px solid #666",
+                        }
+                        )
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '30%'
+            }),
+        ],
+        style={
+            'display': 'flex',
+            'gap': '10px'
         })
     ],
     style={
@@ -243,16 +407,31 @@ def update_map_graph(value):
     return fig
 
 @callback(
-    Output('race-distribution-graph', 'figure'),
-    Output('race-distribution-title', 'children'),
-    Output('race-point-distribution-graph', 'figure'),
-    Output('race-point-distribution-title', 'children'),
     Output('fastest-constructor', 'children'),
     Output('fastest-constructor-speed', 'children'),
     Output('most-winner-constructor', 'children'),
     Output('most-winner-constructor-wins', 'children'),
     Output('most-problematic-constructor', 'children'),
     Output('most-problematic-constructor-problems', 'children'),
+    Input('seasons-dropdown', 'value')
+)
+def update_stats(value):
+    fastest_constructor, most_winner_constructor, most_problematic_constructor = get_constructor_info(value)
+    
+    fastest_constructor_name = html.A(f"{fastest_constructor.name[0]}", href=f"{fastest_constructor.url[0]}", target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    fastest_constructor_speed = f'{fastest_constructor.speed[0]} km/h'
+    most_winner_constructor_name = html.A(f'{most_winner_constructor.name[0]}', href=f'{most_winner_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    most_winner_constructor_wins = f'{int(most_winner_constructor.wins[0])} wins'
+    most_problematic_constructor_name = html.A(f'{most_problematic_constructor.name[0]}', href=f'{most_problematic_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
+    most_problematic_constructor_problems = f'{int(most_problematic_constructor.problems[0])} problems'
+
+    return fastest_constructor_name, fastest_constructor_speed, most_winner_constructor_name, most_winner_constructor_wins, most_problematic_constructor_name, most_problematic_constructor_problems
+    
+@callback(
+    Output('race-distribution-graph', 'figure'),
+    Output('race-distribution-title', 'children'),
+    Output('race-point-distribution-graph', 'figure'),
+    Output('race-point-distribution-title', 'children'),
     Input('seasons-dropdown', 'value')
 )
 def update_constructors_graphs(value):
@@ -373,13 +552,74 @@ def update_constructors_graphs(value):
     constructor_standings = f'Constructor standings in the {value} season'
     top_sankey_constructors = f'Top constructor and drivers by points accumulated since the {value} season'
 
-    fastest_constructor, most_winner_constructor, most_problematic_constructor = get_constructor_info(value)
-    
-    fastest_constructor_name = html.A(f"{fastest_constructor.name[0]}", href=f"{fastest_constructor.url[0]}", target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
-    fastest_constructor_speed = f'{fastest_constructor.speed[0]} km/h'
-    most_winner_constructor_name = html.A(f'{most_winner_constructor.name[0]}', href=f'{most_winner_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
-    most_winner_constructor_wins = f'{int(most_winner_constructor.wins[0])} wins'
-    most_problematic_constructor_name = html.A(f'{most_problematic_constructor.name[0]}', href=f'{most_problematic_constructor.url[0]}', target="_blank", rel='noopener noreferrer', style={'text-decoration': 'none', 'color': '#e10600'})
-    most_problematic_constructor_problems = f'{int(most_problematic_constructor.problems[0])} problems'
+    return fig, constructor_standings, fig2, top_sankey_constructors
 
-    return fig, constructor_standings, fig2, top_sankey_constructors, fastest_constructor_name, fastest_constructor_speed, most_winner_constructor_name, most_winner_constructor_wins, most_problematic_constructor_name, most_problematic_constructor_problems
+@callback(
+    Output('constructor-radar-status-title', 'children'),
+    Output('constructor-radar-status-graph', 'figure'),
+    Input('seasons-dropdown', 'value'),
+    Input('constructor-selector', 'value')
+)
+def update_constructor_radar_status_graph(value, constructor):
+    records_data = get_constructor_status_info(value, constructor)
+    fig = go.Figure(data=go.Scatterpolar(
+      r=records_data['problems'],
+      theta=records_data['status'],
+      fill='toself',
+      name='Constructor problems',
+      fillcolor='rgba(225, 6, 0, 0.5)',
+      line=dict(color='rgba(225, 6, 0, 0.5)')
+    ))
+
+    fig.update_layout(
+        plot_bgcolor='rgba(0, 0, 0, 0.0)',
+        paper_bgcolor='rgba(0, 0, 0, 0.0)',
+        font_color="white",
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 20]
+            ),
+            bgcolor='rgba(0, 0, 0, 0.0)'
+        )
+    )
+    
+    return f'{constructor} races status in the {value} season', fig
+
+@callback(
+    Output('constructor-selector', 'options'),
+    Output('constructor-selector', 'value'),
+    Input('seasons-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def update_constructor_selector(value):
+    constructor_names = get_constructor_stats_names(value)
+    options = [{'label': name, 'value': name} for i, name in enumerate(constructor_names['name'])]
+    value = constructor_names['name'][0]
+    return options, value
+
+@callback(
+    Output('constructor-name', 'children'),
+    Output('constructor-total-drivers', 'children'),
+    Output('constructor-max-speed', 'children'),
+    Output('constructor-total-points', 'children'),
+    Output('constructor-total-wins', 'children'),
+    Input('seasons-dropdown', 'value'),
+    Input('constructor-selector', 'value')
+)
+def update_constructor_stats(value, constructor_name):
+    records_data = get_constructor_stats_info(value, constructor_name)
+    return records_data['name'][0], records_data['total_drivers'][0], records_data['max_speed'][0], records_data['total_points'][0], records_data['total_wins'][0]
+
+@callback(
+    Output('constructor-stats-table', 'data'),
+    Output('constructor-stats-table', 'columns'),
+    Input('seasons-dropdown', 'value'),
+    Input('constructor-selector', 'value')
+)
+def update_constructor_stats_table(value, constructor_name):
+    records_data = get_constructor_stats_table(value, constructor_name)
+    records_data.rename(columns={'surname': 'Driver', 'max_speed': 'Speed', 'total_points': 'Points', 'total_wins': 'Wins'}, inplace=True)
+    columns = [{'name': col, 'id': col} for col in records_data.columns]
+
+    return records_data.to_dict('records'), columns

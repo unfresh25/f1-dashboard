@@ -180,7 +180,6 @@ def get_constructor_info(year):
     cur = conn.cursor()
     
     year = str(year)
-    print(year)
     
     cur.execute(
         """
@@ -256,3 +255,137 @@ def get_constructor_info(year):
     conn.close()
 
     return records_data, records_data2, records_data3
+
+@lru_cache(maxsize=None)
+def get_constructor_status_info(value, constructor):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+           select 
+                c.name, s.status_category as status, count(s.status_category) as problems, c.url
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join constructors c on r.constructorid = c.constructorid
+            join categorize_status() s on r.statusid = s.statusid
+            WHERE ra.year = %s and c.name = %s
+            GROUP BY c.name, c.url, s.status_category
+            ORDER BY problems DESC;
+        """, (value, constructor)
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
+
+@lru_cache(maxsize=None)
+def get_constructor_stats_names(value):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+            SELECT 
+                c.name
+            FROM results r
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN constructors c ON r.constructorid = c.constructorid
+            WHERE ra.year = %s
+            GROUP BY c.name, c.url;
+        """, (value,)
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
+
+@lru_cache(maxsize=None)
+def get_constructor_stats_info(value, constructor):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+            SELECT 
+                c.name, c.url,
+                COUNT(DISTINCT r.driverid) AS total_drivers, 
+                MAX(r.fastestlapspeed) AS max_speed, 
+                SUM(r.points) AS total_points,
+                SUM(CASE WHEN r.position = 1 THEN 1 ELSE 0 END) AS total_wins
+            FROM results r
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN constructors c ON r.constructorid = c.constructorid
+            WHERE ra.year = %s and c.name = %s
+            GROUP BY c.name, c.url;
+        """, (value, constructor)
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
+
+@lru_cache(maxsize=None)
+def get_constructor_stats_table(value, constructor):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+            SELECT 
+                d.surname, 
+                MAX(r.fastestlapspeed) AS max_speed, 
+                SUM(r.points) AS total_points,
+                SUM(CASE WHEN r.position = 1 THEN 1 ELSE 0 END) AS total_wins
+            FROM results r
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN constructors c ON r.constructorid = c.constructorid
+            JOIN drivers d on r.driverid = d.driverid
+            WHERE ra.year = %s and c.name = %s
+            GROUP BY  d.surname;
+        """, (value, constructor)
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
