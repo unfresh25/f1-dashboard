@@ -114,12 +114,12 @@ layout = html.Main([
                 html.H3(
                     "Analysis",
                 ),
-                html.P(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec mattis eros. Phasellus tempus magna ut nibh dapibus, ut ornare risus varius. Praesent eget dignissim lectus. Fusce elementum sed nunc in molestie. Aliquam erat volutpat. Ut sit amet tortor magna. Donec pretium quam et ante pretium, sed sagittis leo volutpat.",
-                    style={
-                        'margin-bottom': '1rem',
-                    }
-                ),
+                html.P([
+                    html.Span("The project encompassed an exploratory data analysis focusing on team and driver dynamics, alongside the deployment of diverse models including time series analysis, logistic regression, and principal component analysis. You can find more information about this analysis in our quarto report "),
+                    html.A('here.', href='https://unfresh25.github.io/f1-dashboard/site/', rel='noopener noreferrer', target='_blank', style={'color': 'inherit'}),
+                ],style={
+                    'margin-bottom': '1rem',
+                }),
             ],
             style={
                 'position': 'relative',
@@ -155,12 +155,14 @@ layout = html.Main([
                 html.H3(
                     "Dataset",
                 ),
-                html.P(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec mattis eros. Phasellus tempus magna ut nibh dapibus, ut ornare risus varius. Praesent eget dignissim lectus. Fusce elementum sed nunc in molestie. Aliquam erat volutpat. Ut sit amet tortor magna. Donec pretium quam et ante pretium, sed sagittis leo volutpat.",
-                    style={
-                        'margin-bottom': '1rem',
-                    }
-                ),
+                html.P([
+                    "The 'F1 Dashboard' project utilizes a comprehensive dataset sourced from ",
+                    html.A('Kaggle, ', href='https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020', target='_blank', rel='noopener noreferrer', style={'color': 'inherit'}),
+                    "encompassing detailed information spanning Formula 1 races, drivers, constructors, qualifying sessions, circuits, lap times, pit stops, and championships, dating back from the inaugural season in 1950 up to the latest records of the 2023 season."
+                ],
+                style={
+                    'margin-bottom': '1rem',
+                }),
             ],
             style={
                 'position': 'relative',
