@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-from functions import convert_milliseconds, get_constructor_info, get_constructor_stats_info, get_constructor_stats_names, get_constructor_stats_table, get_constructor_status_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
+from functions import convert_milliseconds, get_constructor_info, get_constructor_stats_info, get_constructor_stats_names, get_constructor_stats_table, get_constructor_status_info, get_driver_age_point_distribution_data, get_driver_status_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ layout = html.Main([
 
     html.Section([
         html.H3('Constructors'),
-        html.Hr(id='xd'),
+        html.Hr(),
         html.Nav([
             html.Article([
                 html.Span('Season', style={'font-weight': 'regular', 'color': 'rgba(255, 255, 255, 0.35)', 'margin-left': '12px', 'position': 'relative', 'top': '5px'}),
@@ -364,8 +364,60 @@ layout = html.Main([
     ],
     style={
         'margin-top': '50px'
-    })
+    }),
 
+    html.Section([
+        html.H3('Drivers'),
+        html.Hr(),
+        html.Section([
+            html.Article([
+                html.H5(id='driver-age-point-distribution-title', style={'text-align': 'center'}),
+                dls.Grid([
+                    dcc.Graph(id='driver-age-point-distribution-graph')
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '60%'
+            }),
+            html.Article([
+                html.H5(id='driver-radar-status-title', style={'text-align': 'center'}),
+                dls.Grid([
+                    dcc.Graph(id='driver-radar-status-graph')
+                ],
+                color='#fff',
+                speed_multiplier=2,
+                show_initially=True
+                )
+            ],
+            style={
+                "padding": "20px",
+                "border-radius": "12px",
+                "border": "1px solid rgba(255, 255, 255, 0.125)",
+                "margin-top": "10px",
+                "background-color": "rgba(0, 0, 0, 0.7)",
+                "backdrop-filter": 'blur(5px)',
+                'width': '40%',
+                'place-content': 'center'
+            }),
+        ],
+        style={
+            'display': 'flex',
+            'gap': '10px'
+        }),
+    ],
+    style={
+        'margin-top': '50px'
+    })
 ], 
 style={
     'width': '90%',
@@ -623,3 +675,89 @@ def update_constructor_stats_table(value, constructor_name):
     columns = [{'name': col, 'id': col} for col in records_data.columns]
 
     return records_data.to_dict('records'), columns
+
+@callback(
+    Output('driver-age-point-distribution-title', 'children'),
+    Output('driver-age-point-distribution-graph', 'figure'),
+    Input('constructor-selector', 'value'),
+    Input('seasons-dropdown', 'value')
+)
+def update_driver_age_point_distribution_graph(constructor_name, year):
+    records_data = get_driver_age_point_distribution_data(constructor_name, year)
+
+    fig = go.Figure()
+
+    ages = records_data['age'].unique()
+
+    for driver in records_data['driver'].unique():
+        driver_data = records_data[records_data['driver'] == driver]
+        fig.add_trace(go.Scatter(x=ages, y=driver_data['points'],
+                                mode='lines', name=driver,
+                                hovertemplate='<b>%{text}</b><extra></extra>',
+                                text=[f"{driver_data['constructor'].iloc[i]}" for i in range(len(driver_data))]))
+
+    fig.update_layout(
+        xaxis=dict(title='Edad'),
+        yaxis=dict(title='Puntos acumulados'),
+        showlegend=True
+    )
+
+    fig.update_traces(hovertemplate=None)
+    fig.update_yaxes(visible=False, showticklabels=False)
+    fig.update_xaxes(visible=False, showticklabels=False)
+    fig.update_layout(hovermode="x unified")
+    fig.update_layout(
+        margin={'b': 0, 'r': 30, 'l': 30, 't': 0},
+        xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+        yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+        plot_bgcolor='rgba(0, 0, 0, 0.0)',
+        paper_bgcolor='rgba(0, 0, 0, 0.0)',
+        font_color="white",
+        hoverlabel=dict(
+            bgcolor="#111"
+        )
+    )
+
+    title = f'{constructor_name} drivers in {year}, distribution of points earned throughout their entire careers'
+
+    return title, fig
+
+@callback(
+    Output('driver-radar-status-title', 'children'),
+    Output('driver-radar-status-graph', 'figure'),
+    Input('seasons-dropdown', 'value'),
+    Input('constructor-selector', 'value')
+)
+def update_driver_radar_status_graph(value, constructor):
+    records_data = get_driver_status_info(value, constructor)
+
+    fig = go.Figure()
+
+    drivers = records_data['surname'].unique()
+
+    for driver in drivers:
+        driver_data = records_data[records_data['surname'] == driver]
+        colorf = random_color()
+        fig.add_trace(go.Scatterpolar(
+            r=driver_data['problems'],
+            theta=driver_data['status'],
+            fill='toself',
+            name=driver,
+            fillcolor=colorf,
+            line=dict(color=colorf)
+        ))
+
+    fig.update_layout(
+        plot_bgcolor='rgba(0, 0, 0, 0.0)',
+        paper_bgcolor='rgba(0, 0, 0, 0.0)',
+        font_color="white",
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 20]
+            ),
+            bgcolor='rgba(0, 0, 0, 0.0)'
+        )
+    )
+    
+    return f'Drivers races status in the {value} season from {constructor} team', fig

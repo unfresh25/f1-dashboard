@@ -150,7 +150,7 @@ def get_constructors_data(year):
 def get_sankey_data(year):
     conn = connection_db()
     cur = conn.cursor()
-
+    
     cur.execute(
         """
             SELECT 
@@ -373,6 +373,98 @@ def get_constructor_stats_table(value, constructor):
             JOIN drivers d on r.driverid = d.driverid
             WHERE ra.year = %s and c.name = %s
             GROUP BY  d.surname;
+        """, (value, constructor)
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
+
+@lru_cache(maxsize=None)
+def get_driver_age_point_distribution_data(constructor_name, year):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute("DROP TABLE IF EXISTS filtered_results;")
+    conn.commit()
+
+    cur.execute(
+        """
+            CREATE TEMP TABLE filtered_results AS
+            SELECT 
+                d.driverid,
+                d.surname,
+                c.name AS constructor_name,
+                SUM(rs.points) AS total_points
+            FROM drivers d
+            JOIN results rs ON d.driverid = rs.driverid
+            JOIN races ra ON rs.raceid = ra.raceid
+            JOIN constructors c ON rs.constructorid = c.constructorid
+            WHERE ra.year = %s
+            AND c.name = %s
+            GROUP BY d.driverid, d.surname, c.name;
+        """, (year, constructor_name,)
+    )
+    conn.commit()
+
+    cur.execute(
+        """
+            SELECT 
+                DISTINCT d.surname as driver,
+                c.name as constructor,
+                (DATE_PART('year', ra.date) - DATE_PART('year', d.dob)) as age,
+                SUM(r.points) as points
+            FROM drivers d
+            JOIN results r ON d.driverid = r.driverid
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN constructors c ON r.constructorid = c.constructorid
+            WHERE d.surname IN (SELECT DISTINCT surname FROM filtered_results)
+            GROUP BY d.surname, age, constructor
+            ORDER BY age;
+        """
+    )
+
+    records = cur.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+
+    cur.close()
+    conn.close()
+
+    return records_data
+
+@lru_cache(maxsize=None)
+def get_driver_status_info(value, constructor):
+    conn = connection_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+            select 
+                d.surname, s.status_category as status, count(s.status_category) as problems, c.url
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join constructors c on r.constructorid = c.constructorid
+            join categorize_status() s on r.statusid = s.statusid
+            join drivers d on r.driverid = d.driverid
+            WHERE ra.year = %s and c.name = %s
+            GROUP BY d.surname, c.url, s.status_category
+            ORDER BY problems DESC;
         """, (value, constructor)
     )
 
