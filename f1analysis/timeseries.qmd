@@ -1,0 +1,138 @@
+---
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
+---
+
+``` {python load_os}
+#| echo: false
+import os 
+from dotenv import load_dotenv
+import warnings
+from sklearn.exceptions import DataConversionWarning
+warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# Definición 
+
+Una serie temporal es una realización parcial de un proceso estocástico de parámetro tiempo discreto, donde los elementos de $I$ están ordenados y corresponden a instantes equidistantes del tiempo. Estos procesos estocásticos son colecciones o familias de variables aleatorias $\{X_{t}\}_{t\in I}$ ordenadas según el subíndice $t$ que en general se suele identificar con el tiempo. Llamamos trayectoria del proceso a una realización del proceso estocástico. Si $I$ es discreto, el proceso es en tiempo discreto. Si $I$ es continuo, el proceso es en tiempo continuo. Entre las series de tiempo, existen modelos estadísticos que definen el proceso de cualquier conjunto de hipótesis bien definidas sobre las propeidades estadísticas de dicho proceso estocástico. 
+
+Uno de los modelos más utilizados a la hora de realizar pronósticos de series de tiempo es el modelo `ARIMA`. Estos modelos `ARIMA` (Autorregresivos Integrados de Media Móvil) aproximan los valores futuros de una serie temporal como una función lineal de observaciones pasadas y términos de ruido blanco. Una serie de tiempo $y_t$ se llama un proceso de media móvil integrada autorregresiva (`ARIMA`) de órdenes $p, d, q$, denotado ARIMA($p, d, q$) si su diferencia $d$ da lugar a un proceso estacionario ARMA($p, q$). Por lo tanto, un ARIMA($p, d, q$) puede escribirse como
+
+$$
+    \Phi(B)(1 - B)^{d} y_{t} = \delta + \Theta(B) \varepsilon_{t}
+$$
+
+donde
+
+$$
+    \Phi(B) = 1 - \sum_{i = 1}^{p} \phi_{i} B^{i} \quad \text{y} \quad \Theta(B) = 1 - \sum_{i = 1}^{q} \theta_{i} B^{i},
+$$
+
+son los términos del operador back-shit en los AR($p$) y MA($q$) definidos como $\Phi(B) y_{t} = \delta + \varepsilon_{t}$ y $y_{t} = \mu + \Theta(B) \varepsilon_{t}$ con $\delta = \mu - \phi \mu$, donde $\mu$ es la media y $\varepsilon_{t}$ el ruido blanco con $E(\varepsilon_t) = 0$ [@rubio2024].
+
+# Planteamiento del problema
+
+El análisis de series de tiempo `SARIMA` (Seasonal Autoregressive Integrated Moving Average) se propone como una herramienta efectiva para pronosticar la tasa de obtención de puntos de los cinco equipos más exitosos desde el año 2010. Estos equipos incluyen **Red Bull Racing**, **Mercedes-AMG Petronas Formula One Team**, **Scuderia Ferrari**, **Williams Racing** y **McLaren F1 Team**. El objetivo es generar pronósticos precisos para la tasa de obtención de puntos de estos equipos en los próximas 25 premios.
+
+# Obtención de los datos
+
+Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.
+
+Primero, importamos las bibliotecas necesarias:
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+
+import plotly.graph_objects as go
+import plotly.express as px
+```
+
+A continuación, creamos la función que facilita las conexiones:
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Es importante destacar que esta función utiliza una variable de entorno para almacenar los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/), que nos permite crear un servidor de bases de datos con `PostgreSQL`.
+
+Como mencionamos previamente, las tablas y sus respectivas columnas que utilizaremos para el desarrollo de este modelo son las siguientes:
+
+* **Results:** points (tasa de obtención de puntos).
+* **Races:** date (fecha en que se celebró la carrera).
+* **Constructors:** name (nombre del equipo).
+
+Luego, ejecutamos la consulta SQL para obtener los datos relevantes:
+
+``` {python}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT 
+                r.date AS race_date, 
+                c.name AS team, 
+                SUM(res.points) AS points_sum,
+                round((SUM(res.points) / COALESCE(fs.total_first_second, 1)) * 100, 4) AS adjusted_points_percentage
+            FROM Results res
+            JOIN Constructors c ON res.constructorId = c.constructorId
+            JOIN Races r ON res.raceId = r.raceId
+            LEFT JOIN (
+                SELECT raceId, SUM(points) AS total_first_second
+                FROM Results
+                WHERE positionOrder IN (1, 2)
+                GROUP BY raceId
+            ) fs ON fs.raceId = res.raceId
+            WHERE r.date >= '2010-01-01'
+            GROUP BY r.date, c.name, fs.total_first_second
+            ORDER BY r.date ASC, c.name ASC;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+Con este procedimiento, hemos obtenido los datos necesarios para nuestro análisis y modelado subsiguiente.
+
+# Construcción del modelo SARIMA
+
+El modelo ARIMA estacional (`SARIMA`), como su nombre lo indica, es una versión designada del modelo `ARIMA` para series temporales con una componente estacional. Una serie temporal con un componente estacional tiene una fuerte relación sus rezagos estacionales. El modelo `SARIMA` utiliza los rezagos estacionales de manera similar a como lo hace el modelo `ARIMA`, esto es, utiliza los rezagos no estacionales con los procesos `AR` y `MA` y la `diferenciación`. Para ello, añade los tres componentes siguientes al modelo `ARIMA`.
+
+* **Proceso SAR** (`P`): Un proceso `AR` estacional de la serie con sus `P` rezagos estacionales pasados. Por ejemplo, un `SAR(2)` es un proceso `AR` de la serie con sus dos últimos rezagos estacionales, es decir, $Y_t = c + \Phi_1 Y_{t-f} + \Phi_2 Y_{t - 2f} + \varepsilon_{t}$ donde $\Phi$ representa el coeficiente estacional del proceso `SAR`, y $f$ representa la frecuencia de la serie.
+
+* **Proceso SMA** (`Q`): Un proceso `MA` estacional de la serie con sus Q términos de error estacionales pasados. Por ejemplo, un `SMA(1)` es un proceso de media móvil de la serie con su término de error estacional pasado, es decir, $Y_t = \mu + \varepsilon_{t} + \Theta_1 \varepsilon_{t - f}$, donde $\Theta$ representa el coeficiente estacional del proceso `SMA`. 
+
+* **Proceso SI** (`D`): Una diferenciación estacional de la serie con sus últimos `D` rezagos estacionales. De forma similar, podemos diferenciar la serie con su rezago estacional, es decir, $Y_{D = 1}' = Y_t - Y_{t - f}$.
+
+Utilizamos la siguiente notación para denotar los parámetros `SARIMA`, donde los parámetros $P$ y $Q$ representan los ordenes correspondientes de los procesos `AR` y `MA` estacionales de la serie con sus rezagos estacionales, y $D$ define el grado diferenciación de la serie con sus rezagos estacionales.
+
+$$
+    \text{SARIMA}(p, d, q) \times (P, D, Q).
+$$

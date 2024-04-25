@@ -31,6 +31,12 @@ website:
             href: constructors.qmd
           - text: "Análisis de la tabla drivers"
             href: drivers.qmd
+      - section: "Análisis Predictivos" 
+        contents:
+          - text: "Modelo de Regresión Logística Binaria"
+            href: logisticbinary.qmd
+          - text: "Modelo de Serie de Tiempo"
+            href: timeseries.qmd
     - tools: 
       - icon: github
         url: https://github.com/unfresh25/f1-dashboard

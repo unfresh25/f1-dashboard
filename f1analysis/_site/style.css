@@ -70,7 +70,7 @@ figcaption {
   text-align: center;
 }
 
-.ex {
+.ex, .kw {
   color: #0096c7 !important;
 }
 

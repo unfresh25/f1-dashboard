@@ -1,0 +1,544 @@
+---
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
+---
+
+``` {python load_os}
+#| echo: false
+import os 
+from dotenv import load_dotenv
+import warnings
+from sklearn.exceptions import DataConversionWarning
+warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# Definición 
+
+La regresión lineal es una herramienta de modelado ampliamente aplicable, pero no es apropiada cuando el modelo correcto debe ser no lineal en los parámetros. Tal es el caso cuando el punto final del estudio es una variable binaria. El modelo se vuelve no lineal porque lo que se está modelando es la probabilidad de que un caso experimente el evento de interés o que un caso esté en una categoría particular de la respuesta binaria [@DeMaris2013].
+
+[@ibm_logistic_regression] Este tipo de modelo estadístico (también conocido como modelo logit) se utiliza frecuentemente para clasificación y análisis predictivo. Dado que el resultado es una probabilidad, la variable dependiente está limitada entre 0 y 1. En la regresión logística, se aplica una transformación logit a las probabilidades, es decir, la probabilidad de éxito dividida por la probabilidad de fracaso. Esto también se conoce comúnmente como logaritmo de las probabilidades o logaritmo natural de las probabilidades, y esta función logística se representa mediante las siguientes fórmulas: 
+
+$$
+    \text{Logit} (p_j) := \ln\left(\frac{p_j}{1-p_j}\right) =  \delta  \;+\;  \beta_1 \,x_{j1}  \;+\;\cdots \;+\; \beta_K \,x_{jK}.
+$$
+
+En esta ecuación de regresión logística, $\text{Logit} (p_j)$ es la variable `dependiente` o de respuesta, y $x$ es la variable `independiente`. El `parámetro beta`, o coeficiente, en este modelo comúnmente se estima mediante la `estimación de máxima verosimilitud` (MLE, por sus siglas en inglés). Este método prueba diferentes valores de beta a través de múltiples iteraciones para optimizar el mejor ajuste de los logaritmos de las probabilidades. Todas estas iteraciones producen la `función de verosimilitud logarítmica`, y la regresión logística busca maximizar esta función para encontrar la mejor estimación de los parámetros. Una vez que se encuentra el coeficiente óptimo (o coeficientes si hay más de una variable independiente), se pueden calcular las probabilidades condicionales para cada observación, tomarles el logaritmo y sumarlos para obtener una probabilidad predicha. Para la clasificación binaria, una probabilidad menor que 0.5 predecirá 0, mientras que una probabilidad mayor que 0.5 predecirá 1.
+
+[@llinas2012multinomial] Notemos que este modelo es construido suponiendo una matriz de diseño de la siguiente forma: 
+
+$$
+    C = \left(
+        \begin{array}{cccc}
+            1          & x_{11}    &\cdots     &x_{1K}\\
+            1          & x_{21}    &\cdots     &x_{2K}\\
+            \vdots     &\vdots     &           &\vdots\\
+            1          &x_{J1}     &\cdots     &x_{JK}\\
+        \end{array}
+    \right)
+$$
+
+donde el rango completo de esta matriz estará dado por: $Rg(C) = 1 + K \leq J$, tal que $J$ representa el número de poblaciones existentens en los datos.
+
+La ecuación denotada para $\text{Logit} (p_j)$ es conocido como el modelo logístico. Sin embargo, para hallarlo necesitamos conocer el valor de $p_j$. Este valor representa la probabilidad (`riesgo`) de que se obtenga alguna de las respuestas de la variable dependiente. Entonces, la probabilidad 
+
+$$
+    p_j = P\left(Y_j = 1 | x_{j1},\dots, x_{jK}\right),
+$$
+
+de obtener un éxito en la población $j = 1, \dots, J$, dados los valores $x_{j1},\dots, x_{jK}$, viene dada por: 
+
+$$
+    p_j \;= \; \mbox{Logit}^{-1}(g_j) \;= \; \frac{e^{g_j}} {1 + e^{g_j}},
+$$
+
+donde $g_j$ está definido así: 
+
+$$
+    g_j:=\delta \;+\; \beta_1\,x_{1j} \;+\;\cdots \;+\; \beta_K \,x_{Kj},
+$$
+
+con vector de parámetros $\alpha = \left(\delta, \beta_1, \dots, \beta_K \right)^\top$. Ahora, para obtener el logaritmo de la función de verosimilitud del modelo logístico debemos tener en cuenta la siguiente ecuación:
+
+$$
+    \begin{align*}
+        \cal L (p) &= \sum_{j = 1}^J \left(\sum_{i = 1}^n \left[y_{ij} \ln (p_j) + (1 - y_{ij}) \ln (1 - p_j)\right]\right) \\
+        &=  \sum_{j = 1}^J \left[z_j \ln (p_j) + (n_j - z_j) \ln (1 - p_j)\right],
+    \end{align*}
+$$
+
+tal que $z_j$ es una variable aleatoria binomial $z_j \sim{\cal B} (n_j, p_j)$ de las distintas poblaciones.
+
+Ahora, reescribiendo esta ecuación en términos de $\alpha$ tenemos
+
+$$
+    \begin{align*}
+        {\cal L} ({\alpha}) &= \sum^{J}_{j = 1} \left[z_j \ln \left(\frac{p_j}{1 - p_j}\right) + n_j \ln(1 - p_j)\right] \\
+        &= \sum^{J}_{j = 1} z_j \, g_j \;-\; \sum^{J}_{j = 1} n_j \ln \left[1 + e^{g_j}\right].
+    \end{align*}
+$$
+
+# Planteamiento del problema
+
+En el ámbito del deporte del automovilismo, predecir el rendimiento de un equipo en una carrera es crucial para estrategias efectivas y toma de decisiones informadas. Se propone desarrollar un modelo logístico binario para determinar la probabilidad de que un equipo alcance la meta en una carrera. Este modelo se basará en varios atributos relacionados con el equipo, los pilotos y la carrera misma.
+
+**Variables Independientes:**
+1. **Posición Inicial en la Parrilla (grid):** La posición en la que un equipo comienza la carrera puede influir significativamente en sus posibilidades de éxito. Se espera que equipos con posiciones de partida más adelantadas tengan una mayor probabilidad de llegar a la meta.
+  
+2. **Duración para Finalizar la Carrera (milliseconds):** El tiempo necesario para que un equipo complete la carrera puede indicar tanto su rendimiento general como su capacidad para enfrentar desafíos y mantener la consistencia a lo largo de la competición.
+
+3. **Velocidad más Alta Alcanzada en la Vuelta Más Rápida (fastestlapspeed):** La velocidad máxima alcanzada por un equipo durante la carrera puede reflejar su habilidad para optimizar el rendimiento de su vehículo y aprovechar al máximo las oportunidades en la pista.
+
+4. **ID del Equipo (constructorid):** La identificación única del equipo puede capturar aspectos relacionados con su experiencia, recursos y estrategias de desarrollo técnico, los cuales pueden influir en su desempeño en la carrera.
+
+5. **Edad de los Pilotos (age):** La edad de los pilotos del equipo, calculada a partir de la fecha de la carrera y la fecha de nacimiento de los pilotos, podría tener implicaciones en términos de experiencia, habilidades físicas y capacidad para manejar la presión de la competición.
+
+6. **Número de Paradas en los Boxes (pit_stop):** El número de paradas en los boxes durante la carrera puede indicar la eficiencia en la gestión de neumáticos, combustible y ajustes de estrategia, lo cual influye directamente en el tiempo total de la carrera y, por ende, en la probabilidad de llegar a la meta.
+
+**Variable Dependiente:**
+- **Llegada a la Meta (finished_or_no):** Esta variable binaria representará si el equipo logra o no alcanzar la meta al finalizar la carrera. Será el objetivo de nuestro modelo logístico, donde un valor de 1 indicará éxito (llegada a la meta) y un valor de 0 indicará fracaso (no llegar a la meta).
+
+El objetivo principal será construir un modelo logístico que, utilizando estas variables independientes, pueda predecir la probabilidad de que un equipo alcance la meta en una carrera dada. Esto permitirá a los equipos tomar decisiones más informadas sobre estrategias de carrera y optimización de recursos para mejorar sus posibilidades de éxito en competiciones futuras.
+
+# Obtención de los datos
+
+Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.
+
+Primero, importamos las bibliotecas necesarias:
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+
+import plotly.graph_objects as go
+import plotly.express as px
+```
+
+A continuación, creamos la función que facilita las conexiones:
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Es importante destacar que esta función utiliza una variable de entorno para almacenar los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/), que nos permite crear un servidor de bases de datos con `PostgreSQL`.
+
+Como mencionamos previamente, las tablas y sus respectivas columnas que utilizaremos para el desarrollo de este modelo son las siguientes:
+
+* **Results:** points (determinará si finalizó la carrera o no), grid (posición inicial), milliseconds (duración de la carrera en milisegundos), fastestlapspeed (velocidad más alta alcanzada en la vuelta más rápida) y constructorid (identificador del equipo).
+* **Races:** date (fecha en que se celebró la carrera).
+* **Drivers:** dob (fecha de nacimiento del piloto).
+* **Pit_stops:** stop (número de paradas en boxes).
+
+Luego, ejecutamos la consulta SQL para obtener los datos relevantes:
+
+``` {python}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT
+                CASE
+                    WHEN r.points > 0 THEN 1
+                    ELSE 0
+                END AS finished_or_no,
+                r.grid, 
+                r.milliseconds / 60000.0 AS minutes, 
+                r.fastestlapspeed, r.constructorid,
+                (DATE_PART('year', ra.date) - DATE_PART('year', d.dob)) as age,
+                MAX(p.stop) as pit_stop
+            FROM results r
+            JOIN drivers d ON r.driverid = d.driverid
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN pit_stops p ON r.raceid = p.raceid
+            GROUP BY finished_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid, age;
+        """
+    )
+
+    records = cursor.fetchall()
+    records_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    records_data.columns = columns
+    records_data['fastestlapspeed'] = pd.to_numeric(records_data['fastestlapspeed'])
+    records_data['grid'] = records_data['grid'].astype(int)
+    records_data['minutes'] = pd.to_numeric(records_data['minutes'])
+
+    display(records_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+Con este procedimiento, hemos obtenido los datos necesarios para nuestro análisis y modelado subsiguiente.
+
+# Construcción del modelo logístico
+
+Después de obtener los datos, procedemos a la construcción de nuestro modelo de regresión logística para una variable respuesta tipo binaria. Teniendo en cuenta la definición anterior, podemos establecer que nuestro modelo $g_j$ estará compuesto por las siguientes variables:
+
+$$
+    \begin{align*}
+        g_j = &\delta + \beta_1 \text{grid} + \beta_2 \text{age} + \beta_3 \text{minutes} \\
+        &+ \beta_4 \text{fastestlapspeed} + \beta_5 \text{constructorid} + \beta_6 \text{pitstop}
+    \end{align*}
+$$
+
+Para construir nuestro modelo en Python, emplearemos la biblioteca `statsmodels`. Sin embargo, es necesario separar inicialmente nuestro conjunto de datos en conjuntos de entrenamiento y prueba. Esto se realiza de la siguiente manera:
+
+``` {python}
+from sklearn.model_selection import train_test_split
+
+X = records_data.iloc[:, 1:]
+y = records_data.iloc[:, 0:1]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state=42)
+
+train_data = pd.concat([y_train, X_train], axis=1)
+test_data = pd.concat([y_test, X_test], axis=1)
+```
+
+A continuación, planteamos nuestro modelo utilizando las variables de interés:
+
+``` {python}
+import statsmodels.formula.api as sm
+
+log_reg = sm.logit('finished_or_no ~ grid + age + minutes + constructorid + pit_stop + fastestlapspeed', data = train_data).fit()
+```
+
+``` {python}
+#| echo: false
+print(log_reg.summary())
+```
+
+Los coeficientes del modelo indican cómo cada variable predictora afecta la probabilidad de que un corredor de carreras finalice la carrera, de ello podemos afirmar lo siguiente: un `intercepto` negativo grande sugiere una baja probabilidad inicial de no finalizar la carrera. Una `posición de salida` más atrás en la parrilla y ser un `equipo` nuevo disminuyen la probabilidad de finalizar la carrera, mientras que un `tiempo de carrera` más largo, realizar un `pit stop` durante la carrera y alcanzar una `velocidad` alta en la vuelta más rápida aumentan esta probabilidad. La `edad del corredor` no parece tener un efecto significativo en la probabilidad de finalizar la carrera, como lo sugiere el intervalo de confianza que incluye cero para el coeficiente correspondiente. Todos los demás coeficientes son significativos, como lo indican los intervalos de confianza que no incluyen cero.
+
+A continuación, procedemos a remover la variable `age` del modelo, ya que no es significativa, y observamos los resultados del nuevo modelo:
+
+``` {python}
+import statsmodels.formula.api as sm
+
+log_reg_2 = sm.logit('finished_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed', data = train_data).fit()
+```
+
+``` {python}
+#| echo: false
+print(log_reg_2.summary())
+```
+
+Es notable que la eliminación de la variable `age` no afectó negativamente la capacidad predictiva del modelo, lo que sugiere que la edad de los corredores puede no ser un factor determinante en su habilidad para finalizar una carrera. Sin embargo, es importante considerar que la relevancia de esta variable podría variar en función de otros factores contextuales o características específicas de la muestra de datos utilizada. Por otro lado, los resultados obtenidos son similares a los previamente concluidos, por lo que podemos proceder a analizar las métricas del modelo.
+
+# Evaluación del modelo
+
+En esta sección, nos centraremos en evaluar el desempeño de nuestro modelo de regresión logística utilizando diversas métricas de evaluación. Estas métricas son fundamentales para comprender cómo se comporta nuestro modelo en términos de su capacidad para predecir correctamente la variable de interés, en este caso, la probabilidad de finalizar una carrera.
+
+Entre las métricas que utilizaremos se encuentran: `precision`, `recall`, `f1-score` y el área bajo la curva ROC (`AUC`). Cada una de estas métricas proporciona una perspectiva única sobre el rendimiento del modelo y nos ayudará a determinar su efectividad en la clasificación de los resultados.
+
+* **Precision:** mide cuántas de las muestras predichas como positivas son realmente positivas. Es decir, identifica qué proporción de identificaciones positivas son correctas. 
+
+$$
+    \text{precision} = \frac{TP}{TP + FP},
+$$
+
+donde $TP$ representa los verdaderos positivos y $FP$ los falsos positivos. Esta métrica se utiliza como métrica de rendimiento cuando el objetivo es `limitar el número de falsos positivos`.
+
+* **Recall:** mide cuántas de las muestras de la clase positiva son realmente predichas positivas. Es decir, nos muestra la proporción de instancias positivas que fueron correctamente identificadas por el modelo entre todas las instancias que realmente son positivas.
+
+$$
+    \text{recall} = \frac{TP}{TP + FN}
+$$
+
+donde $FN$ son los falsos negativos. Este métrica se utiliza como métrica de rendimiento cuando el objetivo es `limitar el número de falsos negativos`.
+
+Existe un equilibrio entre la optimización del `recall` y el `precision`. Se puede obtener de forma sencilla, una recuperación perfecta si se predice que todas las muestras pertenecen a la clase positiva. Si se predice que todas las muestras pertenecen a la clase positiva, no habrá falsos negativos ni verdaderos negativos. Sin embargo, predecir todas las muestras como positivas, dará lugar a muchos falsos positivos y, por lo tanto, su `precision` será muy baja. Por otro lado, si se encuentra un modelo que predice sólo el punto de datos del que se está más seguro como positivo y el resto como negativo, entonces `precision` será perfecto (suponiendo que este punto de datos sea de hecho positivo), pero el `recall` será muy malo [@lihkir_model_evaluation].
+
+Por lo tanto, aunque `precision` y `recall` sean medidas muy importantes, si sólo se tiene en cuenta una de ellas no se obtiene una visión completa. Una forma de resumirlas es usando el `f-score`, que es la `media armónica` entre precision y recall:
+
+$$
+    \text{F} = 2 \cdot \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}.
+$$
+
+Esta variante concreta también se conoce como $f_1$-score. Finalmente, el área bajo la curva `ROC` proporciona una evaluación del rendimiento global del modelo, considerando todas las posibles tasas de verdaderos positivos frente a falsos positivos.
+
+Veamos entonces cuáles son los resultados para las métricas mencionadas en nuestros modelos
+
+``` {python}
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score
+import numpy as np
+
+y_pred = log_reg.predict(X_test)
+y_pred = np.where(y_pred > 0.5, 1, 0)
+
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+auc = roc_auc_score(y_test, y_pred)
+
+y_pred2 = log_reg_2.predict(X_test)
+y_pred2_a = np.where(y_pred2 > 0.5, 1, 0)
+
+precision2 = precision_score(y_test, y_pred2_a)
+recall2 = recall_score(y_test, y_pred2_a)
+f1_2 = f1_score(y_test, y_pred2_a)
+auc2 = roc_auc_score(y_test, y_pred2_a)
+```
+
+``` {python}
+#| echo: false
+metrics_dict = {
+    "Precision": precision,
+    "Recall": recall,
+    "F1-score": f1,
+    "AUC": auc
+}
+
+metrics_dict2 = {
+    "Precision": precision2,
+    "Recall": recall2,
+    "F1-score": f1_2,
+    "AUC": auc2
+}
+
+metrics = pd.DataFrame.from_dict(metrics_dict, orient='index', columns=['Logit 1'])
+metrics2 = pd.DataFrame.from_dict(metrics_dict2, orient='index', columns=['Logit 2'])
+metrics = pd.concat([metrics, metrics2], axis = 1).T
+
+metrics
+```
+
+Las métricas de evaluación muestran que el modelo `Logit 2` presenta una mejora marginal en comparación con `Logit 1` en la clasificación de los resultados de finalización de la carrera. Ambos modelos tienen una precisión, recall y AUC similares, pero el `Logit 2` muestra una leve mejora en el F1-score, lo que sugiere un mejor equilibrio entre precisión y recall. En resumen, el `Logit 2` muestra un rendimiento ligeramente superior en la clasificación de los resultados en comparación con el `Logit 1`.
+
+# Visualización de los resultados
+
+## Curva ROC
+
+Antes de realizar el gráfico de la curva ROC debemos ver dos gráficos que nos darán contexto al mecánismo de los umbrales detrás de esta curva. 
+
+``` {python}
+#| output: false
+from sklearn.metrics import roc_curve
+fpr, tpr, thresholds = roc_curve(y_test, y_pred2)
+
+y_test_g = y_test['finished_or_no'].values
+
+fig_hist = px.histogram(
+    x=y_pred2, color=y_test_g, nbins=50,
+    labels=dict(color='True Labels', x='Score')
+)
+
+fig_hist.update_layout(
+    margin={'b': 0, 'r': 30, 'l': 30, 't': 0},
+    xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    plot_bgcolor='rgba(0, 0, 0, 0.0)',
+    paper_bgcolor='rgba(0, 0, 0, 0.0)',
+    font_color="white",
+    hoverlabel=dict(
+        bgcolor="#111"
+    )
+)
+
+fig_hist.show()
+```
+
+``` {python}
+#| echo: false
+fig_hist.write_html('roc_logit_binary_g1.html')
+```
+
+``` {=html}
+<iframe
+    src = 'roc_logit_binary_g1.html'
+    width = '730'
+    height = '520'
+    title = 'ROC Logit Binary Graph 1'
+>
+</iframe>
+```
+
+En el histograma, observamos que la puntuación se distribuye de tal forma que la mayoría de las etiquetas positivas y negativas se sitúan cerca de 0, y las que más valores se reunen en 1 serían las negativas. Cuando fijamos un umbral en la puntuación, todos los bines a su izquierda se clasificarán como 0, y todo a la derecha serán 1. Obviamente, hay algunos valores atípicos, como las muestras negativas a las que nuestro modelo dio una puntuación alta, y las muestras positivas con una puntuación baja. Si fijamos un umbral justo en el medio, esos valores atípicos se convertirán respectivamente en falsos positivos y falsos negativos.
+
+Evaluemos entonces el rendimiento del modelo con diferentes umbrales
+
+``` {python}
+#| output: false
+df = pd.DataFrame({
+    'False Positive Rate': fpr,
+    'True Positive Rate': tpr
+}, index=thresholds)
+df.index.name = "Thresholds"
+df.columns.name = "Rate"
+
+fig_thresh = px.line(
+    df, title='TPR y FPR en cada umbral',
+    width=700, height=500
+)
+
+fig_thresh.update_yaxes(scaleanchor="x", scaleratio=1)
+fig_thresh.update_xaxes(range=[0, 1], constrain='domain')
+
+fig_thresh.update_layout(
+    margin={'b': 0, 'r': 30, 'l': 30, 't': 50},
+    xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    plot_bgcolor='rgba(0, 0, 0, 0.0)',
+    paper_bgcolor='rgba(0, 0, 0, 0.0)',
+    font_color="white",
+    hoverlabel=dict(
+        bgcolor="#111"
+    )
+)
+
+fig_thresh.show()
+```
+
+``` {python}
+#| echo: false
+fig_thresh.write_html('roc_logit_binary_g2.html')
+```
+
+``` {=html}
+<iframe
+    src = 'roc_logit_binary_g2.html'
+    width = '730'
+    height = '520'
+    title = 'ROC Logit Binary Graph 2'
+>
+</iframe>
+```
+
+A medida que ajustamos los umbrales, el número de positivos aumentará o disminuirá, y al mismo tiempo también cambiará el número de verdaderos positivos; esto se muestra en el segundo gráfico. Como se puede ver, el modelo parece funcionar bastante bien, porque la tasa de verdaderos positivos disminuye lentamente, mientras que la tasa de falsos positivos disminuye bruscamente a medida que aumentamos el umbral. Cada una de esas dos líneas representa una dimensión de la curva ROC.
+
+``` {python}
+#| output: false
+fig_roc = px.area(
+    x=fpr, y=tpr,
+    title=f'Curva de ROC',
+    labels=dict(x='False Positive Rate', y='True Positive Rate'),
+    width=700, height=500
+)
+
+fig_roc.add_shape(
+    type='line', line=dict(dash='dash', color='white'),
+    x0=0, x1=1, y0=0, y1=1
+)
+
+fig_roc.add_annotation(
+    xref = 'paper', yref = 'paper',
+    x = .95, y = .05,
+    text = f'AUC: {auc2:.4f}',
+    showarrow = False,
+    bordercolor = 'black',
+    borderwidth = .5,
+    bgcolor = '#e10600'
+)
+
+fig_roc.update_yaxes(scaleanchor="x", scaleratio=1)
+fig_roc.update_xaxes(constrain='domain')
+
+fig_roc.update_layout(
+    margin={'b': 0, 'r': 30, 'l': 30, 't': 50},
+    xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    plot_bgcolor='rgba(0, 0, 0, 0.0)',
+    paper_bgcolor='rgba(0, 0, 0, 0.0)',
+    font_color="white",
+    hoverlabel=dict(
+        bgcolor="#111"
+    )
+)
+
+fig_roc.show()
+```
+
+``` {python}
+#| echo: false
+fig_roc.write_html('roc_logit_binary.html')
+```
+
+``` {=html}
+<iframe
+    src = 'roc_logit_binary.html'
+    width = '730'
+    height = '520'
+    title = 'ROC Logit Binary Graph'
+>
+</iframe>
+```
+
+Notemos que esta curva ROC se parece a la curva de TPR del gráfico anterior. Esto se debe a que son la misma curva, salvo que el eje x consiste en valores crecientes de FPR en lugar de umbral, razón por la cual la línea está invertida y distorsionada. También se puede observar el área bajo la curva ROC (ROC AUC), que es bastante alta, lo que concuerda con nuestra interpretación de los gráficos anteriores.
+
+## Matriz de confusión 
+
+Otra forma de visualizar los aciertos en las predicciones de los modelos es mediante una matriz de confusión. En ella podremos observar los valores $TP$, $FP$, $TN$ y $FN$ predichos por el modelo y determinar qué tanto es el acierto.
+
+``` {python}
+#| output: false
+from sklearn.metrics import confusion_matrix
+import plotly.figure_factory as ff
+
+conf_matrix_log_reg = confusion_matrix(y_test, y_pred2_a)
+
+labels = ['No Finalizado', 'Finalizado']
+fig_cm = ff.create_annotated_heatmap(conf_matrix_log_reg, x=labels, y=labels, colorscale=[[0, '#FFFFFF'], [1, '#e10600']])
+fig_cm.update_layout(title='Matriz de Confusión para Logit 2')
+
+fig_cm.update_layout(
+    margin={'b': 0, 'r': 30, 'l': 30, 't': 50},
+    xaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    yaxis={'gridcolor': '#111', 'tickfont': {'color': 'white'}},
+    plot_bgcolor='rgba(0, 0, 0, 0.0)',
+    paper_bgcolor='rgba(0, 0, 0, 0.0)',
+    font_color="white",
+    hoverlabel=dict(
+        bgcolor="#111"
+    )
+)
+
+fig_cm.show()
+```
+
+``` {python}
+#| echo: false
+fig_cm.write_html('cm_logit_binary.html')
+```
+
+``` {=html}
+<iframe
+    src = 'cm_logit_binary.html'
+    width = '730'
+    height = '520'
+    title = 'Confusion Matrix Logit Binary Graph'
+>
+</iframe>
+```
+
+# Modelo Logístico
+
+Luego de realizar la evaluación del modelo mediante las distinas métricas podemos determinar que el segundo modelo logístico obtenido se ajusta bien a los resultados esperados. Podemos notar un buen ajuste mediante la **curva de ROC** y también tenemos un buen valor para el $f_1$-score la cual nos permite contemplar que hay una cantidad poco significativa de $FP$ y $FN$. El modelo logístico entonces estaría dado de la siguiente forma:
+
+$$
+    \begin{align*}
+    \hat{g_j} = &- 30.3484 - 0.2169 \text{grid}_j + 0.1308 \text{minutes}_j - 0.0057 \text{constructorid}_j \\
+        &+ 0.3981 \text{pitstop}_j + 0.0901 \text{fastestlapspeed}_j
+    \end{align*}
+$$
+
+donde $j$ será la población que se querrá predecir.
