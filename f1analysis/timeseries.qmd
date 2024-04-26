@@ -5,17 +5,13 @@ description: |
  La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
 ---
 
-``` {python load_os}
+``` {r}
 #| echo: false
-import os 
-from dotenv import load_dotenv
-import warnings
-from sklearn.exceptions import DataConversionWarning
-warnings.filterwarnings(action='ignore', category=DataConversionWarning)
-
-load_dotenv()
-
-DATABASE_URL = os.environ.get('DATABASE_URL')
+HOST <- Sys.getenv('HOST')
+DB_NAME <- Sys.getenv('DB_NAME')
+USER <- Sys.getenv('USER')
+PASS <- Sys.getenv('PASSWORD')
+PORT <- Sys.getenv('PORT')
 ```
 
 # Definición 
@@ -46,24 +42,32 @@ Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo 
 
 Primero, importamos las bibliotecas necesarias:
 
-``` {python libraries}
-import pandas as pd
-import psycopg2 as psy
-from psycopg2 import Error
-
-import plotly.graph_objects as go
-import plotly.express as px
+``` {r libraries}
+library(stats)
+library(DBI)
+library(RPostgreSQL)
+library(dplyr)
+library(tidyr)
+library(tsibble)
+library(plotly)
+library(TSstudio)
+library(forecast)
 ```
 
 A continuación, creamos la función que facilita las conexiones:
 
-``` {python db_function}
-def connection_db() -> psy.extensions.connection:
-    try:
-        conn = psy.connect(DATABASE_URL)
-        return conn
-    except (Exception, Error) as e:
-        print('Error while connecting to PostgreSQL', e)
+``` {r db_function}
+connection_db <- function(){
+  return(connection <- dbConnect(
+      RPostgres::Postgres(),
+      dbname = 'f1_db',
+                 host = 'ep-delicate-art-a5sxoon2.us-east-2.aws.neon.tech',
+                 port = 5432,
+                 user = 'f1_db_owner',
+                 password = 'VOTP3ugh8Gts'
+    )
+  )
+}
 ```
 
 Es importante destacar que esta función utiliza una variable de entorno para almacenar los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/), que nos permite crear un servidor de bases de datos con `PostgreSQL`.
@@ -76,47 +80,44 @@ Como mencionamos previamente, las tablas y sus respectivas columnas que utilizar
 
 Luego, ejecutamos la consulta SQL para obtener los datos relevantes:
 
-``` {python}
-try:
-    connection = connection_db()
-    cursor = connection.cursor()
+``` {r}
+connection <- connection_db() 
 
-    cursor.execute(
-        """
-            SELECT 
-                r.date AS race_date, 
-                c.name AS team, 
-                SUM(res.points) AS points_sum,
-                round((SUM(res.points) / COALESCE(fs.total_first_second, 1)) * 100, 4) AS adjusted_points_percentage
-            FROM Results res
-            JOIN Constructors c ON res.constructorId = c.constructorId
-            JOIN Races r ON res.raceId = r.raceId
-            LEFT JOIN (
-                SELECT raceId, SUM(points) AS total_first_second
-                FROM Results
-                WHERE positionOrder IN (1, 2)
-                GROUP BY raceId
-            ) fs ON fs.raceId = res.raceId
-            WHERE r.date >= '2010-01-01'
-            GROUP BY r.date, c.name, fs.total_first_second
-            ORDER BY r.date ASC, c.name ASC;
-        """
-    )
+query <- "
+  SELECT 
+  	r.date AS race_date, 
+  	c.name AS team, 
+  	SUM(res.points) AS points_sum,
+  	round((SUM(res.points) / COALESCE(fs.total_first_second, 1)) * 100, 4) AS adjusted_points_percentage
+  FROM Results res
+  JOIN Constructors c ON res.constructorId = c.constructorId
+  JOIN Races r ON res.raceId = r.raceId
+  LEFT JOIN (
+    SELECT raceId, SUM(points) AS total_first_second
+    FROM Results
+    WHERE positionOrder IN (1, 2)
+    GROUP BY raceId
+  ) fs ON fs.raceId = res.raceId
+  WHERE r.date >= '2010-01-01'
+  GROUP BY r.date, c.name, fs.total_first_second
+  ORDER BY r.date ASC, c.name ASC;
+"
+race_data <- dbGetQuery(connection, query)
 
-    records = cursor.fetchall()
-    records_data = pd.DataFrame(records)
+dbDisconnect(connection)
 
-    columns = []
-    for column in cursor.description:
-        columns.append(column[0])
+race_ts_data <- race_data %>%
+  filter(team %in% c("Ferrari", "Mercedes", "Red Bull", "McLaren", "Williams")) %>%
+  select(race_date, team, adjusted_points_percentage) %>%
+  spread(key = team, value = adjusted_points_percentage) %>%
+  fill(Ferrari, .direction = "down") %>%
+  fill(Mercedes, .direction = "down") %>%
+  fill(`Red Bull`, .direction = "down") %>%
+  fill(McLaren, .direction = "down") %>%
+  fill(Williams, .direction = "down") %>%
+  as_tsibble(index = race_date)
 
-    display(records_data)
-except (Exception, Error) as e:
-    print('Error while executing the query', e)
-finally:
-    if(connection):
-        cursor.close()
-        connection.close()
+head(race_ts_data)
 ```
 
 Con este procedimiento, hemos obtenido los datos necesarios para nuestro análisis y modelado subsiguiente.
@@ -136,3 +137,732 @@ Utilizamos la siguiente notación para denotar los parámetros `SARIMA`, donde l
 $$
     \text{SARIMA}(p, d, q) \times (P, D, Q).
 $$
+
+## Visualización de las series de tiempo
+
+Inicialmente, veamos gráficamente las series de tiempo que tenemos para cada equipo
+
+### Ferrari
+
+``` {r}
+m <- list(
+    l = 0,
+    r = 0,
+    b = 0,
+    t = 80
+)
+
+frecuencia <- 25  
+
+ferrari_ts <- ts(
+    race_ts_data$Ferrari, 
+    frequency = frecuencia, 
+    start = c(
+        as.integer(
+            format(min(race_ts_data$race_date), "%Y")
+        ),
+        as.integer(format(min(race_ts_data$race_date), "%j"))
+    )
+)
+
+fig <- ts_plot(
+    ferrari_ts,
+    title = "Rendimiento de Ferrari desde el 2013-Presente",
+    Ytitle = "Porcentajes de puntos ganados",
+    Xtitle = "Año",
+    color = "#a6051a"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Red Bull
+
+``` {r}
+redbull_ts <- ts(
+    race_ts_data$`Red Bull`, 
+    frequency = frecuencia, 
+    start = c(
+        as.integer(
+            format(min(race_ts_data$race_date), "%Y")
+        ),
+        as.integer(format(min(race_ts_data$race_date), "%j"))
+    )
+)
+
+fig <- ts_plot(
+    redbull_ts,
+    title = "Rendimiento de Red Bull desde el 2013-Presente",
+    Ytitle = "Porcentajes de puntos ganados",
+    Xtitle = "Año",
+    color = "#223971"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Mercedes
+
+``` {r}
+mercedes_ts <- ts(
+    race_ts_data$Mercedes, 
+    frequency = frecuencia, 
+    start = c(
+        as.integer(
+            format(min(race_ts_data$race_date), "%Y")
+        ),
+        as.integer(format(min(race_ts_data$race_date), "%j"))
+    )
+)
+
+fig <- ts_plot(
+    mercedes_ts,
+    title = "Rendimiento de Mercedes desde el 2013-Presente",
+    Ytitle = "Porcentajes de puntos ganados",
+    Xtitle = "Año",
+    color = "#00a19c"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Williams
+
+``` {r}
+williams_ts <- ts(
+    race_ts_data$Williams, 
+    frequency = frecuencia, 
+    start = c(
+        as.integer(
+            format(min(race_ts_data$race_date), "%Y")
+        ),
+        as.integer(format(min(race_ts_data$race_date), "%j"))
+    )
+)
+
+fig <- ts_plot(
+    williams_ts,
+    title = "Rendimiento de Williams desde el 2013-Presente",
+    Ytitle = "Porcentajes de puntos ganados",
+    Xtitle = "Año",
+    color = "#00a3e0"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### McLaren
+
+``` {r}
+mclaren_ts <- ts(
+    race_ts_data$McLaren, 
+    frequency = frecuencia, 
+    start = c(
+        as.integer(
+            format(min(race_ts_data$race_date), "%Y")
+        ),
+        as.integer(format(min(race_ts_data$race_date), "%j"))
+    )
+)
+
+fig <- ts_plot(
+    mclaren_ts,
+    title = "Rendimiento de McLaren desde el 2013-Presente",
+    Ytitle = "Porcentajes de puntos ganados",
+    Xtitle = "Año",
+    color = "#ff8000"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+## Divisón de datos para entrenamiento del modelo
+
+Ahora procederemos a definir nuestro conjunto de datos para entrenar el modelo. Donde, como mencionamos anteriormente, tomaremos como horizonte 25 premios. 
+
+``` {r}
+ferrari_split <- ts_split(ferrari_ts, sample.out = 25)
+redbull_split <- ts_split(redbull_ts, sample.out = 25)
+williams_split <- ts_split(williams_ts, sample.out = 25)
+mclaren_split <- ts_split(mclaren_ts, sample.out = 25)
+mercedes_split <- ts_split(mercedes_ts, sample.out = 25)
+
+ferrari_train <- ferrari_split$train
+ferrari_test <- ferrari_split$test
+
+redbull_train <- redbull_split$train
+redbull_test <- redbull_split$test
+
+williams_train <- williams_split$train
+williams_test <- williams_split$test
+
+mclaren_train <- mclaren_split$train
+mclaren_test <- mclaren_split$test
+
+mercedes_train <- mercedes_split$train
+mercedes_test <- mercedes_split$test
+```
+
+## Criterios AIC, BIC y HQIC
+
+Los criterios de información de Akaike (`AIC`), Bayesiano (`BIC`) y de Hannan-Quinn (`HQIC`) utilizan el método de estimación de máxima verosimilitud (`log-verosimilitud`) de los modelos como medida de ajuste. Estas medidas buscan valores bajos para indicar un mejor ajuste del modelo a los datos, empleando las siguientes fórmulas:
+
+$$
+\begin{align*}
+    \text{AIC} &= 2k - 2 \ln(L) \\
+    \text{BIC} &= k \ln(n) - 2 \ln(L) \\
+    \text{HQIC} &= 2k \ln(\ln(n)) - 2 \ln(L).
+\end{align*}
+$$
+
+donde $k$ representa el `número de parámetros` en el modelo estadístico, $L$ el valor de la función de máxima verosimilitud del modelo estimado, y $n$ el tamaño de la muestra. 
+
+Es importante destacar que, aunque aumentar el `número de parámetros` puede aumentar el valor de la verosimilitud, esto puede conducir a problemas de **sobreajuste** en el modelo. Para abordar este problema, los criterios mencionados anteriormente introducen un `término de penalización` basado en el número de parámetros. El término de penalización es mayor en el `BIC` que en el `AIC` para muestras superiores a 7. Por su parte, el `HQIC` busca equilibrar esta penalización, situándose entre el `AIC` y el `BIC`. La elección del criterio a utilizar dependerá del objetivo principal de la investigación.
+
+En nuestra investigación, consideraremos el criterio de **Akaike** para identificar el mejor modelo. Comencemos creando una función que tome un dataframe de entrenamiento y devuelva el mejor conjunto de órdenes 
+$p, d, q$ y $P, D, Q$ asociados al criterio AIC de bondad de ajuste, junto con el valor de AIC del mejor modelo encontrado para cada uno de los equipos.
+
+``` {r}
+best_ARIMA <- function(ts_in, p_n, d_n, q_n) {
+    best_aic <- Inf
+    best_pdq <- NULL
+    best_PDQ <- NULL
+    fit <- NULL
+    for(p in 1:p_n) {
+        for(d in 1:d_n) {
+            for (q in 1:q_n) {
+                for(P in 1:p_n) {
+                    for(D in 1:d_n) {
+                        for (Q in 1:q_n) {
+                            tryCatch({
+                                fit <- arima(
+                                    scale(ts_in), 
+                                    order=c(p, d, q), 
+                                    seasonal = list(order = c(P, D, Q), period = 25),
+                                    xreg=1:length(ts_in), 
+                                    method="CSS-ML"
+                                )
+                                tmp_aic <- AIC(fit)
+                                if (tmp_aic < best_aic) {
+                                    best_aic <- tmp_aic
+                                    best_pdq = c(p, d, q)
+                                    best_PDQ = c(P, D, Q)
+                                }
+                            }, error=function(e){})
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return(list("best_aic" = best_aic, "best_pdq" = best_pdq, "best_PDQ" = best_PDQ))
+}
+```
+
+Procedemos a obtener los modelos:
+
+``` {r}
+if(file.exists("models/ferrari_best_arima.rda")) {
+    ferrari_best_model = readRDS("models/ferrari_best_arima.rda")
+} else {
+    ferrari_best_model = best_ARIMA(ferrari_train, 3, 1, 3)
+    saveRDS(best_model, file = "models/ferrari_best_arima.rda")
+}
+
+if(file.exists("models/redbull_best_arima.rda")) {
+    redbull_best_model = readRDS("models/redbull_best_arima.rda")
+} else {
+    redbull_best_model = best_ARIMA(redbull_train, 3, 1, 3)
+    saveRDS(best_model, file = "models/redbull_best_arima.rda")
+}
+
+if(file.exists("models/williams_best_arima.rda")) {
+    williams_best_model = readRDS("models/williams_best_arima.rda")
+} else {
+    williams_best_model = best_ARIMA(williams_train, 3, 1, 3)
+    saveRDS(best_model, file = "models/williams_best_arima.rda")
+}
+
+if(file.exists("models/mclaren_best_arima.rda")) {
+    mclaren_best_model = readRDS("models/mclaren_best_arima.rda")
+} else {
+    mclaren_best_model = best_ARIMA(mclaren_train, 3, 1, 3)
+    saveRDS(best_model, file = "models/mclaren_best_arima.rda")
+}
+
+if(file.exists("models/mercedes_best_arima.rda")) {
+    mercedes_best_model = readRDS("models/mercedes_best_arima.rda")
+} else {
+    mercedes_best_model = best_ARIMA(mercedes_train, 3, 1, 3)
+    saveRDS(best_model, file = "models/mercedes_best_arima.rda")
+}
+```
+
+``` {r}
+#| echo: false
+cat(
+  paste0(
+    "Best Ferrari model: SARIMA(", paste(ferrari_best_model$best_pdq, collapse = ","), ") (", paste(ferrari_best_model$best_PDQ, collapse = ","), ") | Best AIC: ", ferrari_best_model$best_aic, "\n",
+    "Best Red Bull model: SARIMA(", paste(redbull_best_model$best_pdq, collapse = ","), ") (", paste(redbull_best_model$best_PDQ, collapse = ","), ") | Best AIC: ", redbull_best_model$best_aic, "\n",
+    "Best Mercedes model: SARIMA(", paste(mercedes_best_model$best_pdq, collapse = ","), ") (", paste(mercedes_best_model$best_PDQ, collapse = ","), ") | Best AIC: ", mercedes_best_model$best_aic, "\n",
+    "Best Williams model: SARIMA(", paste(williams_best_model$best_pdq, collapse = ","), ") (", paste(williams_best_model$best_PDQ, collapse = ","), ") | Best AIC: ", williams_best_model$best_aic, "\n",
+    "Best McLaren model: SARIMA(", paste(mclaren_best_model$best_pdq, collapse = ","), ") (", paste(mclaren_best_model$best_PDQ, collapse = ","), ") | Best AIC: ", mclaren_best_model$best_aic
+  )
+)
+
+```
+
+# Modelos ajustados
+
+Luego de identificar los mejores ordenes para el modelo `SARIMA`, podemos pasar a identificar el mejor modelo ajustado teniendo en cuenta estos parámetros. Definamos una función para realizar hallar este modelo para cada uno de los equipos de interés.
+
+``` {r}
+fitted_model <- function(file, train, order_pdq, order_PDQ){
+    fit_model <- NULL
+
+    if(file.exists(file)) {
+        fit_model = readRDS(file)
+    } else {
+        fit_model <- arima(
+            train, 
+            order = order_pdq, 
+            seasonal = list(order = order_PDQ)
+        )    
+        saveRDS(fit_model, file = file)
+    }
+
+    return(fit_model)
+}
+```
+
+## Ferrari
+
+``` {r}
+ferrari_fit_model <- fitted_model('models/ferrari_model.rda', ferrari_train, ferrari_best_model$best_pdq, ferrari_best_model$best_PDQ)
+checkresiduals(ferrari_fit_model)
+```
+
+### Forecasting sin rolling
+
+``` {r}
+ferrari_pred_25 <- forecast(ferrari_fit_model, h = 25)
+ferrari_pred_25
+```
+
+``` {r}
+fig <- plot_forecast(
+    ferrari_pred_25,
+    title = "Pronóstico últimas 25 carreras Ferrari",
+    Ytitle = "",
+    Xtitle = "Year",
+    color = "#a6051a"
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Rolling Forecasting
+
+``` {r}
+pred_rolling <- function(historico, prueba, modelo) {
+    predicciones <- numeric(length(prueba))
+    
+    for (t in seq_along(prueba)) {
+        modelo_ajustado <- Arima(historico, model=modelo)
+        pronostico <- forecast(modelo_ajustado, h=1)
+        predicciones[t] <- pronostico$mean
+
+        if (predicciones[t]< 0) {
+            predicciones[t] <- 0
+        } else if (predicciones[t] > 100) {
+            predicciones[t] <- 100
+        }
+        historico <- c(historico, prueba[t])
+    }
+
+    return(predicciones)
+}
+
+predicciones_ferrari <- pred_rolling(ferrari_train, ferrari_test, ferrari_fit_model)
+
+df_entrenamiento <- data.frame(Fecha = time(ferrari_train), Valor = as.numeric(ferrari_train))
+df_prueba <- data.frame(Fecha = time(ferrari_test), Valor = as.numeric(ferrari_test))
+df_predicciones <- data.frame(Fecha = time(ferrari_test), Valor = predicciones_ferrari)
+
+p_ferrari <- plot_ly() %>%
+    add_lines(data = df_entrenamiento, x = ~Fecha, y = ~Valor, name = "Entrenamiento", line = list(color = '#a6051a')) %>%
+    add_lines(data = df_prueba, x = ~Fecha, y = ~Valor, name = "Prueba", line = list(color = '#ffeb00')) %>%
+    add_lines(data = df_predicciones, x = ~Fecha, y = ~Valor, name = "Predicción", line = list(color = '#fff')) %>%
+    layout(
+        title = paste("Predicción ARIMA Rolling -", 25, "premios"),
+        xaxis = list(title = "Año", gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, color = 'white'),
+        showlegend = TRUE,
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        font = list(color = "white"),
+        margin = m
+    )
+
+p_ferrari
+```
+
+## Red Bull
+
+``` {r}
+redbull_fit_model <- fitted_model('models/redbull_model.rda', redbull_train, redbull_best_model$best_pdq, redbull_best_model$best_PDQ)
+checkresiduals(redbull_fit_model)
+```
+
+### Forecasting sin rolling
+
+``` {r}
+redbull_pred_25 <- forecast(redbull_fit_model, h = 25)
+redbull_pred_25
+```
+
+``` {r}
+fig <- plot_forecast(
+    redbull_pred_25,
+    title = "Pronóstico últimas 25 carreras Red Bull",
+    Ytitle = "",
+    Xtitle = "Year",
+    color = '#223971'
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Rolling Forecasting
+
+``` {r}
+predicciones_redbull <- pred_rolling(redbull_train, redbull_test, redbull_fit_model)
+
+df_entrenamiento <- data.frame(Fecha = time(redbull_train), Valor = as.numeric(redbull_train))
+df_prueba <- data.frame(Fecha = time(redbull_test), Valor = as.numeric(redbull_test))
+df_predicciones <- data.frame(Fecha = time(redbull_test), Valor = predicciones_redbull)
+
+p_redbull <- plot_ly() %>%
+    add_lines(data = df_entrenamiento, x = ~Fecha, y = ~Valor, name = "Entrenamiento", line = list(color = '#223971')) %>%
+    add_lines(data = df_prueba, x = ~Fecha, y = ~Valor, name = "Prueba", line = list(color = '#cc1e4a')) %>%
+    add_lines(data = df_predicciones, x = ~Fecha, y = ~Valor, name = "Predicción", line = list(color = '#ffc906')) %>%
+    layout(
+        title = paste("Predicción ARIMA Rolling -", 25, "premios"),
+        xaxis = list(title = "Año", gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, color = 'white'),
+        showlegend = TRUE,
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        font = list(color = "white"),
+        margin = m
+    )
+
+p_redbull
+```
+
+## Mercedes
+
+``` {r}
+mercedes_fit_model <- fitted_model('models/mercedes_model.rda', mercedes_train, mercedes_best_model$best_pdq, mercedes_best_model$best_PDQ)
+checkresiduals(mercedes_fit_model)
+```
+
+### Forecasting sin rolling
+
+``` {r}
+mercedes_pred_25 <- forecast(mercedes_fit_model, h = 25)
+mercedes_pred_25
+```
+
+``` {r}
+fig <- plot_forecast(
+    mercedes_pred_25,
+    title = "Pronóstico últimas 25 carreras Mercedes",
+    Ytitle = "",
+    Xtitle = "Year",
+    color = '#00a19c'
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Rolling Forecasting
+
+``` {r}
+predicciones_mercedes <- pred_rolling(mercedes_train, mercedes_test, mercedes_fit_model)
+
+df_entrenamiento <- data.frame(Fecha = time(mercedes_train), Valor = as.numeric(mercedes_train))
+df_prueba <- data.frame(Fecha = time(mercedes_test), Valor = as.numeric(mercedes_test))
+df_predicciones <- data.frame(Fecha = time(mercedes_test), Valor = predicciones_mercedes)
+
+p_mercedes <- plot_ly() %>%
+    add_lines(data = df_entrenamiento, x = ~Fecha, y = ~Valor, name = "Entrenamiento", line = list(color = '#00a19c')) %>%
+    add_lines(data = df_prueba, x = ~Fecha, y = ~Valor, name = "Prueba", line = list(color = '#80142b')) %>%
+    add_lines(data = df_predicciones, x = ~Fecha, y = ~Valor, name = "Predicción", line = list(color = '#c6c6c6')) %>%
+    layout(
+        title = paste("Predicción ARIMA Rolling -", 25, "premios"),
+        xaxis = list(title = "Año", gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, color = 'white'),
+        showlegend = TRUE,
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        font = list(color = "white"),
+        margin = m
+    )
+
+p_mercedes
+```
+
+## Williams
+
+``` {r}
+williams_fit_model <- fitted_model('models/williams_model.rda', williams_train, williams_best_model$best_pdq, williams_best_model$best_PDQ)
+checkresiduals(williams_fit_model)
+```
+
+### Forecasting sin rolling
+
+``` {r}
+williams_pred_25 <- forecast(williams_fit_model, h = 25)
+williams_pred_25
+```
+
+``` {r}
+fig <- plot_forecast(
+    williams_pred_25,
+    title = "Pronóstico últimas 25 carreras Williams",
+    Ytitle = "",
+    Xtitle = "Year",
+    color = '#00a3e0'
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Rolling Forecasting
+
+``` {r}
+predicciones_williams <- pred_rolling(williams_train, williams_test, williams_fit_model)
+
+df_entrenamiento <- data.frame(Fecha = time(williams_train), Valor = as.numeric(williams_train))
+df_prueba <- data.frame(Fecha = time(williams_test), Valor = as.numeric(williams_test))
+df_predicciones <- data.frame(Fecha = time(williams_test), Valor = predicciones_williams)
+
+p_williams <- plot_ly() %>%
+    add_lines(data = df_entrenamiento, x = ~Fecha, y = ~Valor, name = "Entrenamiento", line = list(color = '#00a3e0')) %>%
+    add_lines(data = df_prueba, x = ~Fecha, y = ~Valor, name = "Prueba", line = list(color = '#e40046')) %>%
+    add_lines(data = df_predicciones, x = ~Fecha, y = ~Valor, name = "Predicción", line = list(color = '#041e42')) %>%
+    layout(
+        title = paste("Predicción ARIMA Rolling -", 25, "premios"),
+        xaxis = list(title = "Año", gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, color = 'white'),
+        showlegend = TRUE,
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        font = list(color = "white"),
+        margin = m
+    )
+
+p_williams
+```
+
+## McLaren
+
+``` {r}
+mclaren_fit_model <- fitted_model('models/mclaren_model.rda', mclaren_train, mclaren_best_model$best_pdq, mclaren_best_model$best_PDQ)
+checkresiduals(mclaren_fit_model)
+```
+
+### Forecasting sin rolling
+
+``` {r}
+mclaren_pred_25 <- forecast(mclaren_fit_model, h = 25)
+mclaren_pred_25
+```
+
+``` {r}
+fig <- plot_forecast(
+    mclaren_pred_25,
+    title = "Pronóstico últimas 25 carreras McLaren",
+    Ytitle = "",
+    Xtitle = "Year",
+    color = '#ff8000'
+)
+
+fig %>%
+    layout(
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, showticklabels = F),
+        showlegend = FALSE,
+        font = list(color = "white"),
+        margin = m
+    )
+```
+
+### Rolling Forecasting
+
+``` {r}
+predicciones_mclaren <- pred_rolling(mclaren_train, mclaren_test, mclaren_fit_model)
+
+df_entrenamiento <- data.frame(Fecha = time(mclaren_train), Valor = as.numeric(mclaren_train))
+df_prueba <- data.frame(Fecha = time(mclaren_test), Valor = as.numeric(mclaren_test))
+df_predicciones <- data.frame(Fecha = time(mclaren_test), Valor = predicciones_mclaren)
+
+p_mclaren <- plot_ly() %>%
+    add_lines(data = df_entrenamiento, x = ~Fecha, y = ~Valor, name = "Entrenamiento", line = list(color = '#ff8000')) %>%
+    add_lines(data = df_prueba, x = ~Fecha, y = ~Valor, name = "Prueba", line = list(color = '#47c7fc')) %>%
+    add_lines(data = df_predicciones, x = ~Fecha, y = ~Valor, name = "Predicción", line = list(color = '#fff')) %>%
+    layout(
+        title = paste("Predicción ARIMA Rolling -", 25, "premios"),
+        xaxis = list(title = "Año", gridcolor = "#111", showline = FALSE, color = 'white'),
+        yaxis = list(title = "", gridcolor = "#111", showline = FALSE, color = 'white'),
+        showlegend = TRUE,
+        paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+        plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+        font = list(color = "white"),
+        margin = m
+    )
+
+p_mclaren
+```
+
+# Evaluación de los modelos
+
+``` {r}
+forecast_accuracy <- function(forecast, actual, str_name) {
+  epsilon <- 0.0001
+
+  mape <- mean(abs(forecast - actual) / (abs(actual) + epsilon))
+  
+  mae <- mean(abs(forecast - actual))
+  rmse <- sqrt(mean((forecast - actual)^2))
+  mse <- mean((forecast - actual)^2)
+  
+  r_squared <- 1 - sum((actual - forecast)^2) / sum((actual - mean(actual))^2)
+  
+  df_acc <- data.frame(
+    MAE = mae,
+    MSE = mse,
+    MAPE = mape,
+    RMSE = rmse,
+    R2 = r_squared
+  )
+  
+  rownames(df_acc) <- str_name
+  
+  return(df_acc)
+}
+
+```
+
+Comencemos obteniendo las métricas para los modelo utilizando `rolling`:
+
+``` {r}
+ferrari_accuracy = forecast_accuracy(predicciones_ferrari, ferrari_test, 'Ferrari Rolling')
+redbull_accuracy = forecast_accuracy(predicciones_redbull, redbull_test, 'Red Bull Rolling')
+mercedes_accuracy = forecast_accuracy(predicciones_mercedes, mercedes_test, 'Mercedes Rolling')
+williams_accuracy = forecast_accuracy(predicciones_williams, williams_test, 'Williams Rolling')
+mclaren_accuracy = forecast_accuracy(predicciones_mclaren, mclaren_test, 'McLaren Rolling')
+```
+
+Ahora, obtendremos las métricas para lo modelos `sin utilizar rolling`:
+
+``` {r}
+ferrari_accuracy_nor = forecast_accuracy(ferrari_pred_25$mean, ferrari_test, 'Ferrari sin Rolling')
+redbull_accuracy_nor = forecast_accuracy(redbull_pred_25$mean, redbull_test, 'Red Bull sin Rolling')
+mercedes_accuracy_nor = forecast_accuracy(mercedes_pred_25$mean, mercedes_test, 'Mercedes sin Rolling')
+williams_accuracy_nor = forecast_accuracy(williams_pred_25$mean, williams_test, 'Williams sin Rolling')
+mclaren_accuracy_nor = forecast_accuracy(mclaren_pred_25$mean, mclaren_test, 'McLaren sin Rolling')
+
+accuracy <- rbind(ferrari_accuracy, redbull_accuracy, mercedes_accuracy, williams_accuracy, mclaren_accuracy,
+                  ferrari_accuracy_nor, redbull_accuracy_nor, mercedes_accuracy_nor, williams_accuracy_nor, mclaren_accuracy_nor)
+
+accuracy
+```
+
+``` {r}
+ferrari_test
+```
