@@ -131,6 +131,38 @@ div.csl-indent {
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
+<script type="text/javascript">
+
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
+if (typeof require !== 'undefined') {
+
+require.undef("plotly");
+
+requirejs.config({
+
+    paths: {
+
+        'plotly': ['https://cdn.plot.ly/plotly-2.30.0.min']
+
+    }
+
+});
+
+require(['plotly'], function(Plotly) {
+
+    window._Plotly = Plotly;
+
+});
+
+}
+
+</script>
+
+
+
 <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
@@ -323,7 +355,7 @@ div.csl-indent {
 <h1>Obtención de los datos</h1>
 <p>Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.</p>
 <p>Primero, importamos las bibliotecas necesarias:</p>
-<div id="c53d0e88" class="cell" data-execution_count="2">
+<div id="bab5795d" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
@@ -334,7 +366,7 @@ div.csl-indent {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>A continuación, creamos la función que facilita las conexiones:</p>
-<div id="8b0e4727" class="cell" data-execution_count="3">
+<div id="28d6f850" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -351,7 +383,7 @@ div.csl-indent {
 <li><strong>Pit_stops:</strong> stop (número de paradas en boxes).</li>
 </ul>
 <p>Luego, ejecutamos la consulta SQL para obtener los datos relevantes:</p>
-<div id="346d9d75" class="cell" data-execution_count="4">
+<div id="938006a8" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -568,35 +600,202 @@ div.csl-indent {
 <section id="componentes-principales-pca" class="level1">
 <h1>Componentes principales (PCA)</h1>
 <p>Convertiremos los datos a numeric, particularmente para manejar datos de tipo <code>int64</code>, además rellenaremos los datos <code>NA</code> y trataremos con los valores <code>inf</code></p>
-<div id="1abdfc38" class="cell" data-execution_count="5">
+<div id="8ba37917" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.<span class="bu">apply</span>(pd.to_numeric, errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.fillna(<span class="dv">0</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.replace([<span class="bu">float</span>(<span class="st">'inf'</span>), <span class="bu">float</span>(<span class="st">'-inf'</span>)], <span class="dv">0</span>) <span class="cf">if</span> x.dtype.kind <span class="kw">in</span> <span class="st">'biufc'</span> <span class="cf">else</span> x)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ahora, normalizaremos las características para asegurar que todas tengan la misma escala y contribución al análisis.</p>
-<div id="62a91789" class="cell" data-execution_count="6">
+<div id="7dfda6bf" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>] <span class="op">=</span> scaler.fit_transform(constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>])</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Realicemos ahora el análisis de componentes principales</p>
-<div id="d865365d" class="cell" data-execution_count="7">
+<div id="7a91129e" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">4</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>pca_results <span class="op">=</span> pca.fit_transform(constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>])</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="5d831dcd" class="cell" data-execution_count="8">
+<div id="6e177cd6" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-stdout">
-<pre><code>Varianza explicada por cada componente principal:
-[0.40634954 0.27080934 0.11465565 0.0967851 ]
+<pre><code>Eigenvalues
+                       Dim.1     Dim.2     Dim.3     Dim.4     
+Variance               3.266     2.177     0.922     0.778     
+% of var.              40.635    27.081    11.466    9.679     
+Cumulative % of var.   40.635    67.716    79.181    88.860    
 
-Suma acumulada de varianza explicada:
-[0.40634954 0.67715888 0.79181454 0.88859964]</code></pre>
+Individuals (the 10 first)
+ Dist |  Dim.1   |  Dim.2   |  Dim.3   |  Dim.4   |   ctr    |   cos2   |   ctr    |   cos2   |   ctr    |   cos2   | 
+    1 |3.708    | 0.259    | 3.606    | -0.346   | -0.746   | 0.070    | 0.973    | -0.093   | -0.201   | 
+    2 |1.147    | -0.856   | -0.707   | 0.243    | 0.150    | -0.747   | -0.617   | 0.212    | 0.131    | 
+    3 |1.576    | 0.940    | -0.740   | 0.728    | -0.723   | 0.596    | -0.469   | 0.462    | -0.459   | 
+    4 |1.069    | 0.909    | -0.318   | 0.122    | -0.448   | 0.850    | -0.297   | 0.114    | -0.419   | 
+    5 |2.045    | -1.110   | 0.021    | -0.992   | -1.402   | -0.543   | 0.010    | -0.485   | -0.686   | 
+    6 |1.058    | 0.648    | -0.477   | 0.282    | -0.626   | 0.613    | -0.451   | 0.266    | -0.592   | 
+    7 |2.517    | -0.445   | 1.736    | 1.094    | 1.388    | -0.177   | 0.690    | 0.435    | 0.551    | 
+    8 |3.126    | -1.879   | -1.479   | 1.026    | 1.732    | -0.601   | -0.473   | 0.328    | 0.554    | 
+    9 |1.726    | 0.341    | 1.416    | 0.797    | 0.473    | 0.198    | 0.820    | 0.461    | 0.274    | 
+   10 |2.035    | -1.052   | -0.468   | -0.857   | -1.442   | -0.517   | -0.230   | -0.421   | -0.709   | 
+
+Variables
+avg_points           | 0.842    | -0.370   | 0.004    | 0.054    | 
+avg_grid             | -0.066   | 0.695    | -0.437   | -0.387   | 
+avg_positionorder    | -0.677   | 0.052    | 0.180    | 0.597    | 
+avg_laps             | 0.515    | 0.831    | 0.137    | 0.090    | 
+avg_fastestlapspeed  | -0.396   | -0.855   | -0.224   | -0.242   | 
+avg_wins             | 0.706    | -0.310   | 0.421    | -0.177   | 
+avg_stops            | 0.562    | -0.181   | -0.672   | 0.402    | 
+avg_abandonos        | -0.926   | 0.059    | -0.010   | -0.097   | </code></pre>
 </div>
 </div>
+<div id="414c0506" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span>(i): <span class="ss">f"PC </span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>var<span class="sc">:.1f}</span><span class="ss">%)"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, var <span class="kw">in</span> <span class="bu">enumerate</span>(pca.explained_variance_ratio_ <span class="op">*</span> <span class="dv">100</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>labels[<span class="st">'color'</span>] <span class="op">=</span> <span class="st">'Equipos'</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.scatter(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    pca_results, </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="dv">0</span>, </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="dv">1</span>, </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>constructor_data[<span class="st">"name"</span>],</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    hover_name<span class="op">=</span>constructor_data[<span class="st">"name"</span>],</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>{</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Avg Wins: '</span>: <span class="bu">round</span>(constructor_data[<span class="st">'avg_wins'</span>], <span class="dv">2</span>),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Avg Points: '</span>: <span class="bu">round</span>(constructor_data[<span class="st">'avg_points'</span>], <span class="dv">2</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Avg Abandonos: '</span>: <span class="bu">round</span>(constructor_data[<span class="st">'avg_abandonos'</span>], <span class="dv">2</span>),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">30</span>},</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Primera Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Segunda Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    showlegend <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<iframe src="graphs/pca_cluster_g2.html" width="730" height="520" title="PCA Cluster Graph 2">
+</iframe>
+<p>Clustericemos ahora estos equipos mediante el método de <code>KMeans</code>.</p>
+<div id="88d36e52" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pca_results_df <span class="op">=</span> pd.DataFrame(pca_results, columns<span class="op">=</span>[<span class="st">"Dim.1"</span>, <span class="st">"Dim.2"</span>, <span class="st">"Dim.3"</span>, <span class="st">"Dim.4"</span>])</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="op">=</span> kmeans.fit_predict(pca_results_df.iloc[:, :<span class="dv">2</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>pca_ind <span class="op">=</span> pd.DataFrame(pca_results_df.iloc[:, :<span class="dv">2</span>], columns<span class="op">=</span>[<span class="st">"Dim.1"</span>, <span class="st">"Dim.2"</span>])</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'constructorName'</span>] <span class="op">=</span> constructor_data[<span class="st">'name'</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgWins'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_wins'</span>]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgPoints'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_points'</span>]</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgAbandonos'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_abandonos'</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'cluster'</span>] <span class="op">=</span> kmeans_result</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.scatter(</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    pca_ind, x<span class="op">=</span><span class="st">'Dim.1'</span>, y<span class="op">=</span><span class="st">'Dim.2'</span>, color<span class="op">=</span><span class="st">'cluster'</span>, hover_name<span class="op">=</span><span class="st">'constructorName'</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>{<span class="st">'avgWins'</span>: <span class="va">True</span>, <span class="st">'avgPoints'</span>: <span class="va">True</span>, <span class="st">'avgAbandonos'</span>: <span class="va">True</span>, <span class="st">'cluster'</span>: <span class="va">True</span>},</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{<span class="st">'Dim.1'</span>: <span class="st">'Primera Dimensión'</span>, <span class="st">'Dim.2'</span>: <span class="st">'Segunda Dimensión'</span>},</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f"PCA de Constructores de F1"</span>,</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">'Viridis'</span>, size_max<span class="op">=</span><span class="dv">10</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>fig.update(layout_coloraxis_showscale<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">30</span>},</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Primera Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Segunda Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    showlegend <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, feature <span class="kw">in</span> <span class="bu">enumerate</span>(constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>]):</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    fig.add_annotation(</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>        ax<span class="op">=</span><span class="dv">0</span>, ay<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        axref<span class="op">=</span><span class="st">"x"</span>, ayref<span class="op">=</span><span class="st">"y"</span>,</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>variables_contributions[i, <span class="dv">0</span>],</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>variables_contributions[i, <span class="dv">1</span>],</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>        showarrow<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>        arrowsize<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>        arrowhead<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>        xanchor<span class="op">=</span><span class="st">"right"</span>,</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>        yanchor<span class="op">=</span><span class="st">"top"</span>,</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>        font<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">"white"</span>, size<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    fig.add_annotation(</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>variables_contributions[i, <span class="dv">0</span>],</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>variables_contributions[i, <span class="dv">1</span>],</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>        ax<span class="op">=</span><span class="dv">0</span>, ay<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>        xanchor<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>        yanchor<span class="op">=</span><span class="st">"bottom"</span>,</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>        text<span class="op">=</span>feature,</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>        yshift<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<iframe src="graphs/pca_cluster_g1.html" width="730" height="520" title="PCA Cluster Graph 1">
+</iframe>
+<div id="a5d7d1c5" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kmeans_result <span class="op">=</span> kmeans.fit_predict(pca_results_df.iloc[:, :<span class="dv">3</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pca_ind <span class="op">=</span> pd.DataFrame(pca_results_df.iloc[:, :<span class="dv">3</span>], columns<span class="op">=</span>[<span class="st">"Dim.1"</span>, <span class="st">"Dim.2"</span>, <span class="st">"Dim.3"</span>])</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'constructorName'</span>] <span class="op">=</span> constructor_data[<span class="st">'name'</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgWins'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_wins'</span>]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgPoints'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_points'</span>]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'avgAbandonos'</span>] <span class="op">=</span> constructor_data[<span class="st">'avg_abandonos'</span>]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>pca_ind[<span class="st">'cluster'</span>] <span class="op">=</span> kmeans_result</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.scatter_3d(</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    pca_ind, x<span class="op">=</span><span class="st">'Dim.1'</span>, y<span class="op">=</span><span class="st">'Dim.2'</span>, z<span class="op">=</span><span class="st">'Dim.3'</span>, color<span class="op">=</span><span class="st">'cluster'</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    hover_name<span class="op">=</span><span class="st">'constructorName'</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>{<span class="st">'avgWins'</span>: <span class="va">True</span>, <span class="st">'avgPoints'</span>: <span class="va">True</span>, <span class="st">'cluster'</span>: <span class="va">False</span>},</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{<span class="st">'Dim.1'</span>: <span class="st">'Primera Dimensión'</span>, <span class="st">'Dim.2'</span>: <span class="st">'Segunda Dimensión'</span>, <span class="st">'Dim.3'</span>: <span class="st">'Tercera Dimensión'</span>},</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f"3D PCA de Constructores de F1"</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">'Viridis'</span>, size_max<span class="op">=</span><span class="dv">5</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>fig.update(layout_coloraxis_showscale<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">30</span>},</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Primera Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'title'</span>: <span class="st">'Segunda Dimensión'</span>, <span class="st">'gridcolor'</span>: <span class="st">'rgba(0, 0, 0, 0.0)'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    scene<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        xaxis<span class="op">=</span><span class="bu">dict</span>(backgroundcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0)'</span>, gridcolor<span class="op">=</span> <span class="st">'#333'</span>),</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        yaxis<span class="op">=</span><span class="bu">dict</span>(backgroundcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0)'</span>, gridcolor<span class="op">=</span> <span class="st">'#333'</span>),</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        zaxis<span class="op">=</span><span class="bu">dict</span>(backgroundcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0)'</span>, gridcolor<span class="op">=</span> <span class="st">'#333'</span>),</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0)'</span>,</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    showlegend <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<iframe src="graphs/pca_cluster_g3.html" width="730" height="520" title="PCA Cluster Graph 3D">
+</iframe>
 
 
 
