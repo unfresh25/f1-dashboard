@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-from functions import convert_milliseconds, get_constructor_info, get_constructor_stats_info, get_constructor_stats_names, get_constructor_stats_table, get_constructor_status_info, get_driver_age_point_distribution_data, get_driver_status_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
+from edafunctions import convert_milliseconds, get_constructor_info, get_constructor_stats_info, get_constructor_stats_names, get_constructor_stats_table, get_constructor_status_info, get_driver_age_point_distribution_data, get_driver_status_info, get_map_data, get_constructors_data, get_sankey_data, get_seasons, random_color
 
 load_dotenv()
 

@@ -29,7 +29,7 @@ server=app.server
 Navigation_options = [
     dbc.NavLink("Home", href = "/", active = "exact"),
     dbc.NavLink("Exploratory Analysis", href = "/eda", active = "exact"),
-    dbc.NavLink("Predictive Analysis", href = "/pa", active = "exact")
+    dbc.NavLink("Predictive Analysis", href = "/models", active = "exact")
 ]
 
 app.layout = html.Div([
