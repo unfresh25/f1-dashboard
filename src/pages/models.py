@@ -269,4 +269,4 @@ def predict_constructor(n_clicks, team, grid, minutes, pits, fastestlapspeed):
 
         prediction = get_binary_model_predict(grid, minutes, constructorid, pits, fastestlapspeed)
 
-        return f'The probability of the constructor getting score is {round(prediction), 4} and {round(prediction * 100), 2}%'
+        return f'The probability of the constructor getting score is {round(prediction, 4)} and {round(prediction * 100, 2)}%'
