@@ -37,6 +37,8 @@ website:
             href: logisticbinary.qmd
           - text: "Modelo de Serie de Tiempo"
             href: timeseries.qmd
+          - text: "Análisis de Componentes Principales (PCA)"
+            href: pca.qmd
     - tools: 
       - icon: github
         url: https://github.com/unfresh25/f1-dashboard

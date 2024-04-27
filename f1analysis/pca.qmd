@@ -1,0 +1,166 @@
+---
+title: "Campeonato Mundial de la Formula 1 (1950 - 2023)"
+subtitle: "Visualización Científica"
+description: |
+ La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra "fórmula" en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.
+---
+
+``` {python load_os}
+#| echo: false
+import os 
+from dotenv import load_dotenv
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+load_dotenv()
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+```
+
+# Definición 
+
+El Análisis de Componentes Principales (PCA) es una técnica que permite resumir y simplificar conjuntos de datos complejos y multidimensionales. Consolida variables que están correlacionadas entre sí en nuevas variables, combinando linealmente las originales de manera que se conserve la mayor cantidad posible de información observada.
+
+Mediante PCA, es posible extraer la esencia de la información contenida en los datos al agrupar múltiples variables que describen a los individuos. Además de su capacidad para resumir datos, PCA también se utiliza como herramienta visual para comprender las estructuras de los datos. Logra esto al reducir la dimensionalidad de los datos, proyectándolos en un espacio de menor dimensión, como una línea, un plano o un espacio tridimensional. Esta reducción de dimensión facilita la interpretación y el análisis de conjuntos de datos complejos [@practical_pca].
+
+En el Análisis de Componentes Principales (PCA), seguimos una secuencia de ejes de proyección con un propósito específico. Primero, identificamos el eje de proyección que maximiza la varianza global. Este eje se conoce como el primer componente principal. Su objetivo es capturar la mayor cantidad posible de variabilidad presente en los datos.
+
+Luego, buscamos el segundo eje de proyección que maximiza la varianza, pero bajo la restricción de ser ortogonal al primer componente principal. Este segundo componente principal ayuda a capturar la variabilidad restante que no fue explicada por el primer componente. La ortogonalidad entre las componentes principales garantiza que cada una capture diferentes aspectos de la variabilidad de los datos. Esta representación óptima facilita la interpretación y el análisis de los datos al proporcionar una visión clara de las relaciones entre las variables originales.
+
+# Planteamiento del problema
+
+El análisis de componentes principales (PCA) y la técnica de clustering se utilizarán para clasificar y agrupar los distintos equipos (constructores) que han participado en la Fórmula 1 desde su inicio en 1950 hasta el año 2023. Este análisis se basará en una variedad de características relacionadas con el desempeño de los equipos en las carreras de F1. Las características incluirán la cantidad de puntos promedio obtenidos, la posición inicial en parrilla promedio, la posición final promedio, el número de vueltas promedio, la velocidad más alta promedio conseguida en la vuelta más rápida, el promedio de victorias, las paradas en pits promedio y el promedio de abandonos (no finalizaron la carrera).
+
+**Variables utilizadas**
+* **Cantidad de Puntos Promedio (avg_points)**: Representa la cantidad media de puntos obtenidos por el equipo en una temporada.
+* **Posición Inicial en Parrilla Promedio (avg_grid)**: La posición media en la que el equipo comenzó las carreras en una temporada.
+* **Posición Final Promedio (avg_positionOrder)**: La posición media en la que el equipo terminó las carreras en una temporada.
+* **Número de Vueltas Promedio (avg_laps)**: La cantidad media de vueltas completadas por el equipo en una carrera.
+* **Velocidad Más Alta Promedio en la Vuelta Más Rápida (avg_fastestlapspeed)**: La velocidad media más alta alcanzada por el equipo en la vuelta más rápida durante una carrera.
+* **Promedio de Victorias (avg_wins)**: El número medio de victorias obtenidas por el equipo en una temporada.
+* **Paradas en Pits Promedio (avg_stop)**: La cantidad media de paradas en pits realizadas por el equipo en una carrera.
+* **Promedio de Abandonos (avg_retirements)**: La cantidad media de abandonos experimentados por el equipo en una temporada.
+
+El objetivo principal será proporcionar una comprensión más profunda de la evolución y diversidad en el desempeño de los equipos de F1 a lo largo de la historia. Además, busca facilitar análisis comparativos y estratégicos para equipos, aficionados y analistas de la Fórmula 1.
+
+# Obtención de los datos
+
+Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.
+
+Primero, importamos las bibliotecas necesarias:
+
+``` {python libraries}
+import pandas as pd
+import psycopg2 as psy
+from psycopg2 import Error
+
+import plotly.graph_objects as go
+import plotly.express as px
+
+import numpy as np
+```
+
+A continuación, creamos la función que facilita las conexiones:
+
+``` {python db_function}
+def connection_db() -> psy.extensions.connection:
+    try:
+        conn = psy.connect(DATABASE_URL)
+        return conn
+    except (Exception, Error) as e:
+        print('Error while connecting to PostgreSQL', e)
+```
+
+Es importante destacar que esta función utiliza una variable de entorno para almacenar los datos de conexión a la base de datos. En este caso, estamos utilizando [Neon](https://neon.tech/), que nos permite crear un servidor de bases de datos con `PostgreSQL`.
+
+Como mencionamos previamente, las tablas y sus respectivas columnas que utilizaremos para el desarrollo de este modelo son las siguientes:
+
+* **Results:** points (determinará si finalizó la carrera o no), grid (posición inicial), milliseconds (duración de la carrera en milisegundos), fastestlapspeed (velocidad más alta alcanzada en la vuelta más rápida) y constructorid (identificador del equipo).
+* **Races:** date (fecha en que se celebró la carrera).
+* **Drivers:** dob (fecha de nacimiento del piloto).
+* **Pit_stops:** stop (número de paradas en boxes).
+
+Luego, ejecutamos la consulta SQL para obtener los datos relevantes:
+
+``` {python}
+try:
+    connection = connection_db()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+            SELECT 
+                c.constructorId, c.name,
+                ROUND(AVG(res.points), 4) AS avg_points, ROUND(AVG(res.grid), 4) AS avg_grid, 
+                ROUND(AVG(res.positionOrder), 4) AS avg_positionOrder, ROUND(AVG(res.laps), 4) AS avg_laps, 
+                ROUND(AVG(res.fastestLapSpeed), 4) AS avg_fastestLapSpeed,
+                ROUND(AVG(CASE WHEN res.positionOrder = 1 THEN 1 ELSE 0 END), 4) AS avg_wins,
+                ROUND(AVG(p.stop), 4) AS avg_stops,
+                ROUND(AVG(CASE WHEN sta.status != 'Finished' THEN 1 ELSE 0 END), 4) AS avg_abandonos
+            FROM Constructors c
+            JOIN Results res ON c.constructorId = res.constructorId
+            LEFT JOIN Pit_Stops p ON res.raceId = p.raceId AND res.driverId = p.driverId
+            LEFT JOIN Status sta ON res.statusId = sta.statusId
+            GROUP BY c.constructorId, c.name;
+        """
+    )
+
+    records = cursor.fetchall()
+    constructor_data = pd.DataFrame(records)
+
+    columns = []
+    for column in cursor.description:
+        columns.append(column[0])
+
+    constructor_data.columns = columns
+
+    display(constructor_data)
+except (Exception, Error) as e:
+    print('Error while executing the query', e)
+finally:
+    if(connection):
+        cursor.close()
+        connection.close()
+```
+
+<br>
+Con este procedimiento, hemos obtenido los datos necesarios para nuestro análisis.
+
+# Componentes principales (PCA)
+
+Convertiremos los datos a numeric, particularmente para manejar datos de tipo `int64`, además rellenaremos los datos `NA` y trataremos con los valores `inf
+`
+``` {python}
+constructor_data = constructor_data.apply(pd.to_numeric, errors='ignore')
+
+constructor_data = constructor_data.fillna(0)
+constructor_data = constructor_data.apply(lambda x: x.replace([float('inf'), float('-inf')], 0) if x.dtype.kind in 'biufc' else x)
+```
+
+Ahora, normalizaremos las características para asegurar que todas tengan la misma escala y contribución al análisis.
+
+``` {python}
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+constructor_data.iloc[:, 2:10] = scaler.fit_transform(constructor_data.iloc[:, 2:10])
+```
+
+Realicemos ahora el análisis de componentes principales
+
+``` {python}
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=4)
+pca_results = pca.fit_transform(constructor_data.iloc[:, 2:10])
+```
+
+``` {python}
+#| echo: false
+print("Varianza explicada por cada componente principal:")
+print(pca.explained_variance_ratio_)
+
+print("\nSuma acumulada de varianza explicada:")
+print(np.cumsum(pca.explained_variance_ratio_))
+
+```

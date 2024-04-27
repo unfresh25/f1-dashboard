@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jorge Borja">
+<meta name="author" content="Jose Mercado">
+<meta name="description" content="La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra “fórmula” en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.">
+
+<title>F1 Dashboard - Campeonato Mundial de la Formula 1 (1950 - 2023)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./timeseries.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sin resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+<link rel="manifest" href="icon/manifest.json">
+<link rel="mask-icon" href="icon/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./logisticbinary.html">Análisis Predictivos</a></li><li class="breadcrumb-item"><a href="./pca.html">Análisis de Componentes Principales (PCA)</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./"><span style="color: #e10600">F1</span> Dashboard</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introducción</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Análisis Exploratorio de Datos (EDA)</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./races.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Análisis de la tabla races</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constructors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Análisis de la tabla constructors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./drivers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Análisis de la tabla drivers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Análisis Predictivos</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logisticbinary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modelo de Regresión Logística Binaria</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./timeseries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modelo de Serie de Tiempo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Análisis de Componentes Principales (PCA)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#definición" id="toc-definición" class="nav-link active" data-scroll-target="#definición">Definición</a></li>
+  <li><a href="#planteamiento-del-problema" id="toc-planteamiento-del-problema" class="nav-link" data-scroll-target="#planteamiento-del-problema">Planteamiento del problema</a></li>
+  <li><a href="#obtención-de-los-datos" id="toc-obtención-de-los-datos" class="nav-link" data-scroll-target="#obtención-de-los-datos">Obtención de los datos</a></li>
+  <li><a href="#componentes-principales-pca" id="toc-componentes-principales-pca" class="nav-link" data-scroll-target="#componentes-principales-pca">Componentes principales (PCA)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./logisticbinary.html">Análisis Predictivos</a></li><li class="breadcrumb-item"><a href="./pca.html">Análisis de Componentes Principales (PCA)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Campeonato Mundial de la Formula 1 (1950 - 2023)</h1>
+<p class="subtitle lead">Visualización Científica</p>
+</div>
+
+<div>
+  <div class="description">
+    <p>La Fórmula 1, también conocida como F1, representa la cúspide de las carreras internacionales de monoplazas de ruedas abiertas, bajo la supervisión de la Federación Internacional del Automóvil (FIA). Desde su primera temporada en 1950, el Campeonato Mundial de Pilotos, rebautizado como el Campeonato Mundial de Fórmula 1 de la FIA en 1981, ha destacado como una de las principales competiciones a nivel global. La palabra “fórmula” en su nombre alude al conjunto de reglas que guían a todos los participantes en cuanto a la construcción y funcionamiento de los vehículos.</p>
+  </div>
+</div>
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Autores/as</div>
+  <div class="quarto-title-meta-heading">Afiliación</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="https://www.linkedin.com/in/jorgeborjas25/">Jorge Borja, Mag</a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            <a href="https://uninorte.edu.co/">
+            Universidad del Norte
+            </a>
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="https://www.linkedin.com/in/jose-javier-mercado-reyes-246352214/">Jose Mercado, Mag</a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="definición" class="level1">
+<h1>Definición</h1>
+<p>El Análisis de Componentes Principales (PCA) es una técnica que permite resumir y simplificar conjuntos de datos complejos y multidimensionales. Consolida variables que están correlacionadas entre sí en nuevas variables, combinando linealmente las originales de manera que se conserve la mayor cantidad posible de información observada.</p>
+<p>Mediante PCA, es posible extraer la esencia de la información contenida en los datos al agrupar múltiples variables que describen a los individuos. Además de su capacidad para resumir datos, PCA también se utiliza como herramienta visual para comprender las estructuras de los datos. Logra esto al reducir la dimensionalidad de los datos, proyectándolos en un espacio de menor dimensión, como una línea, un plano o un espacio tridimensional. Esta reducción de dimensión facilita la interpretación y el análisis de conjuntos de datos complejos <span class="citation" data-cites="practical_pca">(<a href="#ref-practical_pca" role="doc-biblioref">Rubio 2022</a>)</span>.</p>
+<p>En el Análisis de Componentes Principales (PCA), seguimos una secuencia de ejes de proyección con un propósito específico. Primero, identificamos el eje de proyección que maximiza la varianza global. Este eje se conoce como el primer componente principal. Su objetivo es capturar la mayor cantidad posible de variabilidad presente en los datos.</p>
+<p>Luego, buscamos el segundo eje de proyección que maximiza la varianza, pero bajo la restricción de ser ortogonal al primer componente principal. Este segundo componente principal ayuda a capturar la variabilidad restante que no fue explicada por el primer componente. La ortogonalidad entre las componentes principales garantiza que cada una capture diferentes aspectos de la variabilidad de los datos. Esta representación óptima facilita la interpretación y el análisis de los datos al proporcionar una visión clara de las relaciones entre las variables originales.</p>
+</section>
+<section id="planteamiento-del-problema" class="level1">
+<h1>Planteamiento del problema</h1>
+<p>El análisis de componentes principales (PCA) y la técnica de clustering se utilizarán para clasificar y agrupar los distintos equipos (constructores) que han participado en la Fórmula 1 desde su inicio en 1950 hasta el año 2023. Este análisis se basará en una variedad de características relacionadas con el desempeño de los equipos en las carreras de F1. Las características incluirán la cantidad de puntos promedio obtenidos, la posición inicial en parrilla promedio, la posición final promedio, el número de vueltas promedio, la velocidad más alta promedio conseguida en la vuelta más rápida, el promedio de victorias, las paradas en pits promedio y el promedio de abandonos (no finalizaron la carrera).</p>
+<p><strong>Variables utilizadas</strong> * <strong>Cantidad de Puntos Promedio (avg_points)</strong>: Representa la cantidad media de puntos obtenidos por el equipo en una temporada. * <strong>Posición Inicial en Parrilla Promedio (avg_grid)</strong>: La posición media en la que el equipo comenzó las carreras en una temporada. * <strong>Posición Final Promedio (avg_positionOrder)</strong>: La posición media en la que el equipo terminó las carreras en una temporada. * <strong>Número de Vueltas Promedio (avg_laps)</strong>: La cantidad media de vueltas completadas por el equipo en una carrera. * <strong>Velocidad Más Alta Promedio en la Vuelta Más Rápida (avg_fastestlapspeed)</strong>: La velocidad media más alta alcanzada por el equipo en la vuelta más rápida durante una carrera. * <strong>Promedio de Victorias (avg_wins)</strong>: El número medio de victorias obtenidas por el equipo en una temporada. * <strong>Paradas en Pits Promedio (avg_stop)</strong>: La cantidad media de paradas en pits realizadas por el equipo en una carrera. * <strong>Promedio de Abandonos (avg_retirements)</strong>: La cantidad media de abandonos experimentados por el equipo en una temporada.</p>
+<p>El objetivo principal será proporcionar una comprensión más profunda de la evolución y diversidad en el desempeño de los equipos de F1 a lo largo de la historia. Además, busca facilitar análisis comparativos y estratégicos para equipos, aficionados y analistas de la Fórmula 1.</p>
+</section>
+<section id="obtención-de-los-datos" class="level1">
+<h1>Obtención de los datos</h1>
+<p>Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.</p>
+<p>Primero, importamos las bibliotecas necesarias:</p>
+<div id="c53d0e88" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A continuación, creamos la función que facilita las conexiones:</p>
+<div id="8b0e4727" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> conn</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'Error while connecting to PostgreSQL'</span>, e)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Es importante destacar que esta función utiliza una variable de entorno para almacenar los datos de conexión a la base de datos. En este caso, estamos utilizando <a href="https://neon.tech/">Neon</a>, que nos permite crear un servidor de bases de datos con <code>PostgreSQL</code>.</p>
+<p>Como mencionamos previamente, las tablas y sus respectivas columnas que utilizaremos para el desarrollo de este modelo son las siguientes:</p>
+<ul>
+<li><strong>Results:</strong> points (determinará si finalizó la carrera o no), grid (posición inicial), milliseconds (duración de la carrera en milisegundos), fastestlapspeed (velocidad más alta alcanzada en la vuelta más rápida) y constructorid (identificador del equipo).</li>
+<li><strong>Races:</strong> date (fecha en que se celebró la carrera).</li>
+<li><strong>Drivers:</strong> dob (fecha de nacimiento del piloto).</li>
+<li><strong>Pit_stops:</strong> stop (número de paradas en boxes).</li>
+</ul>
+<p>Luego, ejecutamos la consulta SQL para obtener los datos relevantes:</p>
+<div id="346d9d75" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="st">            SELECT </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="st">                c.constructorId, c.name,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(res.points), 4) AS avg_points, ROUND(AVG(res.grid), 4) AS avg_grid, </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(res.positionOrder), 4) AS avg_positionOrder, ROUND(AVG(res.laps), 4) AS avg_laps, </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(res.fastestLapSpeed), 4) AS avg_fastestLapSpeed,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(CASE WHEN res.positionOrder = 1 THEN 1 ELSE 0 END), 4) AS avg_wins,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(p.stop), 4) AS avg_stops,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="st">                ROUND(AVG(CASE WHEN sta.status != 'Finished' THEN 1 ELSE 0 END), 4) AS avg_abandonos</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM Constructors c</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN Results res ON c.constructorId = res.constructorId</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="st">            LEFT JOIN Pit_Stops p ON res.raceId = p.raceId AND res.driverId = p.driverId</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="st">            LEFT JOIN Status sta ON res.statusId = sta.statusId</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="st">            GROUP BY c.constructorId, c.name;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    constructor_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    constructor_data.columns <span class="op">=</span> columns</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    display(constructor_data)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">constructorid</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">avg_points</th>
+<th data-quarto-table-cell-role="th">avg_grid</th>
+<th data-quarto-table-cell-role="th">avg_positionorder</th>
+<th data-quarto-table-cell-role="th">avg_laps</th>
+<th data-quarto-table-cell-role="th">avg_fastestlapspeed</th>
+<th data-quarto-table-cell-role="th">avg_wins</th>
+<th data-quarto-table-cell-role="th">avg_stops</th>
+<th data-quarto-table-cell-role="th">avg_abandonos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>157</td>
+<td>Langley</td>
+<td>0.0000</td>
+<td>31.0000</td>
+<td>16.0000</td>
+<td>128.0000</td>
+<td>140.3620</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>53</td>
+<td>Toleman</td>
+<td>0.1985</td>
+<td>9.9771</td>
+<td>19.7099</td>
+<td>22.0763</td>
+<td>217.7816</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>0.9237</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>32</td>
+<td>Team Lotus</td>
+<td>1.1424</td>
+<td>11.0436</td>
+<td>13.0563</td>
+<td>42.3651</td>
+<td>210.1351</td>
+<td>0.0517</td>
+<td>1.0034</td>
+<td>0.7956</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>7</td>
+<td>Toyota</td>
+<td>0.9964</td>
+<td>10.5357</td>
+<td>11.4500</td>
+<td>51.2964</td>
+<td>207.5047</td>
+<td>0.0000</td>
+<td>1.0071</td>
+<td>0.6500</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>100</td>
+<td>ENB</td>
+<td>0.0000</td>
+<td>25.0000</td>
+<td>16.0000</td>
+<td>14.0000</td>
+<td>230.0360</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">205</td>
+<td>142</td>
+<td>Turner</td>
+<td>0.0000</td>
+<td>23.0000</td>
+<td>21.0000</td>
+<td>146.0000</td>
+<td>123.2220</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">206</td>
+<td>152</td>
+<td>Aston Butterworth</td>
+<td>0.0000</td>
+<td>9.0000</td>
+<td>25.2500</td>
+<td>4.7500</td>
+<td>223.6188</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">207</td>
+<td>41</td>
+<td>Leyton House</td>
+<td>0.1250</td>
+<td>13.7188</td>
+<td>17.4531</td>
+<td>33.3438</td>
+<td>212.6000</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>0.9531</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">208</td>
+<td>206</td>
+<td>Marussia</td>
+<td>0.0105</td>
+<td>19.8653</td>
+<td>17.6882</td>
+<td>53.5263</td>
+<td>194.6222</td>
+<td>0.0000</td>
+<td>1.7885</td>
+<td>0.8950</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">209</td>
+<td>46</td>
+<td>Onyx</td>
+<td>0.1154</td>
+<td>9.9038</td>
+<td>23.2115</td>
+<td>20.7308</td>
+<td>213.7659</td>
+<td>0.0000</td>
+<td>1.0000</td>
+<td>0.9808</td>
+</tr>
+</tbody>
+</table>
+
+<p>210 rows × 10 columns</p>
+</div>
+</div>
+</div>
+</div>
+<p><br> Con este procedimiento, hemos obtenido los datos necesarios para nuestro análisis.</p>
+</section>
+<section id="componentes-principales-pca" class="level1">
+<h1>Componentes principales (PCA)</h1>
+<p>Convertiremos los datos a numeric, particularmente para manejar datos de tipo <code>int64</code>, además rellenaremos los datos <code>NA</code> y trataremos con los valores <code>inf</code></p>
+<div id="1abdfc38" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.<span class="bu">apply</span>(pd.to_numeric, errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.fillna(<span class="dv">0</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>constructor_data <span class="op">=</span> constructor_data.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.replace([<span class="bu">float</span>(<span class="st">'inf'</span>), <span class="bu">float</span>(<span class="st">'-inf'</span>)], <span class="dv">0</span>) <span class="cf">if</span> x.dtype.kind <span class="kw">in</span> <span class="st">'biufc'</span> <span class="cf">else</span> x)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ahora, normalizaremos las características para asegurar que todas tengan la misma escala y contribución al análisis.</p>
+<div id="62a91789" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>] <span class="op">=</span> scaler.fit_transform(constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>])</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Realicemos ahora el análisis de componentes principales</p>
+<div id="d865365d" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>pca_results <span class="op">=</span> pca.fit_transform(constructor_data.iloc[:, <span class="dv">2</span>:<span class="dv">10</span>])</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="5d831dcd" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>Varianza explicada por cada componente principal:
+[0.40634954 0.27080934 0.11465565 0.0967851 ]
+
+Suma acumulada de varianza explicada:
+[0.40634954 0.67715888 0.79181454 0.88859964]</code></pre>
+</div>
+</div>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Referencias</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-practical_pca" class="csl-entry" role="listitem">
+Rubio, Lihki. 2022. <span>«Principal Component Analysis (PCA) Tutorial»</span>. 2022. <a href="https://lihkir.github.io/MachineLearningUninorte/practical_pca.html">https://lihkir.github.io/MachineLearningUninorte/practical_pca.html</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiado");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiado");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./timeseries.html" class="pagination-link" aria-label="Modelo de Serie de Tiempo">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Modelo de Serie de Tiempo</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
