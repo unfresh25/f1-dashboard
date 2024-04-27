@@ -101,7 +101,7 @@ En el ámbito del deporte del automovilismo, predecir el rendimiento de un equip
 6. **Número de Paradas en los Boxes (pit_stop):** El número de paradas en los boxes durante la carrera puede indicar la eficiencia en la gestión de neumáticos, combustible y ajustes de estrategia, lo cual influye directamente en el tiempo total de la carrera y, por ende, en la probabilidad de llegar a la meta.
 
 **Variable Dependiente:**
-- **Llegada a la Meta (finished_or_no):** Esta variable binaria representará si el equipo logra o no alcanzar la meta al finalizar la carrera. Será el objetivo de nuestro modelo logístico, donde un valor de 1 indicará éxito (llegada a la meta) y un valor de 0 indicará fracaso (no llegar a la meta).
+- **Llegada a la Meta (scored_or_no):** Esta variable binaria representará si el equipo logra o no alcanzar la meta al finalizar la carrera. Será el objetivo de nuestro modelo logístico, donde un valor de 1 indicará éxito (llegada a la meta) y un valor de 0 indicará fracaso (no llegar a la meta).
 
 El objetivo principal será construir un modelo logístico que, utilizando estas variables independientes, pueda predecir la probabilidad de que un equipo alcance la meta en una carrera dada. Esto permitirá a los equipos tomar decisiones más informadas sobre estrategias de carrera y optimización de recursos para mejorar sus posibilidades de éxito en competiciones futuras.
 
@@ -153,17 +153,16 @@ try:
                 CASE
                     WHEN r.points > 0 THEN 1
                     ELSE 0
-                END AS finished_or_no,
+                END AS scored_or_no,
                 r.grid, 
                 r.milliseconds / 60000.0 AS minutes, 
                 r.fastestlapspeed, r.constructorid,
-                (DATE_PART('year', ra.date) - DATE_PART('year', d.dob)) as age,
                 MAX(p.stop) as pit_stop
             FROM results r
             JOIN drivers d ON r.driverid = d.driverid
             JOIN races ra ON r.raceid = ra.raceid
             JOIN pit_stops p ON r.raceid = p.raceid
-            GROUP BY finished_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid, age;
+            GROUP BY scored_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid;
         """
     )
 
@@ -201,26 +200,14 @@ $$
     \end{align*}
 $$
 
-Para construir nuestro modelo en Python, emplearemos la biblioteca `statsmodels`. Sin embargo, es necesario separar inicialmente nuestro conjunto de datos en conjuntos de entrenamiento y prueba. Esto se realiza de la siguiente manera:
-
-``` {python}
-from sklearn.model_selection import train_test_split
-
-X = records_data.iloc[:, 1:]
-y = records_data.iloc[:, 0:1]
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state=42)
-
-train_data = pd.concat([y_train, X_train], axis=1)
-test_data = pd.concat([y_test, X_test], axis=1)
-```
-
-A continuación, planteamos nuestro modelo utilizando las variables de interés:
+Para construir nuestro modelo en Python, emplearemos la biblioteca `statsmodels`. A continuación, planteamos nuestro modelo utilizando las variables de interés:
 
 ``` {python}
 import statsmodels.formula.api as sm
 
-log_reg = sm.logit('finished_or_no ~ grid + age + minutes + constructorid + pit_stop + fastestlapspeed', data = train_data).fit()
+X = records_data.iloc[:, 1:]
+y = records_data.iloc[:, 0:1]
+log_reg = sm.logit('scored_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed', data = records_data).fit()
 ```
 
 ``` {python}
@@ -228,22 +215,7 @@ log_reg = sm.logit('finished_or_no ~ grid + age + minutes + constructorid + pit_
 print(log_reg.summary())
 ```
 
-Los coeficientes del modelo indican cómo cada variable predictora afecta la probabilidad de que un corredor de carreras finalice la carrera, de ello podemos afirmar lo siguiente: un `intercepto` negativo grande sugiere una baja probabilidad inicial de no finalizar la carrera. Una `posición de salida` más atrás en la parrilla y ser un `equipo` nuevo disminuyen la probabilidad de finalizar la carrera, mientras que un `tiempo de carrera` más largo, realizar un `pit stop` durante la carrera y alcanzar una `velocidad` alta en la vuelta más rápida aumentan esta probabilidad. La `edad del corredor` no parece tener un efecto significativo en la probabilidad de finalizar la carrera, como lo sugiere el intervalo de confianza que incluye cero para el coeficiente correspondiente. Todos los demás coeficientes son significativos, como lo indican los intervalos de confianza que no incluyen cero.
-
-A continuación, procedemos a remover la variable `age` del modelo, ya que no es significativa, y observamos los resultados del nuevo modelo:
-
-``` {python}
-import statsmodels.formula.api as sm
-
-log_reg_2 = sm.logit('finished_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed', data = train_data).fit()
-```
-
-``` {python}
-#| echo: false
-print(log_reg_2.summary())
-```
-
-Es notable que la eliminación de la variable `age` no afectó negativamente la capacidad predictiva del modelo, lo que sugiere que la edad de los corredores puede no ser un factor determinante en su habilidad para finalizar una carrera. Sin embargo, es importante considerar que la relevancia de esta variable podría variar en función de otros factores contextuales o características específicas de la muestra de datos utilizada. Por otro lado, los resultados obtenidos son similares a los previamente concluidos, por lo que podemos proceder a analizar las métricas del modelo.
+Los coeficientes del modelo indican cómo cada variable predictora afecta la probabilidad de que un corredor de carreras finalice la carrera, de ello podemos afirmar lo siguiente: un `intercepto` negativo grande sugiere una baja probabilidad inicial de no finalizar la carrera. Una `posición de salida` más atrás en la parrilla y ser un `equipo` nuevo disminuyen la probabilidad de finalizar la carrera, mientras que un `tiempo de carrera` más largo, realizar un `pit stop` durante la carrera y alcanzar una `velocidad` alta en la vuelta más rápida aumentan esta probabilidad. Todos los coeficientes son significativos, como lo indican los intervalos de confianza que no incluyen cero.
 
 # Evaluación del modelo
 
@@ -283,21 +255,13 @@ Veamos entonces cuáles son los resultados para las métricas mencionadas en nue
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score
 import numpy as np
 
-y_pred = log_reg.predict(X_test)
-y_pred = np.where(y_pred > 0.5, 1, 0)
+y_pred = log_reg.predict(X)
+y_pred_a = np.where(y_pred > 0.5, 1, 0)
 
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-auc = roc_auc_score(y_test, y_pred)
-
-y_pred2 = log_reg_2.predict(X_test)
-y_pred2_a = np.where(y_pred2 > 0.5, 1, 0)
-
-precision2 = precision_score(y_test, y_pred2_a)
-recall2 = recall_score(y_test, y_pred2_a)
-f1_2 = f1_score(y_test, y_pred2_a)
-auc2 = roc_auc_score(y_test, y_pred2_a)
+precision = precision_score(y, y_pred_a)
+recall = recall_score(y, y_pred_a)
+f1 = f1_score(y, y_pred_a)
+auc = roc_auc_score(y, y_pred_a)
 ```
 
 ``` {python}
@@ -309,16 +273,7 @@ metrics_dict = {
     "AUC": auc
 }
 
-metrics_dict2 = {
-    "Precision": precision2,
-    "Recall": recall2,
-    "F1-score": f1_2,
-    "AUC": auc2
-}
-
-metrics = pd.DataFrame.from_dict(metrics_dict, orient='index', columns=['Logit 1'])
-metrics2 = pd.DataFrame.from_dict(metrics_dict2, orient='index', columns=['Logit 2'])
-metrics = pd.concat([metrics, metrics2], axis = 1).T
+metrics = pd.DataFrame.from_dict(metrics_dict, orient='index', columns=['Modelo logístico'])
 
 metrics
 ```
@@ -334,12 +289,12 @@ Antes de realizar el gráfico de la curva ROC debemos ver dos gráficos que nos 
 ``` {python}
 #| output: false
 from sklearn.metrics import roc_curve
-fpr, tpr, thresholds = roc_curve(y_test, y_pred2)
+fpr, tpr, thresholds = roc_curve(y, y_pred)
 
-y_test_g = y_test['finished_or_no'].values
+y_g = y['scored_or_no'].values
 
 fig_hist = px.histogram(
-    x=y_pred2, color=y_test_g, nbins=50,
+    x=y_pred, color=y_g, nbins=50,
     labels=dict(color='True Labels', x='Score')
 )
 
@@ -360,12 +315,12 @@ fig_hist.show()
 
 ``` {python}
 #| echo: false
-fig_hist.write_html('roc_logit_binary_g1.html')
+fig_hist.write_html('graphs/roc_logit_binary_g1.html')
 ```
 
 ``` {=html}
 <iframe
-    src = 'roc_logit_binary_g1.html'
+    src = 'graphs/roc_logit_binary_g1.html'
     width = '730'
     height = '520'
     title = 'ROC Logit Binary Graph 1'
@@ -411,12 +366,12 @@ fig_thresh.show()
 
 ``` {python}
 #| echo: false
-fig_thresh.write_html('roc_logit_binary_g2.html')
+fig_thresh.write_html('graphs/roc_logit_binary_g2.html')
 ```
 
 ``` {=html}
 <iframe
-    src = 'roc_logit_binary_g2.html'
+    src = 'graphs/roc_logit_binary_g2.html'
     width = '730'
     height = '520'
     title = 'ROC Logit Binary Graph 2'
@@ -443,7 +398,7 @@ fig_roc.add_shape(
 fig_roc.add_annotation(
     xref = 'paper', yref = 'paper',
     x = .95, y = .05,
-    text = f'AUC: {auc2:.4f}',
+    text = f'AUC: {auc:.4f}',
     showarrow = False,
     bordercolor = 'black',
     borderwidth = .5,
@@ -470,12 +425,12 @@ fig_roc.show()
 
 ``` {python}
 #| echo: false
-fig_roc.write_html('roc_logit_binary.html')
+fig_roc.write_html('graphs/roc_logit_binary.html')
 ```
 
 ``` {=html}
 <iframe
-    src = 'roc_logit_binary.html'
+    src = 'graphs/roc_logit_binary.html'
     width = '730'
     height = '520'
     title = 'ROC Logit Binary Graph'
@@ -494,11 +449,11 @@ Otra forma de visualizar los aciertos en las predicciones de los modelos es medi
 from sklearn.metrics import confusion_matrix
 import plotly.figure_factory as ff
 
-conf_matrix_log_reg = confusion_matrix(y_test, y_pred2_a)
+conf_matrix_log_reg = confusion_matrix(y, y_pred_a).T
 
-labels = ['No Finalizado', 'Finalizado']
+labels = ['No Puntuó', 'Puntuó']
 fig_cm = ff.create_annotated_heatmap(conf_matrix_log_reg, x=labels, y=labels, colorscale=[[0, '#FFFFFF'], [1, '#e10600']])
-fig_cm.update_layout(title='Matriz de Confusión para Logit 2')
+fig_cm.update_layout(title='Matriz de Confusión')
 
 fig_cm.update_layout(
     margin={'b': 0, 'r': 30, 'l': 30, 't': 50},
@@ -517,12 +472,12 @@ fig_cm.show()
 
 ``` {python}
 #| echo: false
-fig_cm.write_html('cm_logit_binary.html')
+fig_cm.write_html('graphs/cm_logit_binary.html')
 ```
 
 ``` {=html}
 <iframe
-    src = 'cm_logit_binary.html'
+    src = 'graphs/cm_logit_binary.html'
     width = '730'
     height = '520'
     title = 'Confusion Matrix Logit Binary Graph'

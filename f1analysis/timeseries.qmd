@@ -7,11 +7,7 @@ description: |
 
 ``` {r}
 #| echo: false
-HOST <- Sys.getenv('HOST')
-DB_NAME <- Sys.getenv('DB_NAME')
-USER <- Sys.getenv('USER')
-PASS <- Sys.getenv('PASSWORD')
-PORT <- Sys.getenv('PORT')
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 # Definición 
@@ -52,6 +48,8 @@ library(tsibble)
 library(plotly)
 library(TSstudio)
 library(forecast)
+library(ggplot2)
+library(gridExtra)
 ```
 
 A continuación, creamos la función que facilita las conexiones:
@@ -809,31 +807,248 @@ p_mclaren <- plot_ly() %>%
 p_mclaren
 ```
 
+## Correlación observación real v.s. predicha
+
+``` {r}
+create_correlation_plot <- function(actual, predicted, title, color1, color2) {
+    data <- data.frame(Actual = actual, Predicted = predicted)
+    p <- ggplot(data, aes(x = Actual, y = Predicted)) +
+        geom_point(color = color1, alpha = 0.5) +
+        geom_smooth(method = "lm", se = FALSE, color = color2) +
+        xlab("Valores Reales") +
+        ylab("Valores Predichos") +
+        ggtitle(title) + 
+        theme_minimal()
+
+    fig <- ggplotly(p)
+
+    fig %>%
+        layout(
+            xaxis = list(gridcolor = "#111", showline = FALSE, color = 'white', tickfont = list(color = "white")),
+            yaxis = list(gridcolor = "#111", showline = FALSE, color = 'white', tickfont = list(color = "white")),
+            showlegend = TRUE,
+            paper_bgcolor = "rgba(0, 0, 0, 0.0)",
+            plot_bgcolor = "rgba(0, 0, 0, 0.0)",
+            font = list(color = "white"),
+            margin = m
+        )
+}
+```
+
+### Ferrari
+
+``` {r}
+plot_rolling <- create_correlation_plot(ferrari_test, predicciones_ferrari, "Correlación Rolling Forecast - Ferrari", "#ffeb00", "#a6051a")
+plot_forecast <- create_correlation_plot(ferrari_test, ferrari_pred_25$mean, "Correlación Direct Forecast - Ferrari", "#ffeb00", "#a6051a")
+
+subplot <- subplot(plot_rolling, plot_forecast, nrows = 2, shareX = TRUE) %>%
+    layout(
+        hovermode = "x unified"
+    )
+
+annotations = list( 
+  list( 
+    x = 0.5,  
+    y = 1.0,  
+    text = "Correlación Rolling Forecast - Ferrari",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.5,  
+    y = 0.45,  
+    text = "Correlación Direct Forecast - Ferrari",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  )
+)
+
+subplot <- subplot %>%layout(annotations = annotations) 
+subplot
+```
+
+### Red Bull
+
+``` {r}
+plot_rolling <- create_correlation_plot(redbull_test, predicciones_redbull, "Correlación Rolling Forecast - Red Bull", "#cc1e4a", "#223971")
+plot_forecast <- create_correlation_plot(redbull_test, redbull_pred_25$mean, "Correlación Direct Forecast - Red Bull", "#cc1e4a", "#223971")
+
+subplot <- subplot(plot_rolling, plot_forecast, nrows = 2, shareX = TRUE) %>%
+    layout(
+        hovermode = "x unified"
+    )
+    
+annotations = list( 
+  list( 
+    x = 0.5,  
+    y = 1.0,  
+    text = "Correlación Rolling Forecast - Red Bull",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.5,  
+    y = 0.45,  
+    text = "Correlación Direct Forecast - Red Bull",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  )
+)
+
+subplot <- subplot %>%layout(annotations = annotations) 
+subplot
+```
+
+### Mercedes
+
+``` {r}
+plot_rolling <- create_correlation_plot(mercedes_test, predicciones_mercedes, "Correlación Rolling Forecast - Mercedes", "#80142b", "#00a19c")
+plot_forecast <- create_correlation_plot(mercedes_test, mercedes_pred_25$mean, "Correlación Direct Forecast - Mercedes", "#80142b", "#00a19c")
+
+subplot <- subplot(plot_rolling, plot_forecast, nrows = 2, shareX = TRUE) %>%
+    layout(
+        hovermode = "x unified"
+    )
+    
+annotations = list( 
+  list( 
+    x = 0.5,  
+    y = 1.0,  
+    text = "Correlación Rolling Forecast - Mercedes",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.5,  
+    y = 0.45,  
+    text = "Correlación Direct Forecast - Mercedes",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  )
+)
+
+subplot <- subplot %>%layout(annotations = annotations) 
+subplot
+```
+
+### Williams
+
+``` {r}
+plot_rolling <- create_correlation_plot(williams_test, predicciones_williams, "Correlación Rolling Forecast - Williams", "#e40046", "#00a3e0")
+plot_forecast <- create_correlation_plot(williams_test, williams_pred_25$mean, "Correlación Direct Forecast - Williams", "#e40046", "#00a3e0")
+
+subplot <- subplot(plot_rolling, plot_forecast, nrows = 2, shareX = TRUE) %>%
+    layout(
+        hovermode = "x unified"
+    )
+    
+annotations = list( 
+  list( 
+    x = 0.5,  
+    y = 1.0,  
+    text = "Correlación Rolling Forecast - Williams",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.5,  
+    y = 0.45,  
+    text = "Correlación Direct Forecast - Williams",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  )
+)
+
+subplot <- subplot %>%layout(annotations = annotations) 
+subplot
+```
+
+### McLaren
+
+``` {r}
+plot_rolling <- create_correlation_plot(mclaren_test, predicciones_mclaren, "Correlación Rolling Forecast - McLaren", "#47c7fc", "#ff8000")
+plot_forecast <- create_correlation_plot(mclaren_test, mclaren_pred_25$mean, "Correlación Direct Forecast - McLaren", "#47c7fc", "#ff8000")
+
+subplot <- subplot(plot_rolling, plot_forecast, nrows = 2, shareX = TRUE) %>%
+    layout(
+        hovermode = "x unified"
+    )
+    
+annotations = list( 
+  list( 
+    x = 0.5,  
+    y = 1.0,  
+    text = "Correlación Rolling Forecast - McLaren",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.5,  
+    y = 0.45,  
+    text = "Correlación Direct Forecast - McLaren",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  )
+)
+
+subplot <- subplot %>%layout(annotations = annotations) 
+subplot
+```
+
 # Evaluación de los modelos
 
 ``` {r}
 forecast_accuracy <- function(forecast, actual, str_name) {
-  epsilon <- 0.0001
+    epsilon <- 0.0001
 
-  mape <- mean(abs(forecast - actual) / (abs(actual) + epsilon))
+    mape <- mean(abs(forecast - actual) / (abs(actual) + epsilon))
+    
+    mae <- mean(abs(forecast - actual))
+    rmse <- sqrt(mean((forecast - actual)^2))
+    mse <- mean((forecast - actual)^2)
+    
+    r_squared <- 1 - sum((actual - forecast)^2) / sum((actual - mean(actual))^2)
+    
+    df_acc <- data.frame(
+        MAE = mae,
+        MSE = mse,
+        MAPE = mape,
+        RMSE = rmse
+    )
   
-  mae <- mean(abs(forecast - actual))
-  rmse <- sqrt(mean((forecast - actual)^2))
-  mse <- mean((forecast - actual)^2)
-  
-  r_squared <- 1 - sum((actual - forecast)^2) / sum((actual - mean(actual))^2)
-  
-  df_acc <- data.frame(
-    MAE = mae,
-    MSE = mse,
-    MAPE = mape,
-    RMSE = rmse,
-    R2 = r_squared
-  )
-  
-  rownames(df_acc) <- str_name
-  
-  return(df_acc)
+    rownames(df_acc) <- str_name
+    
+    return(df_acc)
 }
 
 ```
@@ -863,6 +1078,4 @@ accuracy <- rbind(ferrari_accuracy, redbull_accuracy, mercedes_accuracy, william
 accuracy
 ```
 
-``` {r}
-ferrari_test
-```
+En general, para cada equipo, los valores de `MAE`, `MSE`, `MAPE` y `RMSE` son más bajos cuando se utiliza el rolling, lo que indica un mejor rendimiento en la predicción.

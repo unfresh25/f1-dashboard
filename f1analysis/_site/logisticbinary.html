@@ -428,14 +428,14 @@ window.Quarto = {
 <li><p><strong>Edad de los Pilotos (age):</strong> La edad de los pilotos del equipo, calculada a partir de la fecha de la carrera y la fecha de nacimiento de los pilotos, podría tener implicaciones en términos de experiencia, habilidades físicas y capacidad para manejar la presión de la competición.</p></li>
 <li><p><strong>Número de Paradas en los Boxes (pit_stop):</strong> El número de paradas en los boxes durante la carrera puede indicar la eficiencia en la gestión de neumáticos, combustible y ajustes de estrategia, lo cual influye directamente en el tiempo total de la carrera y, por ende, en la probabilidad de llegar a la meta.</p></li>
 </ol>
-<p><strong>Variable Dependiente:</strong> - <strong>Llegada a la Meta (finished_or_no):</strong> Esta variable binaria representará si el equipo logra o no alcanzar la meta al finalizar la carrera. Será el objetivo de nuestro modelo logístico, donde un valor de 1 indicará éxito (llegada a la meta) y un valor de 0 indicará fracaso (no llegar a la meta).</p>
+<p><strong>Variable Dependiente:</strong> - <strong>Llegada a la Meta (scored_or_no):</strong> Esta variable binaria representará si el equipo logra o no alcanzar la meta al finalizar la carrera. Será el objetivo de nuestro modelo logístico, donde un valor de 1 indicará éxito (llegada a la meta) y un valor de 0 indicará fracaso (no llegar a la meta).</p>
 <p>El objetivo principal será construir un modelo logístico que, utilizando estas variables independientes, pueda predecir la probabilidad de que un equipo alcance la meta en una carrera dada. Esto permitirá a los equipos tomar decisiones más informadas sobre estrategias de carrera y optimización de recursos para mejorar sus posibilidades de éxito en competiciones futuras.</p>
 </section>
 <section id="obtención-de-los-datos" class="level1">
 <h1>Obtención de los datos</h1>
 <p>Siguiendo el mismo enfoque utilizado en la sección anterior para llevar a cabo los análisis exploratorios, emplearemos una función para establecer la conexión con la base de datos.</p>
 <p>Primero, importamos las bibliotecas necesarias:</p>
-<div id="af16c939" class="cell" data-execution_count="2">
+<div id="f3c5c0db" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> psycopg2 <span class="im">as</span> psy</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> psycopg2 <span class="im">import</span> Error</span>
@@ -444,7 +444,7 @@ window.Quarto = {
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>A continuación, creamos la función que facilita las conexiones:</p>
-<div id="031d3ce0" class="cell" data-execution_count="3">
+<div id="ffadf197" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> connection_db() <span class="op">-&gt;</span> psy.extensions.connection:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        conn <span class="op">=</span> psy.<span class="ex">connect</span>(DATABASE_URL)</span>
@@ -461,7 +461,7 @@ window.Quarto = {
 <li><strong>Pit_stops:</strong> stop (número de paradas en boxes).</li>
 </ul>
 <p>Luego, ejecutamos la consulta SQL para obtener los datos relevantes:</p>
-<div id="8b931e3d" class="cell" data-execution_count="4">
+<div id="a43df9c7" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    connection <span class="op">=</span> connection_db()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> connection.cursor()</span>
@@ -472,39 +472,38 @@ window.Quarto = {
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="st">                CASE</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHEN r.points &gt; 0 THEN 1</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="st">                    ELSE 0</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">                END AS finished_or_no,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="st">                END AS scored_or_no,</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="st">                r.grid, </span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="st">                r.milliseconds / 60000.0 AS minutes, </span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="st">                r.fastestlapspeed, r.constructorid,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="st">                (DATE_PART('year', ra.date) - DATE_PART('year', d.dob)) as age,</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="st">                MAX(p.stop) as pit_stop</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM results r</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN drivers d ON r.driverid = d.driverid</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN races ra ON r.raceid = ra.raceid</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN pit_stops p ON r.raceid = p.raceid</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="st">            GROUP BY finished_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid, age;</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'fastestlapspeed'</span>])</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'grid'</span>] <span class="op">=</span> records_data[<span class="st">'grid'</span>].astype(<span class="bu">int</span>)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'minutes'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'minutes'</span>])</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="st">                MAX(p.stop) as pit_stop</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="st">            FROM results r</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN drivers d ON r.driverid = d.driverid</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN races ra ON r.raceid = ra.raceid</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="st">            JOIN pit_stops p ON r.raceid = p.raceid</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="st">            GROUP BY scored_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="st">        """</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    records_data <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> []</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> column <span class="kw">in</span> cursor.description:</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        columns.append(column[<span class="dv">0</span>])</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    records_data.columns <span class="op">=</span> columns</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'fastestlapspeed'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'fastestlapspeed'</span>])</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'grid'</span>] <span class="op">=</span> records_data[<span class="st">'grid'</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    records_data[<span class="st">'minutes'</span>] <span class="op">=</span> pd.to_numeric(records_data[<span class="st">'minutes'</span>])</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    display(records_data)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> (<span class="pp">Exception</span>, Error) <span class="im">as</span> e:</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Error while executing the query'</span>, e)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(connection):</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        cursor.close()</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        connection.close()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div>
@@ -514,12 +513,11 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">finished_or_no</th>
+<th data-quarto-table-cell-role="th">scored_or_no</th>
 <th data-quarto-table-cell-role="th">grid</th>
 <th data-quarto-table-cell-role="th">minutes</th>
 <th data-quarto-table-cell-role="th">fastestlapspeed</th>
 <th data-quarto-table-cell-role="th">constructorid</th>
-<th data-quarto-table-cell-role="th">age</th>
 <th data-quarto-table-cell-role="th">pit_stop</th>
 </tr>
 </thead>
@@ -527,52 +525,47 @@ window.Quarto = {
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>0</td>
-<td>20</td>
-<td>74.375950</td>
-<td>238.300</td>
-<td>37</td>
-<td>39.0</td>
+<td>0</td>
+<td>68.471850</td>
+<td>212.261</td>
+<td>42</td>
 <td>1</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>0</td>
-<td>17</td>
-<td>78.781533</td>
-<td>225.354</td>
-<td>6</td>
-<td>29.0</td>
+<td>1</td>
+<td>69.636133</td>
+<td>229.583</td>
+<td>32</td>
 <td>1</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>0</td>
-<td>5</td>
-<td>106.310617</td>
-<td>190.672</td>
 <td>1</td>
-<td>23.0</td>
+<td>7</td>
+<td>88.963167</td>
+<td>220.616</td>
+<td>25</td>
 <td>1</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>0</td>
-<td>0</td>
-<td>68.550567</td>
-<td>211.124</td>
-<td>46</td>
-<td>33.0</td>
+<td>13</td>
+<td>114.639133</td>
+<td>188.481</td>
+<td>204</td>
 <td>1</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>0</td>
-<td>14</td>
-<td>95.686550</td>
-<td>193.481</td>
-<td>51</td>
-<td>40.0</td>
-<td>2</td>
+<td>1</td>
+<td>13</td>
+<td>99.079267</td>
+<td>201.060</td>
+<td>5</td>
+<td>3</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -582,62 +575,56 @@ window.Quarto = {
 <td>...</td>
 <td>...</td>
 <td>...</td>
-<td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">25592</td>
-<td>0</td>
-<td>13</td>
-<td>100.605233</td>
-<td>206.567</td>
-<td>17</td>
-<td>30.0</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">25593</td>
-<td>1</td>
-<td>11</td>
-<td>113.479283</td>
-<td>192.484</td>
-<td>1</td>
-<td>30.0</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">25594</td>
-<td>0</td>
-<td>6</td>
-<td>68.660150</td>
-<td>243.718</td>
-<td>4</td>
-<td>24.0</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">25595</td>
+<td data-quarto-table-cell-role="th">25017</td>
 <td>1</td>
 <td>1</td>
-<td>122.271767</td>
-<td>175.786</td>
-<td>6</td>
-<td>45.0</td>
+<td>141.621667</td>
+<td>180.585</td>
+<td>170</td>
 <td>2</td>
 </tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">25596</td>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25018</td>
 <td>0</td>
 <td>12</td>
-<td>115.799983</td>
-<td>181.054</td>
-<td>32</td>
-<td>31.0</td>
+<td>81.743367</td>
+<td>220.588</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25019</td>
+<td>0</td>
+<td>8</td>
+<td>72.115817</td>
+<td>232.227</td>
+<td>167</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25020</td>
+<td>0</td>
+<td>15</td>
+<td>73.632333</td>
+<td>230.147</td>
+<td>18</td>
 <td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25021</td>
+<td>1</td>
+<td>2</td>
+<td>96.365417</td>
+<td>203.072</td>
+<td>131</td>
+<td>5</td>
 </tr>
 </tbody>
 </table>
 
-<p>25597 rows × 7 columns</p>
+<p>25022 rows × 6 columns</p>
 </div>
 </div>
 </div>
@@ -653,89 +640,43 @@ window.Quarto = {
         &amp;+ \beta_4 \text{fastestlapspeed} + \beta_5 \text{constructorid} + \beta_6 \text{pitstop}
     \end{align*}
 \]</span></p>
-<p>Para construir nuestro modelo en Python, emplearemos la biblioteca <code>statsmodels</code>. Sin embargo, es necesario separar inicialmente nuestro conjunto de datos en conjuntos de entrenamiento y prueba. Esto se realiza de la siguiente manera:</p>
-<div id="60275d22" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<p>Para construir nuestro modelo en Python, emplearemos la biblioteca <code>statsmodels</code>. A continuación, planteamos nuestro modelo utilizando las variables de interés:</p>
+<div id="8b3d1c21" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> sm</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> records_data.iloc[:, <span class="dv">1</span>:]</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> records_data.iloc[:, <span class="dv">0</span>:<span class="dv">1</span>]</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, train_size<span class="op">=</span><span class="fl">0.7</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> pd.concat([y_train, X_train], axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> pd.concat([y_test, X_test], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>A continuación, planteamos nuestro modelo utilizando las variables de interés:</p>
-<div id="eadbd6c3" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> sm</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>log_reg <span class="op">=</span> sm.logit(<span class="st">'finished_or_no ~ grid + age + minutes + constructorid + pit_stop + fastestlapspeed'</span>, data <span class="op">=</span> train_data).fit()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>log_reg <span class="op">=</span> sm.logit(<span class="st">'scored_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed'</span>, data <span class="op">=</span> records_data).fit()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimization terminated successfully.
-         Current function value: 0.438082
+         Current function value: 0.434917
          Iterations 7</code></pre>
 </div>
 </div>
-<div id="f565bde4" class="cell" data-execution_count="7">
+<div id="80e56fff" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-stdout">
 <pre><code>                           Logit Regression Results                           
 ==============================================================================
-Dep. Variable:         finished_or_no   No. Observations:                17917
-Model:                          Logit   Df Residuals:                    17910
-Method:                           MLE   Df Model:                            6
-Date:                Wed, 24 Apr 2024   Pseudo R-squ.:                  0.2908
-Time:                        19:35:45   Log-Likelihood:                -7849.1
-converged:                       True   LL-Null:                       -11068.
-Covariance Type:            nonrobust   LLR p-value:                     0.000
-===================================================================================
-                      coef    std err          z      P&gt;|z|      [0.025      0.975]
------------------------------------------------------------------------------------
-Intercept         -30.2711      0.895    -33.825      0.000     -32.025     -28.517
-grid               -0.2172      0.004    -54.823      0.000      -0.225      -0.209
-age                -0.0030      0.004     -0.763      0.446      -0.011       0.005
-minutes             0.1308      0.003     39.267      0.000       0.124       0.137
-constructorid      -0.0057      0.000    -15.823      0.000      -0.006      -0.005
-pit_stop            0.3959      0.021     19.235      0.000       0.356       0.436
-fastestlapspeed     0.0901      0.003     31.568      0.000       0.085       0.096
-===================================================================================</code></pre>
-</div>
-</div>
-<p>Los coeficientes del modelo indican cómo cada variable predictora afecta la probabilidad de que un corredor de carreras finalice la carrera, de ello podemos afirmar lo siguiente: un <code>intercepto</code> negativo grande sugiere una baja probabilidad inicial de no finalizar la carrera. Una <code>posición de salida</code> más atrás en la parrilla y ser un <code>equipo</code> nuevo disminuyen la probabilidad de finalizar la carrera, mientras que un <code>tiempo de carrera</code> más largo, realizar un <code>pit stop</code> durante la carrera y alcanzar una <code>velocidad</code> alta en la vuelta más rápida aumentan esta probabilidad. La <code>edad del corredor</code> no parece tener un efecto significativo en la probabilidad de finalizar la carrera, como lo sugiere el intervalo de confianza que incluye cero para el coeficiente correspondiente. Todos los demás coeficientes son significativos, como lo indican los intervalos de confianza que no incluyen cero.</p>
-<p>A continuación, procedemos a remover la variable <code>age</code> del modelo, ya que no es significativa, y observamos los resultados del nuevo modelo:</p>
-<div id="65481d86" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> sm</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>log_reg_2 <span class="op">=</span> sm.logit(<span class="st">'finished_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed'</span>, data <span class="op">=</span> train_data).fit()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Optimization terminated successfully.
-         Current function value: 0.438099
-         Iterations 7</code></pre>
-</div>
-</div>
-<div id="715a97f0" class="cell" data-execution_count="9">
-<div class="cell-output cell-output-stdout">
-<pre><code>                           Logit Regression Results                           
-==============================================================================
-Dep. Variable:         finished_or_no   No. Observations:                17917
-Model:                          Logit   Df Residuals:                    17911
+Dep. Variable:           scored_or_no   No. Observations:                25022
+Model:                          Logit   Df Residuals:                    25016
 Method:                           MLE   Df Model:                            5
-Date:                Wed, 24 Apr 2024   Pseudo R-squ.:                  0.2908
-Time:                        19:35:45   Log-Likelihood:                -7849.4
-converged:                       True   LL-Null:                       -11068.
+Date:                Fri, 26 Apr 2024   Pseudo R-squ.:                  0.2986
+Time:                        22:45:42   Log-Likelihood:                -10882.
+converged:                       True   LL-Null:                       -15516.
 Covariance Type:            nonrobust   LLR p-value:                     0.000
 ===================================================================================
                       coef    std err          z      P&gt;|z|      [0.025      0.975]
 -----------------------------------------------------------------------------------
-Intercept         -30.3484      0.889    -34.130      0.000     -32.091     -28.606
-grid               -0.2169      0.004    -54.988      0.000      -0.225      -0.209
-minutes             0.1308      0.003     39.273      0.000       0.124       0.137
-constructorid      -0.0057      0.000    -16.060      0.000      -0.006      -0.005
-pit_stop            0.3981      0.020     19.543      0.000       0.358       0.438
-fastestlapspeed     0.0901      0.003     31.568      0.000       0.084       0.096
+Intercept         -30.2903      0.772    -39.249      0.000     -31.803     -28.778
+grid               -0.2248      0.003    -66.597      0.000      -0.231      -0.218
+minutes             0.1309      0.003     45.193      0.000       0.125       0.137
+constructorid      -0.0053      0.000    -17.800      0.000      -0.006      -0.005
+pit_stop            0.3947      0.017     23.105      0.000       0.361       0.428
+fastestlapspeed     0.0901      0.002     36.540      0.000       0.085       0.095
 ===================================================================================</code></pre>
 </div>
 </div>
-<p>Es notable que la eliminación de la variable <code>age</code> no afectó negativamente la capacidad predictiva del modelo, lo que sugiere que la edad de los corredores puede no ser un factor determinante en su habilidad para finalizar una carrera. Sin embargo, es importante considerar que la relevancia de esta variable podría variar en función de otros factores contextuales o características específicas de la muestra de datos utilizada. Por otro lado, los resultados obtenidos son similares a los previamente concluidos, por lo que podemos proceder a analizar las métricas del modelo.</p>
+<p>Los coeficientes del modelo indican cómo cada variable predictora afecta la probabilidad de que un corredor de carreras finalice la carrera, de ello podemos afirmar lo siguiente: un <code>intercepto</code> negativo grande sugiere una baja probabilidad inicial de no finalizar la carrera. Una <code>posición de salida</code> más atrás en la parrilla y ser un <code>equipo</code> nuevo disminuyen la probabilidad de finalizar la carrera, mientras que un <code>tiempo de carrera</code> más largo, realizar un <code>pit stop</code> durante la carrera y alcanzar una <code>velocidad</code> alta en la vuelta más rápida aumentan esta probabilidad. Todos los coeficientes son significativos, como lo indican los intervalos de confianza que no incluyen cero.</p>
 </section>
 <section id="evaluación-del-modelo" class="level1">
 <h1>Evaluación del modelo</h1>
@@ -762,28 +703,20 @@ fastestlapspeed     0.0901      0.003     31.568      0.000       0.084       0.
 \]</span></p>
 <p>Esta variante concreta también se conoce como <span class="math inline">\(f_1\)</span>-score. Finalmente, el área bajo la curva <code>ROC</code> proporciona una evaluación del rendimiento global del modelo, considerando todas las posibles tasas de verdaderos positivos frente a falsos positivos.</p>
 <p>Veamos entonces cuáles son los resultados para las métricas mencionadas en nuestros modelos</p>
-<div id="daa6b88e" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score, f1_score, roc_auc_score</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> log_reg.predict(X_test)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> np.where(y_pred <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(y_test, y_pred)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> recall_score(y_test, y_pred)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(y_test, y_pred)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>auc <span class="op">=</span> roc_auc_score(y_test, y_pred)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>y_pred2 <span class="op">=</span> log_reg_2.predict(X_test)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>y_pred2_a <span class="op">=</span> np.where(y_pred2 <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>precision2 <span class="op">=</span> precision_score(y_test, y_pred2_a)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>recall2 <span class="op">=</span> recall_score(y_test, y_pred2_a)</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>f1_2 <span class="op">=</span> f1_score(y_test, y_pred2_a)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>auc2 <span class="op">=</span> roc_auc_score(y_test, y_pred2_a)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="c1185f74" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score, f1_score, roc_auc_score</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> log_reg.predict(X)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>y_pred_a <span class="op">=</span> np.where(y_pred <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(y, y_pred_a)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> recall_score(y, y_pred_a)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(y, y_pred_a)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>auc <span class="op">=</span> roc_auc_score(y, y_pred_a)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="b50eb303" class="cell" data-execution_count="11">
-<div class="cell-output cell-output-display" data-execution_count="68">
+<div id="a7608afc" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <div>
 
@@ -792,26 +725,25 @@ fastestlapspeed     0.0901      0.003     31.568      0.000       0.084       0.
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Precision</th>
-<th data-quarto-table-cell-role="th">Recall</th>
-<th data-quarto-table-cell-role="th">F1-score</th>
-<th data-quarto-table-cell-role="th">AUC</th>
+<th data-quarto-table-cell-role="th">Modelo logístico</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">Logit 1</td>
-<td>0.764969</td>
-<td>0.593831</td>
-<td>0.668623</td>
-<td>0.757868</td>
+<td data-quarto-table-cell-role="th">Precision</td>
+<td>0.752692</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">Logit 2</td>
-<td>0.765886</td>
-<td>0.596872</td>
-<td>0.670898</td>
-<td>0.759388</td>
+<td data-quarto-table-cell-role="th">Recall</td>
+<td>0.601438</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">F1-score</td>
+<td>0.668618</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">AUC</td>
+<td>0.756069</td>
 </tr>
 </tbody>
 </table>
@@ -827,140 +759,140 @@ fastestlapspeed     0.0901      0.003     31.568      0.000       0.084       0.
 <section id="curva-roc" class="level2">
 <h2 class="anchored" data-anchor-id="curva-roc">Curva ROC</h2>
 <p>Antes de realizar el gráfico de la curva ROC debemos ver dos gráficos que nos darán contexto al mecánismo de los umbrales detrás de esta curva.</p>
-<div id="149adcf3" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds <span class="op">=</span> roc_curve(y_test, y_pred2)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>y_test_g <span class="op">=</span> y_test[<span class="st">'finished_or_no'</span>].values</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>fig_hist <span class="op">=</span> px.histogram(</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>y_pred2, color<span class="op">=</span>y_test_g, nbins<span class="op">=</span><span class="dv">50</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'True Labels'</span>, x<span class="op">=</span><span class="st">'Score'</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>fig_hist.update_layout(</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">0</span>},</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>fig_hist.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="2952568b" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds <span class="op">=</span> roc_curve(y, y_pred)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>y_g <span class="op">=</span> y[<span class="st">'scored_or_no'</span>].values</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>fig_hist <span class="op">=</span> px.histogram(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>y_pred, color<span class="op">=</span>y_g, nbins<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'True Labels'</span>, x<span class="op">=</span><span class="st">'Score'</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>fig_hist.update_layout(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">0</span>},</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>fig_hist.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<iframe src="roc_logit_binary_g1.html" width="730" height="520" title="ROC Logit Binary Graph 1">
+<iframe src="graphs/roc_logit_binary_g1.html" width="730" height="520" title="ROC Logit Binary Graph 1">
 </iframe>
 <p>En el histograma, observamos que la puntuación se distribuye de tal forma que la mayoría de las etiquetas positivas y negativas se sitúan cerca de 0, y las que más valores se reunen en 1 serían las negativas. Cuando fijamos un umbral en la puntuación, todos los bines a su izquierda se clasificarán como 0, y todo a la derecha serán 1. Obviamente, hay algunos valores atípicos, como las muestras negativas a las que nuestro modelo dio una puntuación alta, y las muestras positivas con una puntuación baja. Si fijamos un umbral justo en el medio, esos valores atípicos se convertirán respectivamente en falsos positivos y falsos negativos.</p>
 <p>Evaluemos entonces el rendimiento del modelo con diferentes umbrales</p>
-<div id="307d3506" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'False Positive Rate'</span>: fpr,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'True Positive Rate'</span>: tpr</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>thresholds)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>df.index.name <span class="op">=</span> <span class="st">"Thresholds"</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>df.columns.name <span class="op">=</span> <span class="st">"Rate"</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>fig_thresh <span class="op">=</span> px.line(</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    df, title<span class="op">=</span><span class="st">'TPR y FPR en cada umbral'</span>,</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">700</span>, height<span class="op">=</span><span class="dv">500</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_yaxes(scaleanchor<span class="op">=</span><span class="st">"x"</span>, scaleratio<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_xaxes(<span class="bu">range</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], constrain<span class="op">=</span><span class="st">'domain'</span>)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_layout(</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>fig_thresh.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="dfc76293" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'False Positive Rate'</span>: fpr,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'True Positive Rate'</span>: tpr</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>thresholds)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df.index.name <span class="op">=</span> <span class="st">"Thresholds"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>df.columns.name <span class="op">=</span> <span class="st">"Rate"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>fig_thresh <span class="op">=</span> px.line(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    df, title<span class="op">=</span><span class="st">'TPR y FPR en cada umbral'</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">700</span>, height<span class="op">=</span><span class="dv">500</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_yaxes(scaleanchor<span class="op">=</span><span class="st">"x"</span>, scaleratio<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_xaxes(<span class="bu">range</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>], constrain<span class="op">=</span><span class="st">'domain'</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>fig_thresh.update_layout(</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>fig_thresh.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<iframe src="roc_logit_binary_g2.html" width="730" height="520" title="ROC Logit Binary Graph 2">
+<iframe src="graphs/roc_logit_binary_g2.html" width="730" height="520" title="ROC Logit Binary Graph 2">
 </iframe>
 <p>A medida que ajustamos los umbrales, el número de positivos aumentará o disminuirá, y al mismo tiempo también cambiará el número de verdaderos positivos; esto se muestra en el segundo gráfico. Como se puede ver, el modelo parece funcionar bastante bien, porque la tasa de verdaderos positivos disminuye lentamente, mientras que la tasa de falsos positivos disminuye bruscamente a medida que aumentamos el umbral. Cada una de esas dos líneas representa una dimensión de la curva ROC.</p>
-<div id="b2bd2f98" class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig_roc <span class="op">=</span> px.area(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>fpr, y<span class="op">=</span>tpr,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f'Curva de ROC'</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="bu">dict</span>(x<span class="op">=</span><span class="st">'False Positive Rate'</span>, y<span class="op">=</span><span class="st">'True Positive Rate'</span>),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">700</span>, height<span class="op">=</span><span class="dv">500</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>fig_roc.add_shape(</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>, line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'white'</span>),</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    x0<span class="op">=</span><span class="dv">0</span>, x1<span class="op">=</span><span class="dv">1</span>, y0<span class="op">=</span><span class="dv">0</span>, y1<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>fig_roc.add_annotation(</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    xref <span class="op">=</span> <span class="st">'paper'</span>, yref <span class="op">=</span> <span class="st">'paper'</span>,</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fl">.95</span>, y <span class="op">=</span> <span class="fl">.05</span>,</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="ss">f'AUC: </span><span class="sc">{</span>auc2<span class="sc">:.4f}</span><span class="ss">'</span>,</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    showarrow <span class="op">=</span> <span class="va">False</span>,</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    bordercolor <span class="op">=</span> <span class="st">'black'</span>,</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    borderwidth <span class="op">=</span> <span class="fl">.5</span>,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    bgcolor <span class="op">=</span> <span class="st">'#e10600'</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>fig_roc.update_yaxes(scaleanchor<span class="op">=</span><span class="st">"x"</span>, scaleratio<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>fig_roc.update_xaxes(constrain<span class="op">=</span><span class="st">'domain'</span>)</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>fig_roc.update_layout(</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>fig_roc.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="b04765bd" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fig_roc <span class="op">=</span> px.area(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>fpr, y<span class="op">=</span>tpr,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f'Curva de ROC'</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span><span class="bu">dict</span>(x<span class="op">=</span><span class="st">'False Positive Rate'</span>, y<span class="op">=</span><span class="st">'True Positive Rate'</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    width<span class="op">=</span><span class="dv">700</span>, height<span class="op">=</span><span class="dv">500</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>fig_roc.add_shape(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="st">'line'</span>, line<span class="op">=</span><span class="bu">dict</span>(dash<span class="op">=</span><span class="st">'dash'</span>, color<span class="op">=</span><span class="st">'white'</span>),</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    x0<span class="op">=</span><span class="dv">0</span>, x1<span class="op">=</span><span class="dv">1</span>, y0<span class="op">=</span><span class="dv">0</span>, y1<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>fig_roc.add_annotation(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    xref <span class="op">=</span> <span class="st">'paper'</span>, yref <span class="op">=</span> <span class="st">'paper'</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fl">.95</span>, y <span class="op">=</span> <span class="fl">.05</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="ss">f'AUC: </span><span class="sc">{</span>auc<span class="sc">:.4f}</span><span class="ss">'</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    showarrow <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    bordercolor <span class="op">=</span> <span class="st">'black'</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    borderwidth <span class="op">=</span> <span class="fl">.5</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    bgcolor <span class="op">=</span> <span class="st">'#e10600'</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>fig_roc.update_yaxes(scaleanchor<span class="op">=</span><span class="st">"x"</span>, scaleratio<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>fig_roc.update_xaxes(constrain<span class="op">=</span><span class="st">'domain'</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>fig_roc.update_layout(</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>fig_roc.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<iframe src="roc_logit_binary.html" width="730" height="520" title="ROC Logit Binary Graph">
+<iframe src="graphs/roc_logit_binary.html" width="730" height="520" title="ROC Logit Binary Graph">
 </iframe>
 <p>Notemos que esta curva ROC se parece a la curva de TPR del gráfico anterior. Esto se debe a que son la misma curva, salvo que el eje x consiste en valores crecientes de FPR en lugar de umbral, razón por la cual la línea está invertida y distorsionada. También se puede observar el área bajo la curva ROC (ROC AUC), que es bastante alta, lo que concuerda con nuestra interpretación de los gráficos anteriores.</p>
 </section>
 <section id="matriz-de-confusión" class="level2">
 <h2 class="anchored" data-anchor-id="matriz-de-confusión">Matriz de confusión</h2>
 <p>Otra forma de visualizar los aciertos en las predicciones de los modelos es mediante una matriz de confusión. En ella podremos observar los valores <span class="math inline">\(TP\)</span>, <span class="math inline">\(FP\)</span>, <span class="math inline">\(TN\)</span> y <span class="math inline">\(FN\)</span> predichos por el modelo y determinar qué tanto es el acierto.</p>
-<div id="4efe0ecb" class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.figure_factory <span class="im">as</span> ff</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>conf_matrix_log_reg <span class="op">=</span> confusion_matrix(y_test, y_pred2_a)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'No Finalizado'</span>, <span class="st">'Finalizado'</span>]</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>fig_cm <span class="op">=</span> ff.create_annotated_heatmap(conf_matrix_log_reg, x<span class="op">=</span>labels, y<span class="op">=</span>labels, colorscale<span class="op">=</span>[[<span class="dv">0</span>, <span class="st">'#FFFFFF'</span>], [<span class="dv">1</span>, <span class="st">'#e10600'</span>]])</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>fig_cm.update_layout(title<span class="op">=</span><span class="st">'Matriz de Confusión para Logit 2'</span>)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>fig_cm.update_layout(</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>fig_cm.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="6c7cfb57" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.figure_factory <span class="im">as</span> ff</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>conf_matrix_log_reg <span class="op">=</span> confusion_matrix(y, y_pred_a).T</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'No Puntuó'</span>, <span class="st">'Puntuó'</span>]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>fig_cm <span class="op">=</span> ff.create_annotated_heatmap(conf_matrix_log_reg, x<span class="op">=</span>labels, y<span class="op">=</span>labels, colorscale<span class="op">=</span>[[<span class="dv">0</span>, <span class="st">'#FFFFFF'</span>], [<span class="dv">1</span>, <span class="st">'#e10600'</span>]])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>fig_cm.update_layout(title<span class="op">=</span><span class="st">'Matriz de Confusión'</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>fig_cm.update_layout(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    margin<span class="op">=</span>{<span class="st">'b'</span>: <span class="dv">0</span>, <span class="st">'r'</span>: <span class="dv">30</span>, <span class="st">'l'</span>: <span class="dv">30</span>, <span class="st">'t'</span>: <span class="dv">50</span>},</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    xaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    yaxis<span class="op">=</span>{<span class="st">'gridcolor'</span>: <span class="st">'#111'</span>, <span class="st">'tickfont'</span>: {<span class="st">'color'</span>: <span class="st">'white'</span>}},</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    plot_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    paper_bgcolor<span class="op">=</span><span class="st">'rgba(0, 0, 0, 0.0)'</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    font_color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    hoverlabel<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        bgcolor<span class="op">=</span><span class="st">"#111"</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>fig_cm.show()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<iframe src="cm_logit_binary.html" width="730" height="520" title="Confusion Matrix Logit Binary Graph">
+<iframe src="graphs/cm_logit_binary.html" width="730" height="520" title="Confusion Matrix Logit Binary Graph">
 </iframe>
 </section>
 </section>
