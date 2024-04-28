@@ -8,6 +8,8 @@ import pandas as pd
 
 from functools import lru_cache
 
+import requests
+
 load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
@@ -110,8 +112,10 @@ def get_inputs_params(year):
 
 @lru_cache(maxsize=None)
 def get_binary_model():
-    with open('src/models/binarylsm.pkl', 'rb') as archivo:
-        log_reg = pickle.load(archivo)
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/binarylsm.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    log_reg = pickle.loads(model_content)
     
     precision = log_reg['precision']
     recall = log_reg['recall']
@@ -126,8 +130,10 @@ def get_binary_model():
 
 @lru_cache(maxsize=None)
 def get_binary_model_predict(year, circuit, grid, minutes, constructorid, pits, fastestlapspeed):
-    with open('src/models/binarylsm.pkl', 'rb') as archivo:
-        log_reg = pickle.load(archivo)
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/binarylsm.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    log_reg = pickle.loads(model_content)
 
     
     minutes = float(minutes)
