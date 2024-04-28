@@ -1,6 +1,17 @@
 
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
 
+::-webkit-scrollbar {
+    width: 4px;
+    background-color: rgba(131, 131, 131, 0.1);
+    margin-left: 1em;
+}
+  
+::-webkit-scrollbar-thumb {
+    background-color: rgba(129, 129, 129, 0.3);
+    border-radius: 4px;
+}
+
 body {
     font-family: "League Spartan", sans-serif;
     font-optical-sizing: auto;

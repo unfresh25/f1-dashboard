@@ -29,10 +29,19 @@ def connection_db() -> psy.extensions.connection:
         return None
     
 @lru_cache(maxsize=None)
-def get_teams():
+def get_teams(year):
     conn = connection_db()
     cur = conn.cursor()
-    cur.execute('SELECT DISTINCT constructorid, name FROM constructors')
+    cur.execute(
+        """
+            SELECT 
+                DISTINCT c.constructorid, c.name, c.url
+            FROM constructors c
+            JOIN results r ON c.constructorid = r.constructorid
+            JOIN races ra ON r.raceid = ra.raceid
+            WHERE ra.year = %s
+        """, (year,)
+    )
     teams = cur.fetchall()
     teams = pd.DataFrame(teams)
 
@@ -45,7 +54,68 @@ def get_teams():
     cur.close()
     conn.close()
     return teams
-    
+
+@lru_cache(maxsize=None)
+def get_circuits_data(year):
+    conn = connection_db()
+    cur = conn.cursor()
+    cur.execute(
+        """
+            select 
+                distinct r.raceid, c.name
+            from results r
+            join races ra on r.raceid = ra.raceid
+            join circuits c on ra.circuitid = c.circuitid
+            where ra.year = %s;
+        """, (year,)
+    )
+    inputs = cur.fetchall()
+    inputs = pd.DataFrame(inputs)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    inputs.columns = columns
+
+    cur.close()
+    conn.close()
+    return inputs
+
+@lru_cache(maxsize=None)
+def get_inputs_params(year):
+    conn = connection_db()
+    cur = conn.cursor()
+    cur.execute(
+        """
+            SELECT 
+                min(grid) as min_grid, 
+                max(grid) as max_grid, 
+                min(r.milliseconds) / 60000 as min_minutes,
+                max(r.milliseconds) / 60000 as max_minutes,
+                min(fastestlapspeed) as min_fastestlapspeed,
+                max(fastestlapspeed) as max_fastestlapspeed,
+                min(p.stop) as min_pit_stop,
+                max(p.stop) as max_pit_stop
+            FROM results r
+            JOIN races ra ON r.raceid = ra.raceid
+            JOIN pit_stops p ON r.raceid = p.raceid
+            WHERE ra.year = %s
+        """, (year,)
+    )
+    inputs = cur.fetchall()
+    inputs = pd.DataFrame(inputs)
+
+    columns = []
+    for column in cur.description:
+        columns.append(column[0])
+
+    inputs.columns = columns
+
+    cur.close()
+    conn.close()
+    return inputs
+
 @lru_cache(maxsize=None)
 def get_binary_model():
     with open('src/models/binarylsm.pkl', 'rb') as archivo:
@@ -59,20 +129,20 @@ def get_binary_model():
     fig_thresh = log_reg['fig_thresh']
     fig_roc = log_reg['fig_roc']
     fig_cm = log_reg['fig_cm']
-
-    model = log_reg['binarylsm']
-    #y_hat = model.predict(to_predict)[0]
     
     return precision, recall, f1, auc, fig_hist, fig_thresh, fig_roc, fig_cm
 
 @lru_cache(maxsize=None)
-def get_binary_model_predict(grid, minutes, constructorid, pits, fastestlapspeed):
+def get_binary_model_predict(year, circuit, grid, minutes, constructorid, pits, fastestlapspeed):
     with open('src/models/binarylsm.pkl', 'rb') as archivo:
         log_reg = pickle.load(archivo)
 
+    
     minutes = float(minutes)
 
     to_predict = pd.DataFrame({
+        'year': [year],
+        'raceid': [circuit],
         'grid': [grid],
         'minutes': [minutes],
         'constructorid': [constructorid],
@@ -80,8 +150,6 @@ def get_binary_model_predict(grid, minutes, constructorid, pits, fastestlapspeed
         'fastestlapspeed': [fastestlapspeed]
     })
 
-    print(to_predict.dtypes)
-    
     model = log_reg['binarylsm']
     y_hat = model.predict(to_predict)[0]
 
