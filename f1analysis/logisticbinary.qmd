@@ -154,15 +154,17 @@ try:
                     WHEN r.points > 0 THEN 1
                     ELSE 0
                 END AS scored_or_no,
+                ra.year,
+                ra.raceid,
                 r.grid, 
-                r.milliseconds / 60000.0 AS minutes, 
+                r.milliseconds / 60000 AS minutes, 
                 r.fastestlapspeed, r.constructorid,
                 MAX(p.stop) as pit_stop
             FROM results r
             JOIN drivers d ON r.driverid = d.driverid
             JOIN races ra ON r.raceid = ra.raceid
             JOIN pit_stops p ON r.raceid = p.raceid
-            GROUP BY scored_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid;
+            GROUP BY scored_or_no, r.grid, r.milliseconds, r.fastestlapspeed, r.constructorid, ra.year, ra.raceid;
         """
     )
 
@@ -176,7 +178,7 @@ try:
     records_data.columns = columns
     records_data['fastestlapspeed'] = pd.to_numeric(records_data['fastestlapspeed'])
     records_data['grid'] = records_data['grid'].astype(int)
-    records_data['minutes'] = pd.to_numeric(records_data['minutes'])
+    records_data['minutes'] = records_data['minutes'].astype(int)
 
     display(records_data)
 except (Exception, Error) as e:
@@ -207,7 +209,7 @@ import statsmodels.formula.api as sm
 
 X = records_data.iloc[:, 1:]
 y = records_data.iloc[:, 0:1]
-log_reg = sm.logit('scored_or_no ~ grid + minutes + constructorid + pit_stop + fastestlapspeed', data = records_data).fit()
+log_reg = sm.logit('scored_or_no ~ year + raceid + grid + minutes + constructorid + pit_stop + fastestlapspeed', data = records_data).fit()
 ```
 
 ``` {python}
