@@ -1,18 +1,10 @@
 import os
 import pickle
-import random
 from dotenv import load_dotenv
 import psycopg2 as psy
 from psycopg2 import Error
 
-from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, roc_curve, confusion_matrix
-import statsmodels.formula.api as sm
-
 import pandas as pd
-import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
-import plotly.figure_factory as ff
 
 from functools import lru_cache
 

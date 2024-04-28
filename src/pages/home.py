@@ -194,13 +194,13 @@ layout = html.Main([
            html.Aside([
                html.Img(src='../assets/imgs/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px'}),
                html.Span("Jorge Borja Serrano", style={'margin-top': '15px'}),
-               html.Span("Mg. Applied Statistic"),
+               html.Span("Mg. Applied Statistics"),
            ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
 
            html.Aside([
-               html.Img(src='../assets/imgs/jorge_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px', 'transform': 'scaleX(-1)'}),
+               html.Img(src='../assets/imgs/jose_avatar.svg', alt='Team members', style={'height': '200px', 'width': '200px', 'background-color': '#fff', 'border-radius': '100%', 'padding': '5px', 'transform': 'scaleX(-1)'}),
                html.Span("Jose Mercado Reyes", style={'margin-top': '15px'}),
-               html.Span("Mg. Applied Statistic"),
+               html.Span("Mg. Applied Statistics"),
            ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'})
        ], style={"display": "flex", "justify-content": "space-around", "margin-top": "100px"}),
     ],
