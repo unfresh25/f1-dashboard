@@ -115,7 +115,7 @@ layout = html.Main([
                     "Analysis",
                 ),
                 html.P([
-                    html.Span("The project encompassed an exploratory data analysis focusing on team and driver dynamics, alongside the deployment of diverse models including time series analysis, logistic regression, and principal component analysis. You can find more information about this analysis in our quarto report "),
+                    html.Span("The project encompassed an exploratory data analysis focusing on team and driver dynamics, alongside the deployment of diverse models including time series analysis, logistic regression, and principal component analysis. You can find more information about this analysis in our quarto report."),
                     html.A('here.', href='https://unfresh25.github.io/f1-dashboard/site/', rel='noopener noreferrer', target='_blank', style={'color': 'inherit'}),
                 ],style={
                     'margin-bottom': '1rem',
