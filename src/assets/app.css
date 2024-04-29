@@ -153,9 +153,8 @@ p {
     }
 }
 
-.Select-value-label, .Select-value-icon {
+.Select-value-label {
     color: #fff !important;
-    border: .2px solid #e10600;
 }
 
 .Select-value {
