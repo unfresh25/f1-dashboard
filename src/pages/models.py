@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 import dash_loading_spinners as dls
 
 from edafunctions import get_seasons
-from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_pca_data, get_pca_graph, get_teams
+from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_svm_model, get_teams
 
 import os
 from dotenv import load_dotenv
@@ -53,9 +53,6 @@ car['align-items'] = 'center'
 
 dates = get_seasons()
 dates = dates.sort_values(by='year', ascending=False)
-
-pca_data = get_pca_data()
-pca_variables = pca_data.columns[2:]
 
 layout = html.Main([
     html.Nav([
@@ -333,68 +330,58 @@ def set_model_tab(tab):
         style={
             'margin-top': '20px'
         })
-    elif tab == 'pca':
+    elif tab == 'class':
+        precision, recall, f1, auc, fig_cm = get_svm_model()
+        print(precision)
         return html.Article([
-            html.H3('Ranking the best teams by principal components - PCA', style={'text-align': 'center', 'margin-top': '50px'}),
+            html.H3('Win or no win team ranking by KNN vs. SVM', style={'text-align': 'center', 'margin-top': '50px'}),
             html.Aside([
                 html.Div([
-                    html.Div([
-                        html.Article([
-                            html.Span(id='variables', style={'font-weight': 'regular', 'color': 'rgba(255, 255, 255, 0.35)', 'margin-left': '12px', 'position': 'relative', 'top': '5px'}),
-                            dcc.Dropdown(
-                                id='variables-dropdown',
-                                options=[{'label': k, 'value': k} for i, k in enumerate(pca_variables)],
-                                value=[pca_variables[0], pca_variables[1]],
-                                style={
-                                    "color": "black", 
-                                    "background-color": "transparent", 
-                                    "border": "none", 
-                                    "border-bottom": ".2px solid #e10600",
-                                    "visibility": "hidden"
-                                },
-                                multi=True
-                            ),
-                            dcc.Graph(id='pca-graph-2d', style={'margin-top': '30px'})
-                        ], style={'width': '50%'}), 
-                    ], style={'width': '90%', 'display': 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'gap': '30px'}),
-                ],                   
-                style={
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'gap': '20px',
-                    'background-color': 'rgba(0, 0, 0, 0.7)',
-                    'border': '.5px solid #222',
-                    'border-radius': '20px',
-                    'padding': '20px',
-                    'width': '100%',
-                    'place-content': 'center'
-                }
-                )
-                ,
-                html.Div([
-                    dcc.Graph(id='pca-graph-3d'),
+                    html.Img(src=dash.get_asset_url('webicons/precision.svg'), alt='analysis icon', style={'width': '20px'}),
+                    html.Span([
+                        html.Span('Precision', style={'color': '#e10600'}),
+                        html.Span(round(precision, 3), style={'font-weight': 'bold'})
+                    ],
+                    style=score_card)
                 ],
-                style={
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'gap': '20px',
-                    'background-color': 'rgba(0, 0, 0, 0.7)',
-                    'border': '.5px solid #222',
-                    'border-radius': '20px',
-                    'padding': '20px',
-                    'width': '100%',
-                    'place-content': 'center'
-                })
+                style=score_style),
+                html.Div([
+                    html.Img(src=dash.get_asset_url('webicons/recall.svg'), alt='analysis icon', style={'width': '20px'}),
+                    html.Span([
+                        html.Span('Recall', style={'color': '#e10600'}),
+                        html.Span(round(recall, 3), style={'font-weight': 'bold'})
+                    ],
+                    style=score_card)
+                ],
+                style=score_style),
+                html.Div([
+                    html.Img(src=dash.get_asset_url('webicons/analysis.svg'), alt='analysis icon', style={'width': '20px'}),
+                    html.Span([
+                        html.Span('F1-Score', style={'color': '#e10600'}),
+                        html.Span(round(f1, 3), style={'font-weight': 'bold'})
+                    ],
+                    style=score_card)
+                ],
+                style=score_style),
+                html.Div([
+                    html.Img(src=dash.get_asset_url('webicons/curve.svg'), alt='analysis icon', style={'width': '20px'}),
+                    html.Span([
+                        html.Span('AUC', style={'color': '#e10600'}),
+                        html.Span(round(auc, 3), style={'font-weight': 'bold'})
+                    ],
+                    style=score_card)
+                ],
+                style=score_style),
             ],
             style={
                 'display': 'flex',
-                'flex-direction': 'column',
                 'align-items': 'center',
                 'gap': '30px',
                 'margin-top': '50px',
                 'width': '100%',
                 'place-content': 'center'
-            })
+            }),
+                        
         ])
     else:
         return html.Article([
@@ -522,19 +509,3 @@ def predict_constructor(n_clicks, team, grid, minutes, pits, fastestlapspeed, se
         ]
 
         return info, None, None, None, None
-
-@callback(
-    Output('pca-graph-2d', 'figure'),
-    Output('variables', 'children'),
-    Output('pca-graph-3d', 'figure'),
-    Input('variables-dropdown', 'value')
-)
-def update_pca_graph(variables):
-    if variables is None:
-        return dash.no_update
-    
-    pca_graph, pca_graph3d = get_pca_graph(tuple(variables))
-
-    variables = ', '.join(pca_variables)
-
-    return pca_graph, f'Variables: {variables}', pca_graph3d
