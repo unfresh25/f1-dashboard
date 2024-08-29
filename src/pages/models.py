@@ -61,7 +61,7 @@ layout = html.Main([
             value='binarylsm',
             children=[
                 dcc.Tab(label='Binary Logistic Regression', value='binarylsm'),
-                dcc.Tab(label='PCA - Principal Components', value='pca')
+                dcc.Tab(label='KNN vs. SVM Classifiers', value='class')
             ]
         )
     ], style={'margin-top': '50px'}),

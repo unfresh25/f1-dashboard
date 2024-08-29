@@ -161,3 +161,17 @@ def get_binary_model_predict(year, circuit, grid, minutes, constructorid, pits, 
 
     return y_hat
 
+@lru_cache(maxsize=None)
+def get_svm_model():
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/svm.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    svm = pickle.loads(model_content)
+    
+    precision = svm['precision']
+    recall = svm['recall']
+    f1 = svm['f1']
+    auc = svm['auc']
+    fig_cm = svm['cm']
+    
+    return precision, recall, f1, auc, fig_cm
