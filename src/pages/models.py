@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 import dash_loading_spinners as dls
 
 from edafunctions import get_seasons
-from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_svm_model, get_teams
+from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_svm_model, get_teams, get_knn_model
 
 import os
 from dotenv import load_dotenv
@@ -331,11 +331,12 @@ def set_model_tab(tab):
             'margin-top': '20px'
         })
     elif tab == 'class':
-        precision, recall, f1, auc, fig_cm = get_svm_model()
-        print(precision)
+        precision, recall, f1, auc, fig_cm, fig_acc = get_svm_model()
+        precision_k, recall_k, f1_k, auc_k, fig_cm_k, fig_acc_k = get_knn_model()
         return html.Article([
             html.H3('Win or no win team ranking by KNN vs. SVM', style={'text-align': 'center', 'margin-top': '50px'}),
             html.Aside([
+                html.H4('OneVsOne SVM Classifier ', style={'font-size': '20px', 'text-align': 'center', }),
                 html.Div([
                     html.Img(src=dash.get_asset_url('webicons/precision.svg'), alt='analysis icon', style={'width': '20px'}),
                     html.Span([
@@ -379,7 +380,12 @@ def set_model_tab(tab):
                 'gap': '30px',
                 'margin-top': '50px',
                 'width': '100%',
-                'place-content': 'center'
+                'place-content': 'center',
+                #'flex-direction': 'column',
+                'background-color': 'rgba(0, 0, 0, 0.7)',
+                'border': '.5px solid #222',
+                'border-radius': '20px',
+                'padding': '20px',
             }),
                         
         ])

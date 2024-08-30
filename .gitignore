@@ -4,3 +4,4 @@ f1_env/
 .env
 *.ipynb
 *.csv
+.DS_store

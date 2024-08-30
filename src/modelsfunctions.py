@@ -172,6 +172,23 @@ def get_svm_model():
     recall = svm['recall']
     f1 = svm['f1']
     auc = svm['auc']
-    fig_cm = svm['cm']
+    fig_cm = svm['fig_cm']
+    fig_acc = svm['fig_acc']
     
-    return precision, recall, f1, auc, fig_cm
+    return precision, recall, f1, auc, fig_cm, fig_acc
+
+@lru_cache(maxsize=None)
+def get_knn_model():
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/knn.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    knn = pickle.loads(model_content)
+    
+    precision = knn['precision']
+    recall = knn['recall']
+    f1 = knn['f1']
+    auc = knn['auc']
+    fig_cm = knn['fig_cm']
+    fig_acc = knn['fig_acc']
+    
+    return precision, recall, f1, auc, fig_cm, fig_acc

@@ -116,8 +116,6 @@ python-dateutil
 python-dotenv
 python-json-logger
 pytz
-pywinpty
-PyYAML
 pyzmq
 qtconsole
 QtPy
