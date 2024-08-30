@@ -61,7 +61,7 @@ app.layout = html.Div([
         html.A([
             html.Img(src=app.get_asset_url("webicons/github.svg"), style={"height": "25px", 'filter': 'invert(100%) sepia(0%) saturate(0%) hue-rotate(194deg) brightness(100%) contrast(102%)'})
         ], 
-        href='https://github.com/unfresh25/f1-dashboard',
+        href='https://unfresh25.github.io/f1-dashboard/site/',
         rel='noopener noreferrer',
         target='_blank')
     ], 
