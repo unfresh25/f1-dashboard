@@ -4,8 +4,8 @@ services:
     env: python
     plan: free
     buildCommand: |
-      python -m pip install docopt-0.6.2-py2.py3-none-any.whl
-      pip install --upgrade pip setuptools wheel
+      pip install --upgrade pip wheel
+      pip install docopt-0.6.2-py2.py3-none-any.whl
       pip install -r requirements.txt
     startCommand: gunicorn --chdir src app:server --workers 3
     envVars:
