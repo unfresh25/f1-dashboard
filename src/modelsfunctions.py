@@ -192,3 +192,51 @@ def get_knn_model():
     fig_acc = knn['fig_acc']
     
     return precision, recall, f1, auc, fig_cm, fig_acc
+
+@lru_cache(maxsize=None)
+def get_knn_predict(points, init, final, laps, speed, win, stop, ret):
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/knn.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    knn = pickle.loads(model_content)
+
+    to_predict = pd.DataFrame({
+        'avgpoints': [points],
+        'avginitialpos': [init],
+        'avgfinalpos': [final],
+        'avglaps': [laps],
+        'avgfastestlapspeed': [speed],
+        'totalwins': [win],
+        'avgstops': [stop],
+        'avgretirements': [ret]
+    })
+
+    model = knn['model']
+    y_hat = model.predict(to_predict)[0]
+
+    return y_hat
+
+@lru_cache(maxsize=None)
+def get_svm_predict(points, init, final, laps, speed, win, stop, ret):
+    url = 'https://github.com/unfresh25/f1-dashboard/raw/main/src/models/svm.pkl'
+    response = requests.get(url)
+    model_content = response.content
+    svm = pickle.loads(model_content)
+
+    #speed = float(speed)
+
+    to_predict = pd.DataFrame({
+        'avgpoints': [points],
+        'avginitialpos': [init],
+        'avgfinalpos': [final],
+        'avglaps': [laps],
+        'avgfastestlapspeed': [speed],
+        'totalwins': [win],
+        'avgstops': [stop],
+        'avgretirements': [ret]
+    })
+
+    model = svm['model']
+    y_hat = model.predict(to_predict)[0]
+
+    return y_hat

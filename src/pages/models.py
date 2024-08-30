@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 import dash_loading_spinners as dls
 
 from edafunctions import get_seasons
-from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_svm_model, get_teams, get_knn_model
+from modelsfunctions import get_binary_model, get_binary_model_predict, get_circuits_data, get_inputs_params, get_svm_model, get_teams, get_knn_model, get_knn_predict, get_svm_predict
 
 import os
 from dotenv import load_dotenv
@@ -334,60 +334,266 @@ def set_model_tab(tab):
         precision, recall, f1, auc, fig_cm, fig_acc = get_svm_model()
         precision_k, recall_k, f1_k, auc_k, fig_cm_k, fig_acc_k = get_knn_model()
         return html.Article([
-            html.H3('Win or no win team ranking by KNN vs. SVM', style={'text-align': 'center', 'margin-top': '50px'}),
+            html.H3('Win or no win team classifying by KNN and SVM', style={'text-align': 'center', 'margin-top': '50px'}),
             html.Aside([
-                html.H4('OneVsOne SVM Classifier ', style={'font-size': '20px', 'text-align': 'center', }),
                 html.Div([
-                    html.Img(src=dash.get_asset_url('webicons/precision.svg'), alt='analysis icon', style={'width': '20px'}),
-                    html.Span([
-                        html.Span('Precision', style={'color': '#e10600'}),
-                        html.Span(round(precision, 3), style={'font-weight': 'bold'})
+                    html.H5('How was the average performance of your team in the last practices?'),
+                    html.Div([
+                        dcc.Input(
+                            type='number',
+                            id='avg-points-ks',
+                            placeholder = 'Avg. Points...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
+                        dcc.Input(
+                            type='number',
+                            id='avg-init-ks',
+                            placeholder = 'Avg. Initial Pos...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
+                        dcc.Input(
+                            type='number',
+                            id='avg-final-ks',
+                            placeholder = 'Avg. Final Pos...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),  
                     ],
-                    style=score_card)
-                ],
-                style=score_style),
-                html.Div([
-                    html.Img(src=dash.get_asset_url('webicons/recall.svg'), alt='analysis icon', style={'width': '20px'}),
-                    html.Span([
-                        html.Span('Recall', style={'color': '#e10600'}),
-                        html.Span(round(recall, 3), style={'font-weight': 'bold'})
+                    style={
+                        'display': 'flex', 
+                        'align-items': 'center', 
+                        'gap': '20px', 
+                    }
+                    ),
+                    html.Div([
+                        dcc.Input(
+                            type='number',
+                            id='avg-laps-ks',
+                            placeholder = 'Avg. Laps...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
+                        dcc.Input(
+                            type='number',
+                            id='avg-speed-ks',
+                            placeholder = 'Avg. Fastest Speed...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
+                        dcc.Input(
+                            type='number',
+                            id='avg-wins-ks',
+                            placeholder = 'Total Wins...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),  
                     ],
-                    style=score_card)
-                ],
-                style=score_style),
-                html.Div([
-                    html.Img(src=dash.get_asset_url('webicons/analysis.svg'), alt='analysis icon', style={'width': '20px'}),
-                    html.Span([
-                        html.Span('F1-Score', style={'color': '#e10600'}),
-                        html.Span(round(f1, 3), style={'font-weight': 'bold'})
+                    style={
+                        'display': 'flex', 
+                        'align-items': 'center', 
+                        'gap': '20px', 
+                    }
+                    ),
+                    html.Div([
+                        dcc.Input(
+                            type='number',
+                            id='avg-stop-ks',
+                            placeholder = 'Avg. Pit Stop...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
+                        dcc.Input(
+                            type='number',
+                            id='avg-ret-ks',
+                            placeholder = 'Avg. Retirements...',
+                            autoComplete = 'off',
+                            style={"width": "50%", "color": "#007eff", "background-color": "transparent", "border": "none", "margin-top": "30px", "border-bottom": ".3px solid #e10600"}
+                        ),
                     ],
-                    style=score_card)
-                ],
-                style=score_style),
-                html.Div([
-                    html.Img(src=dash.get_asset_url('webicons/curve.svg'), alt='analysis icon', style={'width': '20px'}),
-                    html.Span([
-                        html.Span('AUC', style={'color': '#e10600'}),
-                        html.Span(round(auc, 3), style={'font-weight': 'bold'})
-                    ],
-                    style=score_card)
-                ],
-                style=score_style),
+                    style={
+                        'display': 'flex', 
+                        'align-items': 'center', 
+                        'gap': '20px', 
+                    }
+                    ),
+                    html.Div([
+                        html.Button([
+                            html.Img(src=dash.get_asset_url('webicons/predict.svg'), alt='predict icon', style={'width': '20px'}),
+                            'Predict'
+                        ], 
+                        id='predict-button-k', 
+                        style={
+                            'background-color': '#e10600', 
+                            'color': '#fff', 
+                            'border': 'none', 
+                            'border-radius': '10px', 
+                            'padding': '10px 20px', 
+                            'font-weight': 'bold', 
+                            'cursor': 'pointer',
+                            'display': 'flex',
+                            'align-items': 'center',
+                            'gap': '10px'
+                        }),
+                    ], style={'display': 'flex', 'align-items': 'center', 'gap': '20px', 'margin-top': '30px', 'place-content': 'center', 'margin-bottom': '20px'}),
+                    dls.Grid(
+                        html.Div(
+                            id='prediction-result-k', 
+                            style={
+                                'margin-top': '30px',
+                                'display': 'flex',
+                                'flex-direction': 'column',
+                                'align-items': 'center',
+                                'gap': '10px'
+                            }
+                        ),
+                        color='#fff',
+                        speed_multiplier=2,
+                        show_initially=False
+                    )
+                ], style={
+                    'display': 'flex', 
+                    'align-items': 'center', 
+                    'gap': '20px', 
+                    'margin-top': '30px', 
+                    'width': '60%',
+                    'place-content': 'center',
+                    'flex-direction': 'column'
+                }
+                ),
+                html.Img(src='https://media1.tenor.com/m/CQgmBoERquwAAAAC/wait-a-minute-wait-a-second.gif', style={'width': '30%'})
             ],
             style={
-                'display': 'flex',
-                'align-items': 'center',
                 'gap': '30px',
-                'margin-top': '50px',
                 'width': '100%',
                 'place-content': 'center',
-                #'flex-direction': 'column',
                 'background-color': 'rgba(0, 0, 0, 0.7)',
                 'border': '.5px solid #222',
                 'border-radius': '20px',
                 'padding': '20px',
-            }),
-                        
+                'margin-top': '30px',
+                'display': 'flex',
+                'justify-content': 'space-between'
+            }           
+            ),
+            html.Aside([
+                html.Div([
+                    html.H4('OneVsOne SVM Classifier', style={'font-size': '20px', 'text-align': 'center', 'width': '20%'}),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/precision.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('Precision', style={'color': '#e10600'}),
+                            html.Span(round(precision, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/recall.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('Recall', style={'color': '#e10600'}),
+                            html.Span(round(recall, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/analysis.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('F1-Score', style={'color': '#e10600'}),
+                            html.Span(round(f1, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/curve.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('AUC', style={'color': '#e10600'}),
+                            html.Span(round(auc, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                ],
+                style={
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '30px',
+                    'width': '100%',
+                    'place-content': 'center',
+                    'background-color': 'rgba(0, 0, 0, 0.7)',
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '20px',
+                }
+                ),
+                html.Div([
+                    html.H4('Cosine KNN Classifier', style={'font-size': '20px', 'text-align': 'center', 'width': '20%'}),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/precision.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('Precision', style={'color': '#e10600'}),
+                            html.Span(round(precision_k, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/recall.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('Recall', style={'color': '#e10600'}),
+                            html.Span(round(recall_k, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card)
+                    ],
+                    style=score_style),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/analysis.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('F1-Score', style={'color': '#e10600'}),
+                            html.Span(round(f1_k, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card
+                        )
+                    ],
+                    style=score_style
+                    ),
+                    html.Div([
+                        html.Img(src=dash.get_asset_url('webicons/curve.svg'), alt='analysis icon', style={'width': '20px'}),
+                        html.Span([
+                            html.Span('AUC', style={'color': '#e10600'}),
+                            html.Span(round(auc_k, 3), style={'font-weight': 'bold'})
+                        ],
+                        style=score_card
+                        )
+                    ],
+                    style=score_style
+                    ),
+                ],
+                style={
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'gap': '30px',
+                    'width': '100%',
+                    'place-content': 'center',
+                    'background-color': 'rgba(0, 0, 0, 0.7)',
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '20px',
+                }),
+            ],
+            style={
+                'gap': '30px',
+                'width': '100%',
+                'place-content': 'center',
+                'background-color': 'rgba(0, 0, 0, 0.7)',
+                'border': '.5px solid #222',
+                'border-radius': '20px',
+                'padding': '20px',
+                'margin-top': '30px',
+            }),         
         ])
     else:
         return html.Article([
@@ -515,3 +721,64 @@ def predict_constructor(n_clicks, team, grid, minutes, pits, fastestlapspeed, se
         ]
 
         return info, None, None, None, None
+    
+@callback(
+    Output('prediction-result-k', 'children'),
+    Output('avg-points-ks', 'value'),
+    Output('avg-init-ks', 'value'),
+    Output('avg-final-ks', 'value'),
+    Output('avg-laps-ks', 'value'),
+    Output('avg-speed-ks', 'value'),
+    Output('avg-wins-ks', 'value'),
+    Output('avg-stop-ks', 'value'),
+    Output('avg-ret-ks', 'value'),
+    Input('predict-button-k', 'n_clicks'),
+    State('avg-points-ks', 'value'),
+    State('avg-init-ks', 'value'),
+    State('avg-final-ks', 'value'),
+    State('avg-laps-ks', 'value'),
+    State('avg-speed-ks', 'value'),
+    State('avg-wins-ks', 'value'),
+    State('avg-stop-ks', 'value'),
+    State('avg-ret-ks', 'value'),
+    prevent_initial_call=True,
+    running=[
+        (Output("predict-button-k", "disabled"), True, False)
+    ]
+)
+def predict_constructor(n_clicks, points, init, final, laps, speed, win, stop, ret):
+    if n_clicks is None:
+        return dash.no_update
+    else:
+        prediction = get_knn_predict(points, init, final, laps, speed, win, stop, ret)
+        prediction_s = get_svm_predict(points, init, final, laps, speed, win, stop, ret)
+        if prediction == 'No win':
+            color = '#e10600'
+        else:
+            color = '#00e600'
+        
+        if prediction_s == 0:
+            color_s = '#e10600'
+            val = 'No win'
+        else:
+            color_s = '#00e600'
+            val = 'Win'
+        
+        info = [
+            html.H5('Prediction Results', style={'text-align': 'center'}),
+            html.Div([
+                html.Span("Based on your team's performance, in the next race your team would"),
+                html.Div([
+                    html.Div([
+                        html.Span('KNN Result'),
+                        html.Span(prediction, style={'color': color})
+                    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'}),
+                    html.Div([
+                        html.Span('SVM Result'),
+                        html.Span(val, style={'color': color_s})
+                    ], style={'display': 'flex', 'flex-direction': 'column', 'align-items': 'center'})
+                ], style={'display': 'flex', 'gap': '20px', 'place-content': 'center', 'margin-top': '15px'})
+            ], style=pred_style.update({'flex-direction': 'column'})),
+        ]
+
+        return info, None, None, None, None, None, None, None, None
