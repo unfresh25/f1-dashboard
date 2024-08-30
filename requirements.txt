@@ -34,7 +34,6 @@ defusedxml
 dill
 diskcache
 distlib
-docopt
 exceptiongroup
 executing
 fastjsonschema
