@@ -63,6 +63,12 @@ app.layout = html.Div([
         ], 
         href='https://unfresh25.github.io/f1-dashboard/site/',
         rel='noopener noreferrer',
+        target='_blank'),
+        html.A([
+            html.Img(src=app.get_asset_url("webicons/colab.png"), style={"height": "25px", 'filter': 'invert(100%) sepia(0%) saturate(0%) hue-rotate(194deg) brightness(100%) contrast(102%)'})
+        ], 
+        href='https://colab.research.google.com/drive/1iZcOsn0WWN41y3O_s7b4f1cJvb45pnJE?usp=sharing',
+        rel='noopener noreferrer',
         target='_blank')
     ], 
     style={
