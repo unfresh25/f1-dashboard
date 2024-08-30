@@ -596,6 +596,20 @@ def set_model_tab(tab):
                     'display': 'flex',
                     'gap': '30px',
                     'width': '100%'
+                }),
+                html.Div([
+                    dcc.Graph(figure=fig_acc, style={'width': '50%'}),
+                    dcc.Graph(figure=fig_acc_k, style={'width': '50%'})
+                ],
+                style={
+                    'background-color': 'rgba(0, 0, 0, 0.7)',
+                    'border': '.5px solid #222',
+                    'border-radius': '20px',
+                    'padding': '20px',
+                    'place-content': 'center',
+                    'display': 'flex',
+                    'gap': '30px',
+                    'width': '100%'
                 })
             ],
             style={
